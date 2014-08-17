@@ -4,12 +4,38 @@
 		xmlns:model="clr-namespace:BatchImageProcessor.Model"
 		xmlns:viewmodel="clr-namespace:BatchImageProcessor.ViewModel"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         Title="Batch Image Processor" Height="720" Width="1280" MinWidth="800" MinHeight="600"
 		UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Images/ImageRotator.ico" WindowStartupLocation="CenterScreen">
 	<Window.Resources>
 		<viewmodel:FileCollectionView x:Key="ficv" Source="{Binding SelectedItem.Files, ElementName=treeView}" />
 		<viewmodel:FolderCollectionView x:Key="focv" Source="{Binding Children}" />
+
+		<!-- #region Converters -->
+		
 		<viewmodel:TypeConverter x:Key="typeConv"/>
+		<viewmodel:EnumBooleanConverter x:Key="enumConv"/>
+		<viewmodel:EnumVisibilityConverter x:Key="enumVis"/>
+		<viewmodel:EnumStringConverter x:Key="enumStr"/>
+		
+		<!-- #endregion -->
+
+		<!-- #region Effects -->
+		
+		<DropShadowEffect x:Key="dse" BlurRadius="5" ShadowDepth="0"/>
+		<DropShadowEffect x:Key="tdse" Opacity="0.6" BlurRadius="6" ShadowDepth="0"/>
+
+		<!-- #endregion -->
+		
+		<!-- #region Styles and Templates -->
+		
+		<!-- Simple Button Control Template -->
+		<ControlTemplate x:Key="btn" TargetType="Button">
+			<Border>
+				<ContentPresenter/>
+			</Border>
+		</ControlTemplate>
+
 		<Style x:Key="tvs" TargetType="TreeViewItem">
 			<Setter Property="BorderThickness" Value="1"/>
 			<Style.Triggers>
@@ -25,7 +51,7 @@
 				</MultiTrigger>
 			</Style.Triggers>
 		</Style>
-
+		
 		<Style TargetType="{x:Type ListView}" BasedOn="{StaticResource {x:Type ListBox}}">
 			<Setter Property="BorderBrush" Value="Black"/>
 			<Setter Property="BorderThickness" Value="0.5"/>
@@ -36,7 +62,7 @@
                 Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}">
 							<ScrollViewer Margin="{TemplateBinding Padding}">
 								<controls:VirtualizingWrapPanel IsItemsHost="True" 
-                       Width="{Binding ActualWidth,RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                       Width="{Binding ActualWidth,RelativeSource={RelativeSource AncestorType=ScrollContentPresenter},FallbackValue=600}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
 ScrollViewer.VerticalScrollBarVisibility="Auto">
 								</controls:VirtualizingWrapPanel>
 							</ScrollViewer>
@@ -45,18 +71,14 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 				</Setter.Value>
 			</Setter>
 		</Style>
-		<DropShadowEffect x:Key="dse" BlurRadius="5" ShadowDepth="0"/>
-		<DropShadowEffect x:Key="tdse" Opacity="0.6" BlurRadius="6" ShadowDepth="0"/>
-		<BitmapImage x:Key="fallback" CacheOption="OnLoad" UriSource="Images/refresh.png"/>
+		
+		<!-- Label Header Style (Global Override) -->
 		<Style TargetType="Label">
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="Effect" Value="{StaticResource tdse}"/>
 		</Style>
-		<ControlTemplate x:Key="btn" TargetType="Button">
-			<Border>
-				<ContentPresenter/>
-			</Border>
-		</ControlTemplate>
+		
+		<!-- Simple Button Style (Global Override) -->
 		<Style TargetType="Button">
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="Background" Value="{x:Null}"/>
@@ -82,28 +104,42 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 				</EventTrigger>
 			</Style.Triggers>
 		</Style>
+
+		<!-- #endregion -->
 		
+		<!-- Thumbnail Fallback Image -->
+		<BitmapImage x:Key="fallback" CacheOption="OnLoad" UriSource="Images/refresh.png"/>
+
+		<!-- File Context Menu -->
 		<ContextMenu x:Key="imageCtxMenu">
-			<MenuItem Header="Override Default Settings" IsCheckable="True"/>
+			<MenuItem Header="Rotation Override">
+				<MenuItem Header="Use Default Settings" IsCheckable="True" IsChecked="{Binding Path=RotationOverride, Converter={StaticResource enumConv}, ConverterParameter=Default}"/>
+				<Separator/>
+				<MenuItem Header="Counter Clockwise" IsCheckable="True" IsChecked="{Binding Path=RotationOverride, Converter={StaticResource enumConv}, ConverterParameter=CounterClockwise}"/>
+				<MenuItem Header="No Rotation" IsCheckable="True" IsChecked="{Binding Path=RotationOverride, Converter={StaticResource enumConv}, ConverterParameter=None}"/>
+				<MenuItem Header="180&#173; Degrees" IsCheckable="True" IsChecked="{Binding Path=RotationOverride, Converter={StaticResource enumConv}, ConverterParameter=UpsideDown}"/>
+				<MenuItem Header="Clockwise" IsCheckable="True" IsChecked="{Binding Path=RotationOverride, Converter={StaticResource enumConv}, ConverterParameter=Clockwise}"/>
+			</MenuItem>
 		</ContextMenu>
 	</Window.Resources>
 
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
+			<RowDefinition Name="Headers" Height="Auto"/>
+			<RowDefinition Name="Toolbars" Height="Auto"/>
+			<RowDefinition Name="Content" Height="*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="200" MinWidth="200" MaxWidth="400"/>
-			<ColumnDefinition Width="*" MinWidth="400"/>
-			<ColumnDefinition Width="300" MinWidth="300"/>
+			<ColumnDefinition Name="Treeview" Width="200" MinWidth="200" MaxWidth="400"/>
+			<ColumnDefinition Name="Grid" Width="*" MinWidth="400"/>
+			<ColumnDefinition Name="Settings" Width="300" MinWidth="300"/>
 		</Grid.ColumnDefinitions>
 
+		<!-- #region Left Column -->
+		
 		<Label Content="Folders" HorizontalAlignment="Center"/>
-		<Label Grid.Column="1" Content="Files" HorizontalAlignment="Center"/>
-		<Label Grid.Column="2" Content="Default Settings" HorizontalAlignment="Center"/>
-
+		
+		<!-- Left Toolbar -->
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Margin="15,0" HorizontalAlignment="Center">
 			<Button x:Name="importImageBtn" ToolTip="Import Image" Cursor="Hand">
 				<Image Width="18" Height="18" Source="Images/image-import.png" Stretch="None" />
@@ -120,33 +156,8 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 				<Image Width="18" Height="18" Source="Images/cross.png" Stretch="None" />
 			</Button>
 		</StackPanel>
-
-		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="15,0" HorizontalAlignment="Center">
-			<Button x:Name="checkAllBtn" ToolTip="Check Selected Items" Cursor="Hand" Click="checkAllBtn_Click">
-				<Image Width="18" Height="18" Source="Images/ui-check-box.png" Stretch="None" />
-			</Button>
-			<Button x:Name="uncheckBtn" ToolTip="Uncheck Selected Items" Cursor="Hand" Click="uncheckBtn_Click">
-				<Image Width="18" Height="18" Source="Images/ui-check-box-uncheck.png" Stretch="None" />
-			</Button>
-			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0" Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>
-			<Button ToolTip="Rotate Counter Clockwise" Cursor="Hand">
-				<Image Width="18" Height="18" Source="Images/arrow-circle-ccwise.png" Stretch="None" />
-			</Button>
-			<Button ToolTip="Rotate 180 Degrees" Cursor="Hand">
-				<Image Width="18" Height="18" Source="Images/arrow-circle-180.png" Stretch="None" />
-			</Button>
-			<Button ToolTip="Rotate Clockwise" Cursor="Hand">
-				<Image Width="18" Height="18" Source="Images/arrow-circle-cwise.png" Stretch="None" />
-			</Button>
-			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0" Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>
-			<Button x:Name="selectAllBtn" ToolTip="Select All" Cursor="Hand" Click="selectAllBtn_Click">
-				<Image Width="18" Height="18" Source="Images/selection-select.png" Stretch="None" />
-			</Button>
-			<Button x:Name="deselectBtn" ToolTip="Select None" Cursor="Hand" Click="deselectBtn_Click">
-				<Image Width="18" Height="18" Source="Images/selection.png" Stretch="None" />
-			</Button>
-		</StackPanel>
-
+		
+		<!-- Treeview File Explorer -->
 		<TreeView x:Name="treeView" Grid.Row="2" ItemsSource="{Binding Folders}" BorderThickness="0">
 			<TreeView.Resources>
 				<HierarchicalDataTemplate DataType="{x:Type viewmodel:Folder}" ItemsSource="{Binding Files}">
@@ -175,7 +186,7 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 											<RowDefinition Height="Auto"/>
 											<RowDefinition Height="Auto"/>
 										</Grid.RowDefinitions>
-										<Image Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=True}" StretchDirection="DownOnly" MaxWidth="400" MaxHeight="300"/>
+										<Image Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=True}" StretchDirection="DownOnly" MaxWidth="400" MaxHeight="300" Effect="{StaticResource tdse}"/>
 										<TextBlock Grid.Row="1" Text="{Binding Path}"/>
 									</Grid>
 								</ToolTip>
@@ -192,7 +203,47 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 				</Style>
 			</TreeView.Resources>
 		</TreeView>
-
+		
+		<!-- #endregion -->
+		
+		<!-- #region Middle Column -->
+		
+		<Label Grid.Column="1" Content="Files" HorizontalAlignment="Center"/>
+		
+		<!-- Middle Toolbar -->
+		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="15,0" HorizontalAlignment="Center">
+			<Button x:Name="checkAllBtn" ToolTip="Enable Selected Items" Cursor="Hand" Click="checkAllBtn_Click">
+				<Image Width="18" Height="18" Source="Images/ui-check-box.png" Stretch="None" />
+			</Button>
+			<Button x:Name="uncheckBtn" ToolTip="Disable Selected Items" Cursor="Hand" Click="uncheckBtn_Click">
+				<Image Width="18" Height="18" Source="Images/ui-check-box-uncheck.png" Stretch="None" />
+			</Button>
+			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0" Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>
+			<Button x:Name="ccRotBtn" ToolTip="Rotate Counter Clockwise" Cursor="Hand" Click="ccRotBtn_Click">
+				<Image Width="18" Height="18" Source="Images/arrow-circle-ccwise.png" Stretch="None" />
+			</Button>
+			<Button x:Name="noRotBtn" ToolTip="No Rotation" Cursor="Hand" Click="noRotBtn_Click">
+				<Image Width="18" Height="18" Source="Images/arrow-noturn.png" Stretch="None" />
+			</Button>
+			<Button x:Name="defRotBtn" ToolTip="Reset to Default" Cursor="Hand" Click="defRotBtn_Click">
+				<Image Width="18" Height="18" Source="Images/image-rotate.png" Stretch="None" />
+			</Button>
+			<Button x:Name="upRotBtn" ToolTip="Rotate 180 Degrees" Cursor="Hand" Click="upRotBtn_Click">
+				<Image Width="18" Height="18" Source="Images/arrow-circle-180.png" Stretch="None" />
+			</Button>
+			<Button x:Name="cRotBtn" ToolTip="Rotate Clockwise" Cursor="Hand" Click="cRotBtn_Click">
+				<Image Width="18" Height="18" Source="Images/arrow-circle-cwise.png" Stretch="None" />
+			</Button>
+			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0" Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>
+			<Button x:Name="selectAllBtn" ToolTip="Select All" Cursor="Hand" Click="selectAllBtn_Click">
+				<Image Width="18" Height="18" Source="Images/selection-select.png" Stretch="None" />
+			</Button>
+			<Button x:Name="deselectBtn" ToolTip="Select None" Cursor="Hand" Click="deselectBtn_Click">
+				<Image Width="18" Height="18" Source="Images/selection.png" Stretch="None" />
+			</Button>
+		</StackPanel>
+		
+		<!-- Grid Splitter -->
 		<GridSplitter Grid.Row="2" Grid.Column="1" Width="3" ResizeDirection="Columns" HorizontalAlignment="Left" IsTabStop="False">
 			<GridSplitter.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -202,6 +253,8 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 				</LinearGradientBrush>
 			</GridSplitter.Background>
 		</GridSplitter>
+		
+		<!-- Item View -->
 		<ListView Grid.Row="2" Grid.Column="1" x:Name="listView" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
 				  ItemsSource="{Binding Source={StaticResource ficv}}" Margin="3,0,0,0">
 			<ListView.ItemTemplate>
@@ -210,21 +263,45 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="*"/>
 							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
 						</Grid.RowDefinitions>
-						<Image Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=True}" StretchDirection="DownOnly" Width="128" Height="128" Margin="3" Effect="{DynamicResource dse}"/>
-						<CheckBox IsChecked="{Binding Selected}" VerticalAlignment="Top"/>
-						<TextBlock Grid.Row="1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" MaxWidth="128" MaxHeight="40" TextAlignment="Center"/>
+						<Image Grid.RowSpan="2" Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=True, Delay=100}" StretchDirection="DownOnly" Width="128" Height="128" Margin="3" Effect="{DynamicResource dse}"/>
+						<CheckBox IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False"/>
+						<StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Effect="{StaticResource tdse}">
+							<Image Width="16" Height="16" Visibility="{Binding Path=RotationOverride, Converter={StaticResource enumVis}, ConverterParameter=None}" StretchDirection="DownOnly" Source="Images/arrow-noturn.png" ToolTip="Override: No Rotation"/>
+							<Image Width="16" Height="16" Visibility="{Binding Path=RotationOverride, Converter={StaticResource enumVis}, ConverterParameter=Clockwise}" StretchDirection="DownOnly" Source="Images/arrow-circle-cwise.png" ToolTip="Override: Rotate Clockwise"/>
+							<Image Width="16" Height="16" Visibility="{Binding Path=RotationOverride, Converter={StaticResource enumVis}, ConverterParameter=UpsideDown}" StretchDirection="DownOnly" Source="Images/arrow-circle-180.png"  ToolTip="Override: Rotate 180&#176;"/>
+							<Image Width="16" Height="16" Visibility="{Binding Path=RotationOverride, Converter={StaticResource enumVis}, ConverterParameter=CounterClockwise}" StretchDirection="DownOnly" Source="Images/arrow-circle-ccwise.png" ToolTip="Override: Counter Clockwise"/>
+						</StackPanel>
+						<TextBlock Grid.Row="2" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" MaxWidth="128" MaxHeight="40" TextAlignment="Center"/>
 					</Grid>
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
+		
+		<!-- #endregion -->
+		
+		<!-- #region Right Column -->
+		
+		<Label Grid.Column="2" Content="Default Settings" HorizontalAlignment="Center"/>
+		
+		<!-- Toolbar -->
+		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="15,0" HorizontalAlignment="Center">
+			<Button x:Name="aboutBtn" ToolTip="About" Cursor="Hand">
+				<Image Width="18" Height="18" Source="Images/information.png" Stretch="None" StretchDirection="DownOnly" />
+			</Button>
+		</StackPanel>
+		
 		<Grid Grid.Column="2" Grid.Row="2">
 			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<ListBox VerticalAlignment="Top" Height="Auto" BorderThickness="0" SelectedIndex="0">
+			
+			<!-- Option tabs -->
+			<ListBox x:Name="OptionsBox" VerticalAlignment="Top" Height="Auto" BorderThickness="0" SelectedIndex="0" SelectionChanged="ListBox_SelectionChanged">
 				<ListBox.Resources>
 					<Style TargetType="{x:Type CheckBox}">
 						<Style.Triggers>
@@ -245,50 +322,218 @@ ScrollViewer.VerticalScrollBarVisibility="Auto">
 						</Style.Triggers>
 					</Style>
 				</ListBox.Resources>
-				<ListBoxItem>
-					<StackPanel Orientation="Horizontal" Margin="25,0">
-						<Image Source="Images/image-rotate.png"/>
-						<Label Content="Rotate"/>
+				<ListBoxItem x:Name="RotateBox">
+					<StackPanel Orientation="Horizontal">
+						<CheckBox VerticalContentAlignment="Center" x:Name="rotChck" IsChecked="{Binding EnableRotation}">
+							<Border Opacity="0.5" Focusable="False"/>
+						</CheckBox>
+						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=rotChck, Path=Content.Opacity}">
+							<Image Source="Images/image-rotate.png"/>
+							<Label Content="Rotate"/>
+						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem>
-					<CheckBox VerticalContentAlignment="Center">
-						<StackPanel Orientation="Horizontal" Margin="5,0" Opacity="0.5">
+				<ListBoxItem x:Name="ResizeBox">
+					<StackPanel Orientation="Horizontal">
+						<CheckBox x:Name="resChck" VerticalContentAlignment="Center">
+							<Border Opacity="0.5" Focusable="False"/>
+						</CheckBox>
+						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=resChck, Path=Content.Opacity}">
 							<Image Source="Images/image-resize-actual.png"/>
 							<Label Content="Resize"/>
 						</StackPanel>
-					</CheckBox>
+					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem>
-					<CheckBox VerticalContentAlignment="Center">
-						<StackPanel Orientation="Horizontal" Margin="5,0" Opacity="0.5">
+				<ListBoxItem x:Name="CropBox">
+					<StackPanel Orientation="Horizontal">
+						<CheckBox x:Name="crpChck" VerticalContentAlignment="Center" IsChecked="{Binding EnableCrop}">
+							<Border Opacity="0.5" Focusable="False"/>
+						</CheckBox>
+						<StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=crpChck}">
 							<Image Source="Images/image-crop.png"/>
 							<Label Content="Crop"/>
 						</StackPanel>
-					</CheckBox>
+					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem>
-					<CheckBox VerticalContentAlignment="Center">
-						<StackPanel Orientation="Horizontal" Margin="5,0" Opacity="0.5">
+				<ListBoxItem x:Name="WatermarkBox">
+					<StackPanel Orientation="Horizontal">
+						<CheckBox x:Name="wtrChck" VerticalContentAlignment="Center">
+							<Border Opacity="0.5" Focusable="False"/>
+						</CheckBox>
+						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=wtrChck, Path=Content.Opacity}">
 							<Image Source="Images/image-saturation.png" />
 							<Label Content="Watermark"/>
 						</StackPanel>
-					</CheckBox>
+					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem>
-					<StackPanel Orientation="Horizontal" Margin="25,0">
+				<ListBoxItem x:Name="OutputBox">
+					<StackPanel Orientation="Horizontal" Margin="20,0">
 						<Image Source="Images/image-export.png" />
 						<Label Content="Output"/>
 					</StackPanel>
 				</ListBoxItem>
 			</ListBox>
-			<!--<ContentControl Grid.Row="1" Content="{Binding}"-->
-			<Button Grid.Row="2" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand">
+			
+			<!-- Separator -->
+			<Border Grid.Row="1" Height="3">
+				<Border.Background>
+					<LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+						<GradientStop Color="Transparent" Offset="0"/>
+						<GradientStop Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}" Offset="0.5"/>
+						<GradientStop Color="Transparent" Offset="1"/>
+					</LinearGradientBrush>
+				</Border.Background>
+			</Border>
+			
+			<!-- #region Options Panes -->
+			
+			<StackPanel x:Name="SettingsPresenter" Grid.Row="2">
+				<Grid x:Name="RotateSettings" Margin="5,0" Visibility="Collapsed">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Label Content="Rotation Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableRotation}">
+						<TextBlock Text="Rotate All Images:" FontWeight="Bold"/>
+						<RadioButton Margin="0,5,0,2" IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource enumConv}, ConverterParameter=None}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/arrow-noturn.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="No Rotation" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						<RadioButton Margin="0,2" IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource enumConv}, ConverterParameter=Clockwise}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/arrow-circle-cwise.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="90&#176; Rotation" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						<RadioButton Margin="0,2" IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource enumConv}, ConverterParameter=UpsideDown}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/arrow-circle-180.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="180&#176; Rotation" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						<RadioButton Margin="0,2" IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource enumConv}, ConverterParameter=CounterClockwise}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/arrow-circle-ccwise.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="270&#176; Rotation" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+					</StackPanel>
+				</Grid>
+				<Grid x:Name="ResizeSettings" Visibility="Collapsed">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Label Content="Resize Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+					<StackPanel Grid.Row="1">
+
+					</StackPanel>
+				</Grid>
+				<Grid x:Name="CropSettings" Margin="5,0">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Label Content="Crop Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableCrop}">
+						<TextBlock Text="Crop down to:" FontWeight="Bold"/>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<TextBlock Text="Width" Margin="0,0,10,0" VerticalAlignment="Center" />
+							<xctk:IntegerUpDown Grid.Column="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1" Value="800"/>
+							<TextBlock Grid.Row="1" Text="Height" Margin="0,0,10,0" VerticalAlignment="Center" />
+							<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1" Value="600"/>
+						</Grid>
+						<TextBlock Text="Crop alignment:" FontWeight="Bold" Margin="0,10,0,0"/>
+						<Grid HorizontalAlignment="Center">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<Button x:Name="cropTlBtn" Click="CropBtn_Click">
+								<Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
+							</Button>
+							<Button x:Name="cropTcBtn" Grid.Column="1">
+								<Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
+							</Button>
+							<Button x:Name="cropTrBtn" Grid.Column="2">
+								<Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
+							</Button>
+
+							<Button x:Name="cropMlBtn" Grid.Row="1">
+								<Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
+							</Button>
+							<Button x:Name="cropMcButton" Grid.Column="1" Grid.Row="1">
+								<Image StretchDirection="DownOnly" Source="Images/circle.png" />
+							</Button>
+							<Button x:Name="cropMrBtn" Grid.Column="2" Grid.Row="1">
+								<Image StretchDirection="DownOnly" Source="Images/arrow.png" />
+							</Button>
+
+							<Button x:Name="CropBlBtn" Grid.Row="2">
+								<Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
+							</Button>
+							<Button x:Name="cropBcBtn" Grid.Column="1" Grid.Row="2">
+								<Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
+							</Button>
+							<Button x:Name="cropBrBtn" Grid.Column="2" Grid.Row="2">
+								<Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
+							</Button>
+
+							<TextBlock Grid.Row="3" Grid.ColumnSpan="3" Text="{Binding DefaultAlignment, Converter={StaticResource enumStr}, FallbackValue={}No Binding}" HorizontalAlignment="Center"/>
+						</Grid>
+					</StackPanel>
+				</Grid>
+				<Grid x:Name="WatermarkSettings" Visibility="Collapsed">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Label Content="Watermark Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+					<StackPanel Grid.Row="1">
+
+					</StackPanel>
+				</Grid>
+				<Grid x:Name="OutputSettings" Visibility="Collapsed">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Label Content="Output Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+					<StackPanel Grid.Row="1">
+
+					</StackPanel>
+				</Grid>
+			</StackPanel>
+			
+			<!-- #endregion -->
+			
+			<!-- Start Button -->
+			<Button Grid.Row="3" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" IsEnabled="False">
 				<StackPanel Orientation="Horizontal">
 					<Label Content="Start Processing" FontSize="20" Margin="0,0,10,0" FontFamily="Segoe UI Light"/>
 					<Image Source="Images/32/image-transition.png" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 		</Grid>
+		
+		<!-- #endregion -->
 	</Grid>
 </Window>

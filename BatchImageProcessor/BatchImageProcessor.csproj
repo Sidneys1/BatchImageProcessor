@@ -78,6 +78,24 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.AvalonDock">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.2.1\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.2.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.2.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.2.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.DataGrid">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.2.1\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.2.1\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -87,12 +105,13 @@
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\Rotation.cs" />
+    <Compile Include="ViewModel\Alignment.cs" />
     <Compile Include="ViewModel\FileWrapper.cs" />
     <Compile Include="ViewModel\Folder.cs" />
     <Compile Include="ViewModel\FolderCollectionView.cs" />
     <Compile Include="ViewModel\FileCollectionView.cs" />
     <Compile Include="ViewModel\Operations.cs" />
-    <Compile Include="ViewModel\TypeConverter.cs" />
+    <Compile Include="ViewModel\Converters.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
     <Compile Include="View\ShellContextMenu.cs" />
     <Page Include="Controls\SplitButton.xaml">
@@ -225,6 +244,31 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\folder-import.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\arrow-noturn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\arrow-default.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\information.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\image-crop--cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\arrow-045.png" />
+    <Resource Include="Images\arrow-090.png" />
+    <Resource Include="Images\arrow-135.png" />
+    <Resource Include="Images\arrow-180.png" />
+    <Resource Include="Images\arrow-225.png" />
+    <Resource Include="Images\arrow-270.png" />
+    <Resource Include="Images\arrow-315.png" />
+    <Resource Include="Images\arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\circle.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

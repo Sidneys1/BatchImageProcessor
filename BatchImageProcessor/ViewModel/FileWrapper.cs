@@ -18,8 +18,20 @@ namespace BatchImageProcessor.ViewModel
 			}
 		}
 
+		Model.Rotation _rotOverride = Model.Rotation.Default;
+		public Model.Rotation RotationOverride
+		{
+			get { return _rotOverride; }
+			set
+			{
+				_rotOverride = value;
+				PropChanged("RotationOverride");
+			}
+		}
+
 		public FileWrapper(string path)
 			: base(path)
-		{ }
+		{
+		}
 	}
 }

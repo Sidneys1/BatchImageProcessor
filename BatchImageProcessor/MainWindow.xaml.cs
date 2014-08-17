@@ -16,12 +16,12 @@ namespace BatchImageProcessor
 		{
 			InitializeComponent();
 
-			//Model.Folder f = new Model.Folder(@"D:\Documents\New folder (2)");
-
 			ViewModel.ViewModel context = new ViewModel.ViewModel();
 			context.Folders.Add(new ViewModel.Folder(@"D:\Documents\New folder (2)\New folder"));
 			this.DataContext = context;
 		}
+
+		#region Grid View Manipulation Buttons
 
 		private void selectAllBtn_Click(object sender, RoutedEventArgs e)
 		{
@@ -47,7 +47,9 @@ namespace BatchImageProcessor
 			{
 				f.Selected = false;
 			}
-		}
+		} 
+
+		#endregion
 
 		private void Grid_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
@@ -82,6 +84,94 @@ namespace BatchImageProcessor
 				ctxMnu.IsOpen = true;
 				
 			}
+		}
+
+		private void ListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+		{
+			RotateSettings.Visibility = ResizeSettings.Visibility = CropSettings.Visibility = WatermarkSettings.Visibility = OutputSettings.Visibility = Visibility.Collapsed;
+			if (SettingsPresenter != null)
+			{
+				if (OptionsBox.SelectedItem == RotateBox)
+					RotateSettings.Visibility = Visibility.Visible;
+				else if (OptionsBox.SelectedItem == ResizeBox)
+					ResizeSettings.Visibility = Visibility.Visible;
+				else if (OptionsBox.SelectedItem == CropBox)
+					CropSettings.Visibility = Visibility.Visible;
+				else if (OptionsBox.SelectedItem == WatermarkBox)
+					WatermarkSettings.Visibility = Visibility.Visible;
+				else if (OptionsBox.SelectedItem == OutputBox)
+					OutputSettings.Visibility = Visibility.Visible;
+			}
+		}
+
+		#region Rotation Button Handlers
+
+		private void ccRotBtn_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (FileWrapper item in listView.SelectedItems)
+			{
+				item.RotationOverride = Model.Rotation.CounterClockwise;
+			}
+		}
+
+		private void noRotBtn_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (FileWrapper item in listView.SelectedItems)
+			{
+				item.RotationOverride = Model.Rotation.None;
+			}
+		}
+
+		private void defRotBtn_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (FileWrapper item in listView.SelectedItems)
+			{
+				item.RotationOverride = Model.Rotation.Default;
+			}
+		}
+
+		private void upRotBtn_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (FileWrapper item in listView.SelectedItems)
+			{
+				item.RotationOverride = Model.Rotation.UpsideDown;
+			}
+		}
+
+		private void cRotBtn_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (FileWrapper item in listView.SelectedItems)
+			{
+				item.RotationOverride = Model.Rotation.Clockwise;
+			}
+		} 
+
+		#endregion
+
+		private void CropBtn_Click(object sender, RoutedEventArgs e)
+		{
+			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
+
+			if (sender == cropTlBtn)
+				model.DefaultCropAlignment = Alignment.Top_Left;
+			else if (sender == cropTcBtn)
+				model.DefaultCropAlignment = Alignment.Top_Center;
+			else if (sender == cropTrBtn)
+				model.DefaultCropAlignment = Alignment.Top_Right;
+
+			else if (sender == cropMlBtn)
+				model.DefaultCropAlignment = Alignment.Middle_Left;
+			else if (sender == cropMcButton)
+				model.DefaultCropAlignment = Alignment.Middle_Center;
+			else if (sender == cropMrBtn)
+				model.DefaultCropAlignment = Alignment.Middle_Right;
+
+			else if (sender == CropBlBtn)
+				model.DefaultCropAlignment = Alignment.Top_Left;
+			else if (sender == cropBcBtn)
+				model.DefaultCropAlignment = Alignment.Top_Center;
+			else if (sender == cropBrBtn)
+				model.DefaultCropAlignment = Alignment.Top_Right;
 		}
 	}
 }

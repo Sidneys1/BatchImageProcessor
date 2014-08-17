@@ -9,7 +9,7 @@ namespace BatchImageProcessor.ViewModel
 	public class Operations
 	{
 		public OpType RotationType { get; set; }
-		public RotationAmount RotationAmount { get; set; }
+		public Model.Rotation RotationAmount { get; set; }
 		public OpType ResizeType { get; set; }
 		public System.Drawing.Size ResizeAmount { get; set; }
 		public OpType CropType { get; set; }
@@ -25,12 +25,6 @@ namespace BatchImageProcessor.ViewModel
 		None
 	}
 
-	public enum RotationAmount
-	{
-		Rot90,
-		Rot180,
-		Rot270
-	}
 
 	public enum WatermarkType
 	{
@@ -38,24 +32,11 @@ namespace BatchImageProcessor.ViewModel
 		Text
 	}
 
-	public enum Alignment
-	{
-		TopLeft,
-		TopCenter,
-		TopRight,
-		MiddleLeft,
-		MiddleCenter,
-		MiddleRight,
-		BottomLeft,
-		BottomCenter,
-		BottomRight
-	}
-
 	public sealed class WatermarkSettings : IDisposable
 	{
 		public WatermarkType Type = WatermarkType.Text;
 		public string Content = "© " + DateTime.Now.Year + System.Environment.UserName;
-		public Alignment Alignment = Alignment.BottomRight;
+		public Alignment Alignment = Alignment.Bottom_Right;
 		public System.Drawing.Font Font = new System.Drawing.Font("Arial", 12f);
 
 		public void Dispose()
