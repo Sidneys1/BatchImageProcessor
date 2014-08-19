@@ -14,7 +14,9 @@ namespace BatchImageProcessor.Model
 		None,
 		Clockwise,
 		CounterClockwise,
-		UpsideDown
+		UpsideDown,
+		Portrait,
+		Landscape
 	}
 
 	

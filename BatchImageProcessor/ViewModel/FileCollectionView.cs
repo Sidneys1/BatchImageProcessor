@@ -11,7 +11,7 @@ namespace BatchImageProcessor.ViewModel
 	{
 		public FileCollectionView():base()
 		{
-			this.Filter += (o, e) => e.Accepted = ((Model.IoObject)e.Item) is Model.File;
+			this.Filter += (o, e) => e.Accepted = e.Item is FileWrapper;
 		}
 	}
 }

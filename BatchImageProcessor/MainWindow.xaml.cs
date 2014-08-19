@@ -10,16 +10,27 @@ namespace BatchImageProcessor
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
 	{
 		public MainWindow()
 		{
 			InitializeComponent();
 
 			ViewModel.ViewModel context = new ViewModel.ViewModel();
-			context.Folders.Add(new ViewModel.Folder(@"D:\Documents\New folder (2)\New folder"));
+			context.Folders.Add(new Folder(removable: false) { Name = "Output Folder" });
+#if DEBUG
+			//context.Folders.Add(new ViewModel.Folder(@"D:\Documents\New folder (2)\New folder"));
+#endif
 			this.DataContext = context;
+
+			FolderBrowser.RootFolder = System.Environment.SpecialFolder.MyComputer;
+			FolderBrowser.ShowNewFolderButton = false;
+			FolderBrowser.Description = "Select a folder to import...";
+
+			_hnadle = new WindowInteropHelper(this).Handle;
 		}
+
+		FolderBrowserDialog FolderBrowser = new FolderBrowserDialog();
 
 		#region Grid View Manipulation Buttons
 
@@ -70,11 +81,11 @@ namespace BatchImageProcessor
 				wrapper = treeView.SelectedItem as FileWrapper;
 			}
 
-			if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+			if ((System.Windows.Forms.Control.ModifierKeys & Keys.Shift) == Keys.Shift)
 			{
 				AndreasJohansson.Win32.Shell.ShellContextMenu scm = new AndreasJohansson.Win32.Shell.ShellContextMenu();
 
-				scm.ShowContextMenu(new WindowInteropHelper(this).Handle, files.ToArray(), Control.MousePosition);
+				scm.ShowContextMenu(new WindowInteropHelper(this).Handle, files.ToArray(), System.Windows.Forms.Control.MousePosition);
 			}
 			else
 			{
@@ -88,19 +99,22 @@ namespace BatchImageProcessor
 
 		private void ListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
 		{
-			RotateSettings.Visibility = ResizeSettings.Visibility = CropSettings.Visibility = WatermarkSettings.Visibility = OutputSettings.Visibility = Visibility.Collapsed;
-			if (SettingsPresenter != null)
+			if (RotateSettings != null)
 			{
-				if (OptionsBox.SelectedItem == RotateBox)
-					RotateSettings.Visibility = Visibility.Visible;
-				else if (OptionsBox.SelectedItem == ResizeBox)
-					ResizeSettings.Visibility = Visibility.Visible;
-				else if (OptionsBox.SelectedItem == CropBox)
-					CropSettings.Visibility = Visibility.Visible;
-				else if (OptionsBox.SelectedItem == WatermarkBox)
-					WatermarkSettings.Visibility = Visibility.Visible;
-				else if (OptionsBox.SelectedItem == OutputBox)
-					OutputSettings.Visibility = Visibility.Visible;
+				RotateSettings.Visibility /*= ResizeSettings.Visibility*/ = CropSettings.Visibility /*= WatermarkSettings.Visibility = OutputSettings.Visibility*/ = Visibility.Collapsed;
+				if (SettingsPresenter != null)
+				{
+					if (OptionsBox.SelectedItem == RotateBox)
+						RotateSettings.Visibility = Visibility.Visible;
+					//else if (OptionsBox.SelectedItem == ResizeBox)
+					//	ResizeSettings.Visibility = Visibility.Visible;
+					else if (OptionsBox.SelectedItem == CropBox)
+						CropSettings.Visibility = Visibility.Visible;
+					//else if (OptionsBox.SelectedItem == WatermarkBox)
+					//	WatermarkSettings.Visibility = Visibility.Visible;
+					//else if (OptionsBox.SelectedItem == OutputBox)
+					//	OutputSettings.Visibility = Visibility.Visible;
+				}
 			}
 		}
 
@@ -144,7 +158,23 @@ namespace BatchImageProcessor
 			{
 				item.RotationOverride = Model.Rotation.Clockwise;
 			}
-		} 
+		}
+
+		private void portRotBtn_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (FileWrapper item in listView.SelectedItems)
+			{
+				item.RotationOverride = Model.Rotation.Portrait;
+			}
+		}
+
+		private void landRotBtn_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (FileWrapper item in listView.SelectedItems)
+			{
+				item.RotationOverride = Model.Rotation.Landscape;
+			}
+		}
 
 		#endregion
 
@@ -167,11 +197,48 @@ namespace BatchImageProcessor
 				model.DefaultCropAlignment = Alignment.Middle_Right;
 
 			else if (sender == CropBlBtn)
-				model.DefaultCropAlignment = Alignment.Top_Left;
+				model.DefaultCropAlignment = Alignment.Bottom_Left;
 			else if (sender == cropBcBtn)
-				model.DefaultCropAlignment = Alignment.Top_Center;
+				model.DefaultCropAlignment = Alignment.Bottom_Center;
 			else if (sender == cropBrBtn)
-				model.DefaultCropAlignment = Alignment.Top_Right;
+				model.DefaultCropAlignment = Alignment.Bottom_Right;
+		}
+
+		private void importFolderBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (FolderBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				DirectoryInfo inf = new DirectoryInfo(FolderBrowser.SelectedPath);
+				bool recurs = false;
+				if (inf.GetDirectories().Length > 0)
+				{
+					MessageBoxResult res = System.Windows.MessageBox.Show(this, "This folder has folders within it. Would you like to add those as well?", "Import Folder", MessageBoxButton.YesNoCancel);
+					if (res == MessageBoxResult.Cancel)
+						return;
+					else if (res == MessageBoxResult.Yes)
+						recurs = true;
+				}
+
+				ViewModel.Folder folder = new Folder(FolderBrowser.SelectedPath,recurs);
+
+				if (treeView.SelectedItem is Folder)
+				{
+					(treeView.SelectedItem as Folder).Files.Add(folder);
+				}
+				else
+					(this.DataContext as ViewModel.ViewModel).Folders[0].Files.Add(folder);
+			}
+		}
+
+		System.IntPtr _hnadle;
+		public System.IntPtr Handle
+		{
+			get { return _hnadle; }
+		}
+
+		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			(this.DataContext as ViewModel.ViewModel).RemoveFolder((e.Source as System.Windows.Controls.MenuItem).DataContext as Folder);
 		}
 	}
 }

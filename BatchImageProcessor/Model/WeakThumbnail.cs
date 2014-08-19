@@ -16,14 +16,19 @@ namespace BatchImageProcessor.Model
 {
 	public class WeakThumbnail: INotifyPropertyChanged
 	{
+		//private delegate void GenMeASource();
+		//private GenMeASource gmaSource;
 		public string Path { get; set; }
 
 		bool set = false;
 		WeakReference<ImageSource> weak;
+		//ImageSource _source = null;
 		public ImageSource Source
 		{
 			get
 			{
+				//return _source ?? (_source = GenSource());
+
 				ImageSource attempt = null;
 				if (set && weak.TryGetTarget(out attempt))
 					if (attempt != null)
@@ -33,6 +38,7 @@ namespace BatchImageProcessor.Model
 
 				set = true;
 				attempt = GenSource();
+				//gmaSource.BeginInvoke(null, null);
 				weak.SetTarget(attempt);
 				return attempt;
 			}
@@ -41,7 +47,8 @@ namespace BatchImageProcessor.Model
 		public WeakThumbnail(string path)
 		{
 			Path = path;
-			weak = new WeakReference<ImageSource>(null);
+			weak = new WeakReference<ImageSource>(null, true);
+			//gmaSource = new GenMeASource(GenMeSource);
 		}
 
 		Bitmap GetThumb(string Path)
@@ -65,6 +72,15 @@ namespace BatchImageProcessor.Model
 			else
 				throw new FileNotFoundException(string.Format(@"File at ""{0}"" does not exist.", Path));
 		} 
+
+		//public void GenMeSource()
+		//{
+		//	ImageSource s = GenSource();
+		//	weak.SetTarget(s);
+		//	set = true;
+		//	if (PropertyChanged!=null)
+		//		PropertyChanged(this, new PropertyChangedEventArgs("Source"));
+		//}
 
 		public ImageSource GenSource()
 		{

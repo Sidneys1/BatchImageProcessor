@@ -2,7 +2,12 @@
 
 namespace BatchImageProcessor.ViewModel
 {
-	public class FileWrapper : Model.File
+	public interface IFolderable
+	{
+
+	}
+
+	public class FileWrapper : Model.File, IFolderable
 	{
 		bool _selected = true;
 		public bool Selected

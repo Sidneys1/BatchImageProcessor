@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 
 namespace BatchImageProcessor.ViewModel
 {
-	public class Folder:INotifyPropertyChanged
+	public class Folder : INotifyPropertyChanged, IFolderable
 	{
-		public List<FileWrapper> Files { get; private set; }
+		public ObservableCollection<IFolderable> Files { get; private set; }
+
+		public bool Removable { get; private set; }
 
 		string _name = "New Folder";
 		public string Name
@@ -22,15 +25,12 @@ namespace BatchImageProcessor.ViewModel
 			}
 		}
 
-		public Folder()
+		public Folder(string fromPath = null, bool recursion = true, bool removable = true)
 		{
-			Files = new List<FileWrapper>();
-		}
-
-		public Folder(string fromPath, bool recursion = true)
-		{
-			Files = new List<FileWrapper>();
-			Populate(fromPath, recursion);
+			Files = new ObservableCollection<IFolderable>();
+			if (fromPath!=null)
+				Populate(fromPath, recursion);
+			Removable = removable;
 		}
 
 		private void Populate(string Path, bool recursive)
@@ -45,16 +45,20 @@ namespace BatchImageProcessor.ViewModel
 
 				foreach (DirectoryInfo inf in folders)
 				{
-					//Files.Add(new Folder(inf.FullName));
+					Files.Add(new Folder(inf.FullName));
 				}
 			}
 
-			var files = info.GetFiles("*.jpg");
-
-			foreach (FileInfo inf in files)
+			foreach (string str in new string[] { "*.jpg", "*.jpeg", "*.png" })
 			{
-				Files.Add(new FileWrapper(inf.FullName));
+				var files = info.GetFiles(str);
+
+				foreach (FileInfo inf in files)
+				{
+					Files.Add(new FileWrapper(inf.FullName));
+				}
 			}
+			
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged = delegate { };

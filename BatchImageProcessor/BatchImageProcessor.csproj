@@ -137,7 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\File.cs" />
-    <Compile Include="Model\Folder.cs" />
     <Compile Include="Model\IoObject.cs" />
     <Compile Include="Model\WeakThumbnail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -249,9 +248,6 @@
     <Resource Include="Images\arrow-noturn.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\arrow-default.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\information.png" />
   </ItemGroup>
   <ItemGroup>
@@ -269,6 +265,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\circle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\image-rotate--asterisk.png" />
+    <Resource Include="Images\image-vertical.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
