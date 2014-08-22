@@ -218,6 +218,11 @@
 									</MenuItem.Icon>
 								</MenuItem>
 								<Separator/>
+								<MenuItem Header="Rename Folder" Click="RenameFolderMenuItem_Click" IsEnabled="{Binding Removable}">
+									<MenuItem.Icon>
+										<Image StretchDirection="DownOnly" Source="Images/ui-text-field.png" Stretch="None" />
+									</MenuItem.Icon>
+								</MenuItem>
 								<MenuItem Header="Remove Folder" Click="RemoveFolderMenuItem_Click" IsEnabled="{Binding Removable}">
 									<MenuItem.Icon>
 										<Image StretchDirection="DownOnly" Source="Images/cross.png" Stretch="None" />

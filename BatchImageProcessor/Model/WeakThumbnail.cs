@@ -73,15 +73,6 @@ namespace BatchImageProcessor.Model
 				throw new FileNotFoundException(string.Format(@"File at ""{0}"" does not exist.", Path));
 		} 
 
-		//public void GenMeSource()
-		//{
-		//	ImageSource s = GenSource();
-		//	weak.SetTarget(s);
-		//	set = true;
-		//	if (PropertyChanged!=null)
-		//		PropertyChanged(this, new PropertyChangedEventArgs("Source"));
-		//}
-
 		public ImageSource GenSource()
 		{
 			ImageSource ret;

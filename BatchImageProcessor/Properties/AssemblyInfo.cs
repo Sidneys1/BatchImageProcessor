@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Batch Image Processor")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A tool for resizing, rotating, cropping, or watermarking large numbers of photos.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Borne Programming")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyProduct("Batch Image Processor")]
+[assembly: AssemblyCopyright("Copyright © 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("0.0.0.1")]
+[assembly: AssemblyVersion("2.0.*")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

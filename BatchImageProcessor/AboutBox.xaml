@@ -39,7 +39,7 @@
 			<TextBlock x:Name="companyTxt" Grid.Row="3" Grid.Column="1" />
 			
 			<TextBlock Grid.Row="4" Text="Description:" Margin="0,0,10,0"/>
-			<TextBox x:Name="descriptionTxt" Grid.Row="5" Grid.ColumnSpan="2" IsReadOnly="True"/>
+			<TextBlock x:Name="descriptionTxt" Grid.Row="5" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="10,0"/>
 		</Grid>
 		<Button x:Name="okBtn" Grid.Column="1" Grid.Row="1" Content="OK" Padding="25,3" Margin="10" HorizontalAlignment="Right" Click="okBtn_Click"/>
     </Grid>

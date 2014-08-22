@@ -373,5 +373,34 @@ namespace BatchImageProcessor
 			b.Owner = this;
 			b.ShowDialog();
 		}
+
+		private void RenameFolderMenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			Folder target = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
+
+			string oldName = target.Name;
+			View.RenameFileDialog fdlg = new View.RenameFileDialog();
+			fdlg.DataContext = target;
+			fdlg.Owner = this;
+			fdlg.Title = "Rename Folder";
+
+			if (fdlg.ShowDialog().GetValueOrDefault(false))
+			{
+				Folder parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+
+				if (parent.ContainsFile(target.Name))
+				{
+					string s = target.Name + " ({0})";
+					int i = 0;
+					while (parent.ContainsFile(string.Format(s, ++i))) ;
+
+					target.Name = string.Format(s, i);
+				}
+
+				target.Name = target.Name.Trim();
+			}
+			else
+				target.Name = oldName;
+		}
 	}
 }

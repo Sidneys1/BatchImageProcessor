@@ -84,5 +84,20 @@ namespace BatchImageProcessor.ViewModel
 		{
 			return Files.Any(o => (o is Folder) ? (o as Folder).Name == p : (o as FileWrapper).Name == p);
 		}
+
+		public Folder FindParent(Folder f)
+		{
+			if (this.Files.Contains(f))
+				return this;
+			else
+				foreach (Folder p in Files)
+				{
+					Folder ret = p.FindParent(f);
+					if (ret != null)
+						return ret;
+				}
+
+			return null;
+		}
 	}
 }
