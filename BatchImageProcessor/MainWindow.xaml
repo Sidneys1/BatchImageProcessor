@@ -180,11 +180,11 @@
 
 		<!-- Left Toolbar -->
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Margin="15,0" HorizontalAlignment="Center">
-			<Button x:Name="importImageBtn" ToolTip="Import Image(s)..." Cursor="Hand">
+			<Button x:Name="importImageBtn" ToolTip="Import Image(s)..." Cursor="Hand" Click="importImageBtn_Click">
 				<Image Width="18" Height="18" Source="Images/image-import.png" Stretch="None" />
 			</Button>
 			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0" Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>
-			<Button x:Name="addFolderBtn" ToolTip="Add New Folder..." Cursor="Hand">
+			<Button x:Name="addFolderBtn" ToolTip="Add New Folder..." Cursor="Hand" Click="addFolderBtn_Click">
 				<Image Width="18" Height="18" Source="Images/folder--plus.png" Stretch="None" />
 			</Button>
 			<Button x:Name="importFolderBtn" ToolTip="Import Folder(s)..." Cursor="Hand" Click="importFolderBtn_Click">
@@ -351,6 +351,9 @@
 
 		<!-- Toolbar -->
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="15,0" HorizontalAlignment="Center">
+			<Button x:Name="gcBtn" ToolTip="About" Cursor="Hand" Click="gcBtn_Click">
+				<Image Width="18" Height="18" Source="Images/bin.png" Stretch="None" StretchDirection="DownOnly" />
+			</Button>
 			<Button x:Name="aboutBtn" ToolTip="About" Cursor="Hand">
 				<Image Width="18" Height="18" Source="Images/information.png" Stretch="None" StretchDirection="DownOnly" />
 			</Button>

@@ -12,6 +12,17 @@ namespace BatchImageProcessor
 	/// </summary>
 	public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
 	{
+		FolderBrowserDialog FolderBrowser = new FolderBrowserDialog() { Description = "Select a Folder to Import", RootFolder = System.Environment.SpecialFolder.MyComputer, ShowNewFolderButton = false };
+		OpenFileDialog FileBrowser = new OpenFileDialog() 
+		{
+			Title = "Import Files...",
+			CheckFileExists = true, 
+			CheckPathExists = true, 
+			Filter = "Image Files|*.jpg;*.jpeg",
+			Multiselect = true,
+			InitialDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyPictures)
+		};
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -23,14 +34,9 @@ namespace BatchImageProcessor
 #endif
 			this.DataContext = context;
 
-			FolderBrowser.RootFolder = System.Environment.SpecialFolder.MyComputer;
-			FolderBrowser.ShowNewFolderButton = false;
-			FolderBrowser.Description = "Select a folder to import...";
-
 			_hnadle = new WindowInteropHelper(this).Handle;
 		}
 
-		FolderBrowserDialog FolderBrowser = new FolderBrowserDialog();
 
 		#region Grid View Manipulation Buttons
 
@@ -239,6 +245,61 @@ namespace BatchImageProcessor
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			(this.DataContext as ViewModel.ViewModel).RemoveFolder((e.Source as System.Windows.Controls.MenuItem).DataContext as Folder);
+		}
+
+		private void addFolderBtn_Click(object sender, RoutedEventArgs e)
+		{
+			View.RenameFileDialog fdlg = new View.RenameFileDialog();
+			Folder f = new Folder();
+			fdlg.DataContext = f;
+			fdlg.Owner = this;
+			fdlg.Title = "Name New Folder";
+			if (fdlg.ShowDialog().GetValueOrDefault(false))
+			{
+				Folder parent = null;
+
+				if (treeView.SelectedItem is Folder)
+					parent = (treeView.SelectedItem as Folder);
+				else
+					parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+
+				f.Name = f.Name.Trim();
+
+				if (parent.ContainsFile(f.Name))
+				{
+					string s = f.Name + " ({0})";
+					int i = 0;
+					while (parent.ContainsFile(string.Format(s, ++i))) ;
+
+					f.Name = string.Format(s, i);
+				}
+
+				parent.Files.Add(f);
+			}
+		}
+
+		private void importImageBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (FileBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				Folder parent = null;
+
+				if (treeView.SelectedItem is Folder)
+					parent = (treeView.SelectedItem as Folder);
+				else
+					parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+
+				foreach (string str in FileBrowser.FileNames)
+				{
+					parent.Files.Add(new FileWrapper(str));
+				}
+			}
+		}
+
+		private void gcBtn_Click(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine("Forcing GC");
+			System.GC.Collect();
 		}
 	}
 }
