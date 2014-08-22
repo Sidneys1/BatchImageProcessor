@@ -1,9 +1,11 @@
 ﻿using BatchImageProcessor.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Linq;
 
 namespace BatchImageProcessor
 {
@@ -29,12 +31,14 @@ namespace BatchImageProcessor
 
 			ViewModel.ViewModel context = new ViewModel.ViewModel();
 			context.Folders.Add(new Folder(removable: false) { Name = "Output Folder" });
-#if DEBUG
-			//context.Folders.Add(new ViewModel.Folder(@"D:\Documents\New folder (2)\New folder"));
-#endif
+
 			this.DataContext = context;
 
 			_hnadle = new WindowInteropHelper(this).Handle;
+
+#if !DEBUG
+			gcBtn.Visibility = System.Windows.Visibility.Collapsed;
+#endif
 		}
 
 
@@ -225,14 +229,33 @@ namespace BatchImageProcessor
 						recurs = true;
 				}
 
-				ViewModel.Folder folder = new Folder(FolderBrowser.SelectedPath,recurs);
+				ViewModel.Folder f = new Folder(FolderBrowser.SelectedPath,recurs);
 
-				if (treeView.SelectedItem is Folder)
+				Folder parent = null;
+
+				if (e.Source is System.Windows.Controls.MenuItem)
 				{
-					(treeView.SelectedItem as Folder).Files.Add(folder);
+					parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
 				}
 				else
-					(this.DataContext as ViewModel.ViewModel).Folders[0].Files.Add(folder);
+				{
+
+					if (treeView.SelectedItem is Folder)
+						parent = (treeView.SelectedItem as Folder);
+					else
+						parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+				}
+
+				if (parent.ContainsFile(f.Name))
+				{
+					string s = f.Name + " ({0})";
+					int i = 0;
+					while (parent.ContainsFile(string.Format(s, ++i))) ;
+
+					f.Name = string.Format(s, i);
+				}
+
+				parent.Files.Add(f);
 			}
 		}
 
@@ -244,7 +267,23 @@ namespace BatchImageProcessor
 
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			(this.DataContext as ViewModel.ViewModel).RemoveFolder((e.Source as System.Windows.Controls.MenuItem).DataContext as Folder);
+			Folder parent = null;
+
+			if (e.Source is System.Windows.Controls.MenuItem)
+			{
+				parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
+			}
+			else
+			{
+
+				if (treeView.SelectedItem is Folder)
+					parent = (treeView.SelectedItem as Folder);
+				else
+					parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+			}
+
+			if (parent.Removable)
+				(this.DataContext as ViewModel.ViewModel).RemoveFolder(parent);
 		}
 
 		private void addFolderBtn_Click(object sender, RoutedEventArgs e)
@@ -258,10 +297,18 @@ namespace BatchImageProcessor
 			{
 				Folder parent = null;
 
-				if (treeView.SelectedItem is Folder)
-					parent = (treeView.SelectedItem as Folder);
+				if (e.Source is System.Windows.Controls.MenuItem)
+				{
+					parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
+				}
 				else
-					parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+				{
+
+					if (treeView.SelectedItem is Folder)
+						parent = (treeView.SelectedItem as Folder);
+					else
+						parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+				}
 
 				f.Name = f.Name.Trim();
 
@@ -284,10 +331,18 @@ namespace BatchImageProcessor
 			{
 				Folder parent = null;
 
-				if (treeView.SelectedItem is Folder)
-					parent = (treeView.SelectedItem as Folder);
+				if (e.Source is System.Windows.Controls.MenuItem)
+				{
+					parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
+				}
 				else
-					parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+				{
+
+					if (treeView.SelectedItem is Folder)
+						parent = (treeView.SelectedItem as Folder);
+					else
+						parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+				}
 
 				foreach (string str in FileBrowser.FileNames)
 				{
@@ -300,6 +355,16 @@ namespace BatchImageProcessor
 		{
 			System.Diagnostics.Debug.WriteLine("Forcing GC");
 			System.GC.Collect();
+		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			string[] args = Environment.GetCommandLineArgs();
+
+			if (args.Length>1 && args.Contains("-noshaders"))
+			{
+				Resources["tdse"] = null;
+			}
 		}
 	}
 }

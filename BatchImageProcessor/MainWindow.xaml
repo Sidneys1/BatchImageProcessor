@@ -1,4 +1,4 @@
-﻿<Window x:Class="BatchImageProcessor.MainWindow"
+﻿<Window x:Name="window" x:Class="BatchImageProcessor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:controls="clr-namespace:BatchImageProcessor.Controls"
 		xmlns:model="clr-namespace:BatchImageProcessor.Model"
@@ -7,7 +7,7 @@
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		xmlns:cc="clr-namespace:System.Windows.Data;assembly=WindowsBase"
         Title="Batch Image Processor" Height="720" Width="1280" MinWidth="800" MinHeight="600"
-		UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Images/ImageRotator.ico" WindowStartupLocation="CenterScreen">
+		UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Images/ImageRotator.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 	<Window.Resources>
 		<viewmodel:FileCollectionView x:Key="ficv" Source="{Binding SelectedItem.Files, ElementName=treeView}" />
 		<viewmodel:FolderCollectionView x:Key="focv" Source="{Binding Children}" />
@@ -22,8 +22,6 @@
 		<!-- #endregion -->
 
 		<!-- #region Effects -->
-
-		<DropShadowEffect x:Key="dse" BlurRadius="5" ShadowDepth="0"/>
 		<DropShadowEffect x:Key="tdse" Opacity="0.6" BlurRadius="6" ShadowDepth="0"/>
 
 		<!-- #endregion -->
@@ -76,7 +74,7 @@
 		<!-- Label Header Style (Global Override) -->
 		<Style TargetType="Label">
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Effect" Value="{StaticResource tdse}"/>
+			<Setter Property="Effect" Value="{DynamicResource tdse}"/>
 		</Style>
 
 		<!-- Simple Button Style (Global Override) -->
@@ -85,8 +83,8 @@
 			<Setter Property="Background" Value="{x:Null}"/>
 			<Setter Property="Padding" Value="2"/>
 			<Setter Property="Margin" Value="3"/>
-			<Setter Property="Effect" Value="{StaticResource tdse}"/>
-			<Setter Property="Template" Value="{StaticResource btn}"/>
+			<Setter Property="Effect" Value="{DynamicResource tdse}"/>
+			<Setter Property="Template" Value="{DynamicResource btn}"/>
 			<Setter Property="Opacity" Value="0.8"/>
 			<Style.Triggers>
 				<EventTrigger RoutedEvent="Control.MouseEnter">
@@ -191,7 +189,7 @@
 				<Image Width="18" Height="18" Source="Images/folder-import.png" Stretch="None" />
 			</Button>
 			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0" Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>
-			<Button x:Name="removeItemBtn" ToolTip="Remove Item" Cursor="Hand">
+			<Button x:Name="removeItemBtn" ToolTip="Remove Item" Cursor="Hand" IsEnabled="{Binding SelectedItem.Removable, ElementName=treeView}">
 				<Image Width="18" Height="18" Source="Images/cross.png" Stretch="None" />
 			</Button>
 		</StackPanel>
@@ -203,13 +201,13 @@
 					<StackPanel Orientation="Horizontal" Cursor="Hand">
 						<StackPanel.ContextMenu>
 							<ContextMenu>
-								<MenuItem Header="Import Image(s)..." >
+								<MenuItem Header="Import Image(s)..." Click="importImageBtn_Click">
 									<MenuItem.Icon>
 										<Image Stretch="None" StretchDirection="DownOnly" Source="Images/image-import.png"/>
 									</MenuItem.Icon>
 								</MenuItem>
 								<Separator/>
-								<MenuItem Header="Add Folder..." >
+								<MenuItem Header="Add Folder..." Click="addFolderBtn_Click" >
 									<MenuItem.Icon>
 										<Image Stretch="None" StretchDirection="DownOnly" Source="Images/folder--plus.png"/>
 									</MenuItem.Icon>
@@ -237,9 +235,9 @@
 						<TextBlock Text="{Binding Name, BindsDirectlyToSource=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="5,1,5,1">
 							<TextBlock.ToolTip>
 								<StackPanel>
-									<Image Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" Effect="{StaticResource tdse}"/>
-										<TextBlock Grid.Row="1" Text="{Binding Path}"/>
-									</StackPanel>
+									<Image Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" Effect="{DynamicResource tdse}"/>
+									<TextBlock Grid.Row="1" Text="{Binding Path}"/>
+								</StackPanel>
 							</TextBlock.ToolTip>
 						</TextBlock>
 					</StackPanel>
@@ -318,7 +316,7 @@
 					<Grid VerticalAlignment="Center" Margin="0,3,0,0" MouseRightButtonUp="Grid_MouseRightButtonUp">
 						<Grid.ToolTip>
 							<StackPanel>
-								<Image HorizontalAlignment="Center" Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" Effect="{StaticResource tdse}"/>
+								<Image HorizontalAlignment="Center" Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" Effect="{DynamicResource tdse}"/>
 								<TextBlock Text="{Binding Path}"/>
 							</StackPanel>
 						</Grid.ToolTip>
@@ -327,7 +325,7 @@
 							<RowDefinition Height="Auto"/>
 							<RowDefinition Height="Auto"/>
 						</Grid.RowDefinitions>
-						<Image Grid.RowSpan="2" Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" MaxWidth="128" Height="128" Margin="3" Effect="{DynamicResource dse}"/>
+						<Image Grid.RowSpan="2" Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" MaxWidth="128" Height="128" Margin="3" Effect="{DynamicResource tdse}"/>
 						<CheckBox IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False"/>
 						<StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Effect="{StaticResource tdse}">
 							<Image Width="16" Height="16" Visibility="{Binding Path=RotationOverride, Converter={StaticResource enumVis}, ConverterParameter=None}" StretchDirection="DownOnly" Source="Images/arrow-noturn.png" ToolTip="Override: No Rotation"/>
@@ -351,7 +349,7 @@
 
 		<!-- Toolbar -->
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="15,0" HorizontalAlignment="Center">
-			<Button x:Name="gcBtn" ToolTip="About" Cursor="Hand" Click="gcBtn_Click">
+			<Button x:Name="gcBtn" ToolTip="Manually GC all Generations" Cursor="Hand" Click="gcBtn_Click">
 				<Image Width="18" Height="18" Source="Images/bin.png" Stretch="None" StretchDirection="DownOnly" />
 			</Button>
 			<Button x:Name="aboutBtn" ToolTip="About" Cursor="Hand">
@@ -400,7 +398,7 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem x:Name="ResizeBox">
+				<ListBoxItem x:Name="ResizeBox" IsEnabled="False">
 					<StackPanel Orientation="Horizontal">
 						<CheckBox x:Name="resChck" VerticalContentAlignment="Center">
 							<Border Opacity="0.5" Focusable="False"/>
@@ -422,7 +420,7 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem x:Name="WatermarkBox">
+				<ListBoxItem x:Name="WatermarkBox" IsEnabled="False">
 					<StackPanel Orientation="Horizontal">
 						<CheckBox x:Name="wtrChck" VerticalContentAlignment="Center">
 							<Border Opacity="0.5" Focusable="False"/>
@@ -433,7 +431,7 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem x:Name="OutputBox">
+				<ListBoxItem x:Name="OutputBox" IsEnabled="False">
 					<StackPanel Orientation="Horizontal" Margin="20,0">
 						<Image Source="Images/image-export.png" />
 						<Label Content="Output"/>
@@ -499,7 +497,7 @@
 								<TextBlock Text="Landscape" Margin="5,0"/>
 							</StackPanel>
 						</RadioButton>
-						
+
 					</StackPanel>
 				</Grid>
 				<!--<Grid x:Name="ResizeSettings" Visibility="Collapsed">

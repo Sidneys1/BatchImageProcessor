@@ -31,10 +31,6 @@ namespace BatchImageProcessor.ViewModel
 		public ViewModel()
 		{
 			Folders = new ObservableCollection<Folder>();
-			//DefaultRotation = Model.Rotation.None;
-			//DefaultCropAlignment = Alignment.Middle_Center;
-			//EnableRotation = false;
-			//EnableCrop = false;
 		}
 
 		public void PropChanged(string val)
