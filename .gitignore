@@ -154,3 +154,23 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+packages/Extended.Wpf.Toolkit.2.2.1/Extended.Wpf.Toolkit.2.2.1.nupkg
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net35/WPFToolkit.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net35/Xceed.Wpf.Toolkit.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/de/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/es/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/fr/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/hu/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/it/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/pt-BR/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/ro/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/ru/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/sv/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.AvalonDock.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.AvalonDock.Themes.Aero.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.AvalonDock.Themes.Metro.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.AvalonDock.Themes.VS2010.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.DataGrid.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.Toolkit.dll
+packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/zh-Hans/Xceed.Wpf.AvalonDock.resources.dll
+packages/Extended.Wpf.Toolkit.2.2.1/tools/install.ps1
