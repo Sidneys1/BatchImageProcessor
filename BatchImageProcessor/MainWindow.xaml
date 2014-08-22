@@ -22,7 +22,7 @@
 		<!-- #endregion -->
 
 		<!-- #region Effects -->
-		<DropShadowEffect x:Key="tdse" Opacity="0.6" BlurRadius="6" ShadowDepth="0"/>
+		<DropShadowEffect x:Key="tdse" Opacity="0.6" BlurRadius="6" ShadowDepth="0" RenderingBias="Quality"/>
 
 		<!-- #endregion -->
 
@@ -352,7 +352,7 @@
 			<Button x:Name="gcBtn" ToolTip="Manually GC all Generations" Cursor="Hand" Click="gcBtn_Click">
 				<Image Width="18" Height="18" Source="Images/bin.png" Stretch="None" StretchDirection="DownOnly" />
 			</Button>
-			<Button x:Name="aboutBtn" ToolTip="About" Cursor="Hand">
+			<Button x:Name="aboutBtn" ToolTip="About" Cursor="Hand" Click="aboutBtn_Click">
 				<Image Width="18" Height="18" Source="Images/information.png" Stretch="None" StretchDirection="DownOnly" />
 			</Button>
 		</StackPanel>

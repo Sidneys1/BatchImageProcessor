@@ -105,6 +105,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AboutBox.xaml.cs">
+      <DependentUpon>AboutBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\Rotation.cs" />
@@ -120,6 +123,10 @@
       <DependentUpon>RenameFileDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ShellContextMenu.cs" />
+    <Page Include="AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SplitButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -282,6 +289,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\bin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ImageRotator.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

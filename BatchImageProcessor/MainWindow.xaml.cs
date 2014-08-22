@@ -366,5 +366,12 @@ namespace BatchImageProcessor
 				Resources["tdse"] = null;
 			}
 		}
+
+		private void aboutBtn_Click(object sender, RoutedEventArgs e)
+		{
+			AboutBox b = new AboutBox();
+			b.Owner = this;
+			b.ShowDialog();
+		}
 	}
 }

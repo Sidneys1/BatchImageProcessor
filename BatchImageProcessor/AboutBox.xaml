@@ -1,0 +1,46 @@
+﻿<Window x:Class="BatchImageProcessor.AboutBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About Batch Image Processor" Height="300" Width="450" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize" Loaded="Window_Loaded" Icon="Images/ImageRotator.ico">
+	<Window.Resources>
+		<DropShadowEffect x:Key="dse" BlurRadius="6" Opacity="0.6" ShadowDepth="0" RenderingBias="Performance"/>
+	</Window.Resources>
+    <Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<Image Source="Images/ImageRotator.png" StretchDirection="DownOnly" Margin="10" />
+		<Grid Grid.Column="1" Margin="10">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Label Content="Batch Image Processor" Grid.ColumnSpan="2" FontSize="16" HorizontalContentAlignment="Center" Effect="{DynamicResource dse}"/>
+			<TextBlock Grid.Row="1" Text="Version:" Margin="0,0,10,0"/>
+			<TextBlock x:Name="versionTxt" Grid.Row="1" Grid.Column="1" />
+			
+			<TextBlock Grid.Row="2" Text="Copyright:" Margin="0,0,10,0"/>
+			<TextBlock x:Name="copyrightTxt" Grid.Row="2" Grid.Column="1" />
+			
+			<TextBlock Grid.Row="3" Text="Company:" Margin="0,0,10,0"/>
+			<TextBlock x:Name="companyTxt" Grid.Row="3" Grid.Column="1" />
+			
+			<TextBlock Grid.Row="4" Text="Description:" Margin="0,0,10,0"/>
+			<TextBox x:Name="descriptionTxt" Grid.Row="5" Grid.ColumnSpan="2" IsReadOnly="True"/>
+		</Grid>
+		<Button x:Name="okBtn" Grid.Column="1" Grid.Row="1" Content="OK" Padding="25,3" Margin="10" HorizontalAlignment="Right" Click="okBtn_Click"/>
+    </Grid>
+</Window>
