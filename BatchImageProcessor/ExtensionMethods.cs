@@ -26,5 +26,10 @@ namespace BatchImageProcessor
 			}
 			return bitmapImage;
 		}
+
+		public static string FormatWith(this string s, params object[] args)
+        {
+            return string.Format(s, args);
+        }
 	}
 }

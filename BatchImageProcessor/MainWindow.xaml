@@ -6,7 +6,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		xmlns:cc="clr-namespace:System.Windows.Data;assembly=WindowsBase"
-        Title="Batch Image Processor" Height="720" Width="1280" MinWidth="800" MinHeight="600"
+        Title="Batch Image Processor" Height="720" Width="1280" MinWidth="1024" MinHeight="600"
 		UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Images/ImageRotator.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 	<Window.Resources>
 		<viewmodel:FileCollectionView x:Key="ficv" Source="{Binding SelectedItem.Files, ElementName=treeView}" />
@@ -394,7 +394,7 @@
 				</ListBox.Resources>
 				<ListBoxItem x:Name="RotateBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox VerticalContentAlignment="Center" x:Name="rotChck" IsChecked="{Binding EnableRotation}">
+						<CheckBox VerticalContentAlignment="Center" x:Name="rotChck" ToolTip="Enable/Disable Rotation" IsChecked="{Binding EnableRotation}">
 							<Border Opacity="0.5" Focusable="False"/>
 						</CheckBox>
 						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=rotChck, Path=Content.Opacity}">
@@ -403,9 +403,9 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem x:Name="ResizeBox" IsEnabled="False">
+				<ListBoxItem x:Name="ResizeBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="resChck" VerticalContentAlignment="Center">
+						<CheckBox x:Name="resChck" VerticalContentAlignment="Center" ToolTip="Enable/Disable Resizing" IsChecked="{Binding EnableResize}">
 							<Border Opacity="0.5" Focusable="False"/>
 						</CheckBox>
 						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=resChck, Path=Content.Opacity}">
@@ -416,7 +416,7 @@
 				</ListBoxItem>
 				<ListBoxItem x:Name="CropBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="crpChck" VerticalContentAlignment="Center" IsChecked="{Binding EnableCrop}">
+						<CheckBox x:Name="crpChck" VerticalContentAlignment="Center" ToolTip="Enable/Disable Cropping" IsChecked="{Binding EnableCrop}">
 							<Border Opacity="0.5" Focusable="False"/>
 						</CheckBox>
 						<StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=crpChck}">
@@ -425,9 +425,9 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem x:Name="WatermarkBox" IsEnabled="False">
+				<ListBoxItem x:Name="WatermarkBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="wtrChck" VerticalContentAlignment="Center">
+						<CheckBox x:Name="wtrChck" VerticalContentAlignment="Center" ToolTip="Enable/Disable Watermarking" IsChecked="{Binding EnableWatermark}">
 							<Border Opacity="0.5" Focusable="False"/>
 						</CheckBox>
 						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=wtrChck, Path=Content.Opacity}">
@@ -458,7 +458,7 @@
 			<!-- #region Options Panes -->
 
 			<StackPanel x:Name="SettingsPresenter" Grid.Row="2">
-				<Grid x:Name="RotateSettings" Margin="5,0" Visibility="Visible">
+				<Grid x:Name="RotateSettings" Margin="5,0" Visibility="Collapsed">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*"/>
@@ -505,16 +505,57 @@
 
 					</StackPanel>
 				</Grid>
-				<!--<Grid x:Name="ResizeSettings" Visibility="Collapsed">
+				<Grid x:Name="ResizeSettings" Visibility="Collapsed">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
 					<Label Content="Resize Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
-					<StackPanel Grid.Row="1">
+					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableResize}">
+						<TextBlock Text="Resize Mode:" FontWeight="Bold"/>
+						<RadioButton Margin="0,5,0,2" IsChecked="{Binding Path=DefaultResizeMode, Converter={StaticResource enumConv}, ConverterParameter=Smaller}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/image-resize-actual.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="Smaller Than" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						<RadioButton Margin="0,2" IsChecked="{Binding Path=DefaultResizeMode, Converter={StaticResource enumConv}, ConverterParameter=Larger}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/image-resize.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="Larger Than" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						<RadioButton Margin="0,2" IsChecked="{Binding Path=DefaultResizeMode, Converter={StaticResource enumConv}, ConverterParameter=Exact}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/image-resize-exact.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="Exact Size" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						<TextBlock Text="Smart Sizing:" FontWeight="Bold" Margin="0,10,0,0"/>
+						<CheckBox IsChecked="{Binding UseAspectRatio}" ToolTip="Automatically swaps the width and height of the resize to match the longer and shorter dimension of the image.">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/image-rotate--asterisk.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="Use Aspect Ratio" Margin="5,0"/>
+							</StackPanel>
+						</CheckBox>
+						<TextBlock Text="Size:" FontWeight="Bold" Margin="0,10,0,0"/>
+						<Grid Margin="15,0,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<TextBlock Text="Width" Margin="5,3" VerticalAlignment="Center"/>
+							<xctk:IntegerUpDown Grid.Column="1" Value="{Binding ResizeWidth}" Minimum="0" Margin="5,3" HorizontalAlignment="Left" MinWidth="100"/>
 
+							<TextBlock Grid.Row="1" Text="Height" Margin="5,3" VerticalAlignment="Center"/>
+							<xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Value="{Binding ResizeHeight}" Minimum="0" Margin="5,3" HorizontalAlignment="Left" MinWidth="100"/>
+						</Grid>
 					</StackPanel>
-				</Grid>-->
+				</Grid>
 				<Grid x:Name="CropSettings" Margin="5,0" Visibility="Collapsed">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
@@ -582,16 +623,139 @@
 						<TextBlock Grid.Row="3" Grid.ColumnSpan="3" Text="{Binding DefaultCropAlignment, Converter={StaticResource enumStr}, FallbackValue={}No Binding}" HorizontalAlignment="Center"/>
 					</StackPanel>
 				</Grid>
-				<!--<Grid x:Name="WatermarkSettings" Visibility="Collapsed">
+				<Grid x:Name="WatermarkSettings" Visibility="Visible">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
 					<Label Content="Watermark Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
-					<StackPanel Grid.Row="1">
+					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableWatermark}">
+						<TextBlock Text="Type:" FontWeight="Bold"/>
+						<RadioButton Margin="0,5,0,2" IsChecked="{Binding Path=DefaultWatermarkType, Converter={StaticResource enumConv}, ConverterParameter=Text}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/edit.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="Text" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						<RadioButton Margin="0,2" IsChecked="{Binding Path=DefaultWatermarkType, Converter={StaticResource enumConv}, ConverterParameter=Image}">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="Images/image.png" StretchDirection="DownOnly"/>
+								<TextBlock Text="Image" Margin="5,0"/>
+							</StackPanel>
+						</RadioButton>
+						
+						<StackPanel Margin="0,10,0,0" Visibility="{Binding Path=DefaultWatermarkType, Converter={StaticResource enumVis}, ConverterParameter=Text}">
+							<TextBlock Text="Text Options:" FontWeight="Bold"/>
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="Auto"/>
+								</Grid.RowDefinitions>
+								<TextBlock Text="Text:" Margin="0,0,10,0" VerticalAlignment="Center"/>
+								<TextBox Grid.Column="1" Margin="3" Text="{Binding WatermarkText}"/>
 
+								<TextBlock Text="Font:" Grid.Row="1" Margin="0,0,10,0" VerticalAlignment="Center"/>
+								<Button x:Name="watermarkFontBtn" Grid.Column="1" Grid.Row="1" Content="{Binding WatermarkFontString}" Click="watermarkFontBtn_Click" Cursor="Hand" FlowDirection="RightToLeft" Margin="10,3" HorizontalAlignment="Center">
+									<Button.Style>
+										<Style TargetType="Button">
+											<Setter Property="Template" Value="{DynamicResource btn}"/>
+										</Style>
+									</Button.Style>
+								</Button>
+							</Grid>
+						</StackPanel>
+						<StackPanel Margin="0,10,0,0" Visibility="{Binding Path=DefaultWatermarkType, Converter={StaticResource enumVis}, ConverterParameter=Image}">
+							<TextBlock Text="Image Options:" FontWeight="Bold"/>
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<TextBlock Text="Image File:" Margin="0,0,10,0" VerticalAlignment="Center"/>
+								<Button x:Name="watermarkImageBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand" Margin="10,3" Click="watermarkImageBtn_Click" VerticalAlignment="Center" HorizontalContentAlignment="Center">
+									<Button.Style>
+										<Style TargetType="Button">
+											<Setter Property="Template" Value="{DynamicResource btn}"/>
+										</Style>
+									</Button.Style>
+									<TextBlock TextTrimming="CharacterEllipsis" Text="{Binding WatermarkImagePath}" VerticalAlignment="Center" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" TextDecorations="Underline" HorizontalAlignment="Center"/>
+								</Button>
+							</Grid>
+							<CheckBox IsChecked="{Binding WatermarkGreyscale}">
+								<StackPanel Orientation="Horizontal">
+									<Image StretchDirection="DownOnly" Source="Images/image-greyscale.png"/>
+									<TextBlock Text="Convert to Greyscale" Margin="5,0"/>
+								</StackPanel>
+							</CheckBox>
+						</StackPanel>
+						<StackPanel Margin="0,10,0,0">
+							<TextBlock Text="Other Options:" FontWeight="Bold"/>
+							<Grid >
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="Auto"/>
+								</Grid.RowDefinitions>
+
+
+								<TextBlock Text="Opacity:" VerticalAlignment="Center"/>
+								<xctk:DoubleUpDown Grid.Column="1" FormatString="P" Value="{Binding WatermarkOpacity}" MinWidth="100" HorizontalAlignment="Left" Increment="0.1" Maximum="1" Minimum="0.01" Margin="3"/>
+								
+								<Grid Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+									</Grid.RowDefinitions>
+									<Button x:Name="watermarkTlBtn" Click="WatermarkBtn_Click" Cursor="Hand">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
+									</Button>
+									<Button x:Name="watermarkTcBtn" Grid.Column="1" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
+									</Button>
+									<Button x:Name="watermarkTrBtn" Grid.Column="2" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
+									</Button>
+
+									<Button x:Name="watermarkMlBtn" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
+									</Button>
+									<Button x:Name="watermarkMcButton" Grid.Column="1" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/circle.png" />
+									</Button>
+									<Button x:Name="watermarkMrBtn" Grid.Column="2" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/arrow.png" />
+									</Button>
+
+									<Button x:Name="watermarkBlBtn" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
+									</Button>
+									<Button x:Name="watermarkBcBtn" Grid.Column="1" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
+									</Button>
+									<Button x:Name="watermarkBrBtn" Grid.Column="2" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
+									</Button>
+								</Grid>
+								<TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding WatermarkAlignment, Converter={StaticResource enumStr}, FallbackValue={}No Binding}" HorizontalAlignment="Center"/>
+							</Grid>
+						</StackPanel>
 					</StackPanel>
-				</Grid>-->
+				</Grid>
 				<!--<Grid x:Name="OutputSettings" Visibility="Collapsed">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>

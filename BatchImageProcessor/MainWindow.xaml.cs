@@ -14,16 +14,51 @@ namespace BatchImageProcessor
 	/// </summary>
 	public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
 	{
-		FolderBrowserDialog FolderBrowser = new FolderBrowserDialog() { Description = "Select a Folder to Import", RootFolder = System.Environment.SpecialFolder.MyComputer, ShowNewFolderButton = false };
-		OpenFileDialog FileBrowser = new OpenFileDialog() 
+		#region Properties/Variables
+
+		#region Dialogs
+
+		FolderBrowserDialog FolderBrowser = new FolderBrowserDialog()
 		{
-			Title = "Import Files...",
-			CheckFileExists = true, 
-			CheckPathExists = true, 
+			Description = "Select a Folder to Import",
+			RootFolder = System.Environment.SpecialFolder.MyComputer,
+			ShowNewFolderButton = false
+		};
+
+		OpenFileDialog FileBrowser = new OpenFileDialog()
+		{
+			Title = "Import Images...",
+			CheckFileExists = true,
+			CheckPathExists = true,
 			Filter = "Image Files|*.jpg;*.jpeg",
 			Multiselect = true,
 			InitialDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyPictures)
 		};
+
+		OpenFileDialog WatermarkFileBrowser = new OpenFileDialog()
+		{
+			Title = "Select Watermark Image...",
+			CheckFileExists = true,
+			CheckPathExists = true,
+			Filter = "Image Files|*.jpg;*.jpeg;*.png",
+			Multiselect = false,
+			InitialDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyPictures)
+		};
+
+		FontDialog WatermarkFontDlg = new FontDialog()
+		{
+			ShowColor = false
+		};
+
+		#endregion
+
+		System.IntPtr _hnadle;
+		public System.IntPtr Handle
+		{
+			get { return _hnadle; }
+		} 
+
+		#endregion
 
 		public MainWindow()
 		{
@@ -34,6 +69,8 @@ namespace BatchImageProcessor
 
 			this.DataContext = context;
 
+			WatermarkFontDlg.Font = context.WatermarkFont;
+
 			_hnadle = new WindowInteropHelper(this).Handle;
 
 #if !DEBUG
@@ -41,6 +78,17 @@ namespace BatchImageProcessor
 #endif
 		}
 
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			string[] args = Environment.GetCommandLineArgs();
+
+			if (args.Length>1 && args.Contains("-noshaders"))
+			{
+				Resources["tdse"] = null;
+			}
+		}
+
+		#region Thumbnail Grid
 
 		#region Grid View Manipulation Buttons
 
@@ -68,7 +116,7 @@ namespace BatchImageProcessor
 			{
 				f.Selected = false;
 			}
-		} 
+		}
 
 		#endregion
 
@@ -103,30 +151,11 @@ namespace BatchImageProcessor
 				ctxMnu.Placement = System.Windows.Controls.Primitives.PlacementMode.Mouse;
 				ctxMnu.DataContext = wrapper;
 				ctxMnu.IsOpen = true;
-				
-			}
-		}
 
-		private void ListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-		{
-			if (RotateSettings != null)
-			{
-				RotateSettings.Visibility /*= ResizeSettings.Visibility*/ = CropSettings.Visibility /*= WatermarkSettings.Visibility = OutputSettings.Visibility*/ = Visibility.Collapsed;
-				if (SettingsPresenter != null)
-				{
-					if (OptionsBox.SelectedItem == RotateBox)
-						RotateSettings.Visibility = Visibility.Visible;
-					//else if (OptionsBox.SelectedItem == ResizeBox)
-					//	ResizeSettings.Visibility = Visibility.Visible;
-					else if (OptionsBox.SelectedItem == CropBox)
-						CropSettings.Visibility = Visibility.Visible;
-					//else if (OptionsBox.SelectedItem == WatermarkBox)
-					//	WatermarkSettings.Visibility = Visibility.Visible;
-					//else if (OptionsBox.SelectedItem == OutputBox)
-					//	OutputSettings.Visibility = Visibility.Visible;
-				}
 			}
-		}
+		} 
+
+		#endregion
 
 		#region Rotation Button Handlers
 
@@ -188,31 +217,7 @@ namespace BatchImageProcessor
 
 		#endregion
 
-		private void CropBtn_Click(object sender, RoutedEventArgs e)
-		{
-			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
-
-			if (sender == cropTlBtn)
-				model.DefaultCropAlignment = Alignment.Top_Left;
-			else if (sender == cropTcBtn)
-				model.DefaultCropAlignment = Alignment.Top_Center;
-			else if (sender == cropTrBtn)
-				model.DefaultCropAlignment = Alignment.Top_Right;
-
-			else if (sender == cropMlBtn)
-				model.DefaultCropAlignment = Alignment.Middle_Left;
-			else if (sender == cropMcButton)
-				model.DefaultCropAlignment = Alignment.Middle_Center;
-			else if (sender == cropMrBtn)
-				model.DefaultCropAlignment = Alignment.Middle_Right;
-
-			else if (sender == CropBlBtn)
-				model.DefaultCropAlignment = Alignment.Bottom_Left;
-			else if (sender == cropBcBtn)
-				model.DefaultCropAlignment = Alignment.Bottom_Center;
-			else if (sender == cropBrBtn)
-				model.DefaultCropAlignment = Alignment.Bottom_Right;
-		}
+		#region File/Folder Interaction Buttons
 
 		private void importFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
@@ -229,7 +234,7 @@ namespace BatchImageProcessor
 						recurs = true;
 				}
 
-				ViewModel.Folder f = new Folder(FolderBrowser.SelectedPath,recurs);
+				ViewModel.Folder f = new Folder(FolderBrowser.SelectedPath, recurs);
 
 				Folder parent = null;
 
@@ -257,12 +262,6 @@ namespace BatchImageProcessor
 
 				parent.Files.Add(f);
 			}
-		}
-
-		System.IntPtr _hnadle;
-		public System.IntPtr Handle
-		{
-			get { return _hnadle; }
 		}
 
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
@@ -351,29 +350,6 @@ namespace BatchImageProcessor
 			}
 		}
 
-		private void gcBtn_Click(object sender, RoutedEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine("Forcing GC");
-			System.GC.Collect();
-		}
-
-		private void Window_Loaded(object sender, RoutedEventArgs e)
-		{
-			string[] args = Environment.GetCommandLineArgs();
-
-			if (args.Length>1 && args.Contains("-noshaders"))
-			{
-				Resources["tdse"] = null;
-			}
-		}
-
-		private void aboutBtn_Click(object sender, RoutedEventArgs e)
-		{
-			AboutBox b = new AboutBox();
-			b.Owner = this;
-			b.ShowDialog();
-		}
-
 		private void RenameFolderMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			Folder target = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
@@ -401,6 +377,120 @@ namespace BatchImageProcessor
 			}
 			else
 				target.Name = oldName;
+		} 
+
+		#endregion
+
+		#region Tool Buttons
+
+		private void gcBtn_Click(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine("Forcing GC");
+			System.GC.Collect();
 		}
+
+		private void aboutBtn_Click(object sender, RoutedEventArgs e)
+		{
+			AboutBox b = new AboutBox();
+			b.Owner = this;
+			b.ShowDialog();
+		} 
+
+		#endregion
+
+		#region Settings Handlers
+
+		private void ListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+		{
+			if (RotateSettings != null)
+			{
+				RotateSettings.Visibility = ResizeSettings.Visibility = CropSettings.Visibility = WatermarkSettings.Visibility /*= OutputSettings.Visibility*/ = Visibility.Collapsed;
+				if (SettingsPresenter != null)
+				{
+					if (OptionsBox.SelectedItem == RotateBox)
+						RotateSettings.Visibility = Visibility.Visible;
+					else if (OptionsBox.SelectedItem == ResizeBox)
+						ResizeSettings.Visibility = Visibility.Visible;
+					else if (OptionsBox.SelectedItem == CropBox)
+						CropSettings.Visibility = Visibility.Visible;
+					else if (OptionsBox.SelectedItem == WatermarkBox)
+						WatermarkSettings.Visibility = Visibility.Visible;
+					//else if (OptionsBox.SelectedItem == OutputBox)
+					//	OutputSettings.Visibility = Visibility.Visible;
+				}
+			}
+		}
+
+		private void CropBtn_Click(object sender, RoutedEventArgs e)
+		{
+			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
+
+			if (sender == cropTlBtn)
+				model.DefaultCropAlignment = Alignment.Top_Left;
+			else if (sender == cropTcBtn)
+				model.DefaultCropAlignment = Alignment.Top_Center;
+			else if (sender == cropTrBtn)
+				model.DefaultCropAlignment = Alignment.Top_Right;
+
+			else if (sender == cropMlBtn)
+				model.DefaultCropAlignment = Alignment.Middle_Left;
+			else if (sender == cropMcButton)
+				model.DefaultCropAlignment = Alignment.Middle_Center;
+			else if (sender == cropMrBtn)
+				model.DefaultCropAlignment = Alignment.Middle_Right;
+
+			else if (sender == CropBlBtn)
+				model.DefaultCropAlignment = Alignment.Bottom_Left;
+			else if (sender == cropBcBtn)
+				model.DefaultCropAlignment = Alignment.Bottom_Center;
+			else if (sender == cropBrBtn)
+				model.DefaultCropAlignment = Alignment.Bottom_Right;
+		}
+
+		private void watermarkFontBtn_Click(object sender, RoutedEventArgs e)
+		{
+			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
+			WatermarkFontDlg.Font = model.WatermarkFont;
+			if (WatermarkFontDlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				model.WatermarkFont = WatermarkFontDlg.Font;
+			}
+		}
+
+		private void WatermarkBtn_Click(object sender, RoutedEventArgs e)
+		{
+			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
+
+			if (sender == watermarkTlBtn)
+				model.WatermarkAlignment = Alignment.Top_Left;
+			else if (sender == watermarkTcBtn)
+				model.WatermarkAlignment = Alignment.Top_Center;
+			else if (sender == watermarkTrBtn)
+				model.WatermarkAlignment = Alignment.Top_Right;
+
+			else if (sender == watermarkMlBtn)
+				model.WatermarkAlignment = Alignment.Middle_Left;
+			else if (sender == watermarkMcButton)
+				model.WatermarkAlignment = Alignment.Middle_Center;
+			else if (sender == watermarkMrBtn)
+				model.WatermarkAlignment = Alignment.Middle_Right;
+
+			else if (sender == watermarkBlBtn)
+				model.WatermarkAlignment = Alignment.Bottom_Left;
+			else if (sender == watermarkBcBtn)
+				model.WatermarkAlignment = Alignment.Bottom_Center;
+			else if (sender == watermarkBrBtn)
+				model.WatermarkAlignment = Alignment.Bottom_Right;
+		}
+
+		private void watermarkImageBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (WatermarkFileBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				(this.DataContext as ViewModel.ViewModel).WatermarkImagePath = WatermarkFileBrowser.FileName;
+			}
+		} 
+
+		#endregion
 	}
 }

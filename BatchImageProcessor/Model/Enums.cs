@@ -19,5 +19,16 @@ namespace BatchImageProcessor.Model
 		Landscape
 	}
 
-	
+	public enum ResizeMode
+	{
+		Smaller,
+		Larger,
+		Exact
+	}
+
+	public enum WatermarkType
+	{
+		Text,
+		Image
+	}
 }

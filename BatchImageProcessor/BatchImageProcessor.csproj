@@ -123,13 +123,12 @@
     </Compile>
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Model\Rotation.cs" />
+    <Compile Include="Model\Enums.cs" />
     <Compile Include="ViewModel\Alignment.cs" />
     <Compile Include="ViewModel\FileWrapper.cs" />
     <Compile Include="ViewModel\Folder.cs" />
     <Compile Include="ViewModel\FolderCollectionView.cs" />
     <Compile Include="ViewModel\FileCollectionView.cs" />
-    <Compile Include="ViewModel\Operations.cs" />
     <Compile Include="ViewModel\Converters.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
     <Compile Include="View\RenameFileDialog.xaml.cs">
@@ -309,6 +308,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\ui-text-field.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\image-resize.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\image-resize-exact.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\image-greyscale.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
