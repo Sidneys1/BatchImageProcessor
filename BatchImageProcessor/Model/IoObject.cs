@@ -10,7 +10,7 @@ using System.Windows.Media;
 
 namespace BatchImageProcessor.Model
 {
-	public abstract class IoObject : INotifyPropertyChanged
+	public abstract class IoObject : INotifyPropertyChanged, IDisposable
 	{
 		string _path = null;
 		public string Path
@@ -91,5 +91,11 @@ namespace BatchImageProcessor.Model
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		public void Dispose()
+		{
+			Watcher.Dispose();
+			GC.SuppressFinalize(this);
+		}
 	}
 }

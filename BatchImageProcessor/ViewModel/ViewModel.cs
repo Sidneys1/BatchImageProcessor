@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BatchImageProcessor.ViewModel
 {
-	public class ViewModel : INotifyPropertyChanged
+	public class ViewModel : INotifyPropertyChanged, IDisposable
 	{
 		#region Properties
 
@@ -148,5 +148,11 @@ namespace BatchImageProcessor.ViewModel
 		} 
 
 		#endregion
+
+		public void Dispose()
+		{
+			_watermarkFont.Dispose();
+			GC.SuppressFinalize(this);
+		}
 	}
 }
