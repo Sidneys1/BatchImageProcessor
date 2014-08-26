@@ -4,15 +4,13 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
 
-namespace BatchImageProcessor
+namespace BatchImageProcessor.Model
 {
 	public static class ExtensionMethods
 	{
 		public static BitmapSource GetSource(this Bitmap bit)
 		{
-			//return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bit.GetHbitmap(Color.Transparent), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(bit.Width, bit.Height));
-
-			BitmapImage bitmapImage = new BitmapImage();
+BitmapImage bitmapImage = new BitmapImage();
 			using (MemoryStream memory = new MemoryStream())
 			{
 				bit.Save(memory, ImageFormat.Png);
@@ -26,10 +24,5 @@ namespace BatchImageProcessor
 			}
 			return bitmapImage;
 		}
-
-		public static string FormatWith(this string s, params object[] args)
-        {
-            return string.Format(s, args);
-        }
 	}
 }

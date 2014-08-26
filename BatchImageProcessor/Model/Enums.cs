@@ -31,4 +31,11 @@ namespace BatchImageProcessor.Model
 		Text,
 		Image
 	}
+
+	public enum NameType
+	{
+		Original,
+		Numbered,
+		Custom
+	}
 }

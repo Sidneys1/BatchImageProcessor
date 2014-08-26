@@ -78,6 +78,32 @@ namespace BatchImageProcessor.ViewModel
 
 		#endregion
 
+		#region OutputSettings
+
+		string _outputPath = "<No Path Set>";
+		public string OutputPath { get { return _outputPath; } set { _outputPath = value; PropChanged("OutputPath"); } }
+
+		bool _outputSet = false;
+		public bool OutputSet { get { return _outputSet; } set { _outputSet = value; PropChanged("OutputSet"); } }
+
+		Model.NameType _nameOption = Model.NameType.Original;
+		public Model.NameType NameOption { get { return _nameOption; } set { _nameOption = value; PropChanged("NameOption"); } }
+
+		string _outputTemplate = "{o} - Processed";
+		public string OutputTemplate { get { return _outputTemplate; } set { _outputTemplate = value; PropChanged("OutputTemplate"); PropChanged("OutputTemplateExample"); } }
+		public string OutputTemplateExample
+		{
+			get 
+			{
+				string str = OutputTemplate.Trim() + ".jpg";
+				str = str.Replace("{o}", "DSCF3013");
+				str = str.Replace("{w}", "1920");
+				str = str.Replace("{h}", "1080");
+				return str;
+			}
+		}
+		#endregion
+
 		#region Checkboxes
 
 		bool _enableRotation = false;

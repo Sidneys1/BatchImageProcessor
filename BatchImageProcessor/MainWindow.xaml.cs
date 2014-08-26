@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
-using System.Linq;
 
 namespace BatchImageProcessor
 {
@@ -23,6 +23,13 @@ namespace BatchImageProcessor
 			Description = "Select a Folder to Import",
 			RootFolder = System.Environment.SpecialFolder.MyComputer,
 			ShowNewFolderButton = false
+		};
+
+		FolderBrowserDialog OutputBrowser = new FolderBrowserDialog()
+		{
+			Description = "Select a folder to Output to",
+			RootFolder = Environment.SpecialFolder.MyComputer,
+			ShowNewFolderButton = true
 		};
 
 		OpenFileDialog FileBrowser = new OpenFileDialog()
@@ -56,20 +63,22 @@ namespace BatchImageProcessor
 		public System.IntPtr Handle
 		{
 			get { return _hnadle; }
-		} 
+		}
+
+		public ViewModel.ViewModel vModel { get; private set; }
 
 		#endregion
 
 		public MainWindow()
 		{
+			vModel = new ViewModel.ViewModel();
+			vModel.Folders.Add(new Folder(removable: false) { Name = "Output Folder" });
+
 			InitializeComponent();
 
-			ViewModel.ViewModel context = new ViewModel.ViewModel();
-			context.Folders.Add(new Folder(removable: false) { Name = "Output Folder" });
+			//this.DataContext = vModel;
 
-			this.DataContext = context;
-
-			WatermarkFontDlg.Font = context.WatermarkFont;
+			WatermarkFontDlg.Font = vModel.WatermarkFont;
 
 			_hnadle = new WindowInteropHelper(this).Handle;
 
@@ -248,7 +257,7 @@ namespace BatchImageProcessor
 					if (treeView.SelectedItem is Folder)
 						parent = (treeView.SelectedItem as Folder);
 					else
-						parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+						parent = vModel.Folders[0];
 				}
 
 				if (parent.ContainsFile(f.Name))
@@ -278,11 +287,11 @@ namespace BatchImageProcessor
 				if (treeView.SelectedItem is Folder)
 					parent = (treeView.SelectedItem as Folder);
 				else
-					parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+					parent = vModel.Folders[0];
 			}
 
 			if (parent.Removable)
-				(this.DataContext as ViewModel.ViewModel).RemoveFolder(parent);
+				vModel.RemoveFolder(parent);
 		}
 
 		private void addFolderBtn_Click(object sender, RoutedEventArgs e)
@@ -306,7 +315,7 @@ namespace BatchImageProcessor
 					if (treeView.SelectedItem is Folder)
 						parent = (treeView.SelectedItem as Folder);
 					else
-						parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+						parent = vModel.Folders[0];
 				}
 
 				f.Name = f.Name.Trim();
@@ -340,7 +349,7 @@ namespace BatchImageProcessor
 					if (treeView.SelectedItem is Folder)
 						parent = (treeView.SelectedItem as Folder);
 					else
-						parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+						parent = vModel.Folders[0];
 				}
 
 				foreach (string str in FileBrowser.FileNames)
@@ -362,7 +371,7 @@ namespace BatchImageProcessor
 
 			if (fdlg.ShowDialog().GetValueOrDefault(false))
 			{
-				Folder parent = (this.DataContext as ViewModel.ViewModel).Folders[0];
+				Folder parent = vModel.Folders[0];
 
 				if (parent.ContainsFile(target.Name))
 				{
@@ -404,7 +413,7 @@ namespace BatchImageProcessor
 		{
 			if (RotateSettings != null)
 			{
-				RotateSettings.Visibility = ResizeSettings.Visibility = CropSettings.Visibility = WatermarkSettings.Visibility /*= OutputSettings.Visibility*/ = Visibility.Collapsed;
+				RotateSettings.Visibility = ResizeSettings.Visibility = CropSettings.Visibility = WatermarkSettings.Visibility = OutputSettings.Visibility = Visibility.Collapsed;
 				if (SettingsPresenter != null)
 				{
 					if (OptionsBox.SelectedItem == RotateBox)
@@ -415,8 +424,8 @@ namespace BatchImageProcessor
 						CropSettings.Visibility = Visibility.Visible;
 					else if (OptionsBox.SelectedItem == WatermarkBox)
 						WatermarkSettings.Visibility = Visibility.Visible;
-					//else if (OptionsBox.SelectedItem == OutputBox)
-					//	OutputSettings.Visibility = Visibility.Visible;
+					else if (OptionsBox.SelectedItem == OutputBox)
+						OutputSettings.Visibility = Visibility.Visible;
 				}
 			}
 		}
@@ -487,10 +496,21 @@ namespace BatchImageProcessor
 		{
 			if (WatermarkFileBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
-				(this.DataContext as ViewModel.ViewModel).WatermarkImagePath = WatermarkFileBrowser.FileName;
+				vModel.WatermarkImagePath = WatermarkFileBrowser.FileName;
 			}
 		} 
 
+		private void outputBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (OutputBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				vModel.OutputPath = OutputBrowser.SelectedPath;
+				vModel.OutputSet = true;
+			}
+		}
+
 		#endregion
+
+		
 	}
 }

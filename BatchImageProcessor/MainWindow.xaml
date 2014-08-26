@@ -6,8 +6,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		xmlns:cc="clr-namespace:System.Windows.Data;assembly=WindowsBase"
-        Title="Batch Image Processor" Height="720" Width="1280" MinWidth="1024" MinHeight="600"
-		UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Images/ImageRotator.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Batch Image Processor" Height="720" Width="1280" MinWidth="1024" MinHeight="650"
+		UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Images/ImageRotator.ico"
+		WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
+		DataContext="{Binding vModel, Mode=OneWay, RelativeSource={RelativeSource Self}}">
 	<Window.Resources>
 		<viewmodel:FileCollectionView x:Key="ficv" Source="{Binding SelectedItem.Files, ElementName=treeView}" />
 		<viewmodel:FolderCollectionView x:Key="focv" Source="{Binding Children}" />
@@ -436,7 +438,7 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				<ListBoxItem x:Name="OutputBox" IsEnabled="False">
+				<ListBoxItem x:Name="OutputBox">
 					<StackPanel Orientation="Horizontal" Margin="20,0">
 						<Image Source="Images/image-export.png" />
 						<Label Content="Output"/>
@@ -456,9 +458,8 @@
 			</Border>
 
 			<!-- #region Options Panes -->
-
 			<StackPanel x:Name="SettingsPresenter" Grid.Row="2">
-				<Grid x:Name="RotateSettings" Margin="5,0" Visibility="Collapsed">
+				<Grid x:Name="RotateSettings" Margin="5,0" Visibility="Visible">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*"/>
@@ -623,7 +624,7 @@
 						<TextBlock Grid.Row="3" Grid.ColumnSpan="3" Text="{Binding DefaultCropAlignment, Converter={StaticResource enumStr}, FallbackValue={}No Binding}" HorizontalAlignment="Center"/>
 					</StackPanel>
 				</Grid>
-				<Grid x:Name="WatermarkSettings" Visibility="Visible">
+				<Grid x:Name="WatermarkSettings" Visibility="Collapsed">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*"/>
@@ -756,22 +757,63 @@
 						</StackPanel>
 					</StackPanel>
 				</Grid>
-				<!--<Grid x:Name="OutputSettings" Visibility="Collapsed">
+				<Grid x:Name="OutputSettings" Visibility="Collapsed">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
 					<Label Content="Output Settings" HorizontalAlignment="Center" Margin="0,0,0,10"/>
 					<StackPanel Grid.Row="1">
-
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Text="Output Location:" Margin="0,0,10,0" VerticalAlignment="Center"/>
+							<Button x:Name="outputBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand" Margin="10,3" VerticalAlignment="Center" HorizontalContentAlignment="Center" Click="outputBtn_Click">
+								<Button.Style>
+									<Style TargetType="Button">
+										<Setter Property="Template" Value="{DynamicResource btn}"/>
+									</Style>
+								</Button.Style>
+								<TextBlock TextTrimming="CharacterEllipsis" Text="{Binding OutputPath}" VerticalAlignment="Center" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" TextDecorations="Underline" HorizontalAlignment="Center"/>
+							</Button>
+						</Grid>
+						<TextBlock Text="File Naming Mode:" FontWeight="Bold" Margin="0,10,0,0"/>
+						<RadioButton Margin="0,5,0,2" Content="Original Filename" IsChecked="{Binding Path=NameOption, Converter={StaticResource enumConv}, ConverterParameter=Original}"/>
+						<RadioButton Margin="0,5,0,2" Content="Numbered Sequentially" IsChecked="{Binding Path=NameOption, Converter={StaticResource enumConv}, ConverterParameter=Numbered}"/>
+						<RadioButton Margin="0,5,0,2" Content="Custom Template" IsChecked="{Binding Path=NameOption, Converter={StaticResource enumConv}, ConverterParameter=Custom}"/>
+						<Grid Visibility="{Binding Path=NameOption, Converter={StaticResource enumVis}, ConverterParameter=Custom}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<TextBlock Text="Custom Template Settings:" Grid.ColumnSpan="2" FontWeight="Bold" Margin="0,10,0,0"/>
+							<TextBlock Grid.Row="1" Text="Template:" Margin="0,0,10,0" VerticalAlignment="Center"/>
+							<TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding OutputTemplate, UpdateSourceTrigger=PropertyChanged}"/>
+							<TextBlock Grid.Row="2" Text="Example:" Margin="0,0,10,0" VerticalAlignment="Center"/>
+							<TextBlock Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding OutputTemplateExample}" VerticalAlignment="Center"/>
+							<TextBlock Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextAlignment="Center">
+								Replacement Codes: <LineBreak/>
+								{o} - Original Filename <LineBreak/>
+								{w} - Output Width <LineBreak/>
+								{h} - Output Height
+							</TextBlock>
+						</Grid>
 					</StackPanel>
-				</Grid>-->
+				</Grid>
 			</StackPanel>
 
 			<!-- #endregion -->
 
 			<!-- Start Button -->
-			<Button Grid.Row="3" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" IsEnabled="False">
+			<Button Grid.Row="3" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" IsEnabled="{Binding OutputSet}">
 				<StackPanel Orientation="Horizontal">
 					<Label Content="Start Processing" FontSize="20" Margin="0,0,10,0" FontFamily="Segoe UI Light"/>
 					<Image Source="Images/32/image-transition.png" VerticalAlignment="Center"/>
