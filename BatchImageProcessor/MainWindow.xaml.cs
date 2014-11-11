@@ -150,17 +150,17 @@ namespace BatchImageProcessor
 
 			if ((System.Windows.Forms.Control.ModifierKeys & Keys.Shift) == Keys.Shift)
 			{
-				AndreasJohansson.Win32.Shell.ShellContextMenu scm = new AndreasJohansson.Win32.Shell.ShellContextMenu();
+				var scm = new View.ShellContextMenu();
 
 				scm.ShowContextMenu(new WindowInteropHelper(this).Handle, files.ToArray(), System.Windows.Forms.Control.MousePosition);
 			}
 			else
 			{
 				System.Windows.Controls.ContextMenu ctxMnu = this.Resources["imageCtxMenu"] as System.Windows.Controls.ContextMenu;
+				if (ctxMnu == null) return;
 				ctxMnu.Placement = System.Windows.Controls.Primitives.PlacementMode.Mouse;
 				ctxMnu.DataContext = wrapper;
 				ctxMnu.IsOpen = true;
-
 			}
 		} 
 

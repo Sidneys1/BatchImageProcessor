@@ -1,6 +1,7 @@
 ﻿<Window x:Class="BatchImageProcessor.View.RenameFileDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:properties="clr-namespace:BatchImageProcessor.Properties"
         Title="Rename Folder"  ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" SizeToContent="WidthAndHeight">
 	<Grid>
 		<Grid.ColumnDefinitions>
@@ -12,8 +13,8 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		<TextBox x:Name="textBox" Grid.ColumnSpan="3" Margin="10" MinWidth="250" MaxWidth="600" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"/>
-		<Button x:Name="okBtn" Grid.Row="1" Grid.Column="1" Content="OK" Padding="15,3" Margin="5,5" IsEnabled="{Binding IsValidName}" Click="okBtn_Click"/>
-		<Button x:Name="cancelBtn" Grid.Row="1" Grid.Column="2" Content="Cancel" Padding="15,3" Margin="5,5" Click="cancelBtn_Click"/>
+		<TextBox x:Name="TextBox" Grid.ColumnSpan="3" Margin="10" MinWidth="250" MaxWidth="600" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"/>
+		<Button x:Name="OkBtn" Grid.Row="1" Grid.Column="1" Content="{x:Static properties:Resources.OkText}" Padding="15,3" Margin="5,5" IsEnabled="{Binding IsValidName}" Click="okBtn_Click"/>
+		<Button x:Name="CancelBtn" Grid.Row="1" Grid.Column="2" Content="{x:Static properties:Resources.CancelText}" Padding="15,3" Margin="5,5" Click="cancelBtn_Click"/>
 	</Grid>
 </Window>

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
+using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel
 {
@@ -13,9 +14,9 @@ namespace BatchImageProcessor.ViewModel
 
 		public bool Removable { get; private set; }
 
-		static Regex nameCheck = null;
+		static Regex _nameCheck;
 
-		string _name = "New Folder";
+		string _name = Resources.New_Folder_Name;
 		public string Name
 		{
 			get { return _name; }
@@ -23,12 +24,12 @@ namespace BatchImageProcessor.ViewModel
 			{
 				if (!_name.Equals(value))
 				{
-					Regex containsABadCharacter = nameCheck ?? (nameCheck = new Regex("[" + Regex.Escape(new string(System.IO.Path.GetInvalidPathChars())) + "]"));
+					var containsABadCharacter = _nameCheck ?? (_nameCheck = new Regex("[" + Regex.Escape(new string(Path.GetInvalidPathChars())) + "]"));
 					if (string.IsNullOrWhiteSpace(value) || containsABadCharacter.IsMatch(value))
 					{
 						IsValidName = false;
 						PropertyChanged(this, new PropertyChangedEventArgs("IsValidName"));
-						throw new System.Exception("Data Validation Error");
+						throw new Exception("Data Validation Error");
 					}
 
 					_name = value;
@@ -50,9 +51,9 @@ namespace BatchImageProcessor.ViewModel
 			Removable = removable;
 		}
 
-		private void Populate(string Path, bool recursive)
+		private void Populate(string path, bool recursive)
 		{
-			var info = new DirectoryInfo(Path);
+			var info = new DirectoryInfo(path);
 
 			Name = info.Name;
 
@@ -60,17 +61,17 @@ namespace BatchImageProcessor.ViewModel
 			{
 				var folders = info.GetDirectories();
 
-				foreach (DirectoryInfo inf in folders)
+				foreach (var inf in folders)
 				{
 					Files.Add(new Folder(inf.FullName));
 				}
 			}
 
-			foreach (string str in new string[] { "*.jpg", "*.jpeg" })
+			foreach (var str in new[] { "*.jpg", "*.jpeg" })
 			{
 				var files = info.GetFiles(str);
 
-				foreach (FileInfo inf in files)
+				foreach (var inf in files)
 				{
 					Files.Add(new FileWrapper(inf.FullName));
 				}
@@ -82,22 +83,12 @@ namespace BatchImageProcessor.ViewModel
 
 		internal bool ContainsFile(string p)
 		{
-			return Files.Any(o => (o is Folder) ? (o as Folder).Name == p : (o as FileWrapper).Name == p);
+			return Files.Any(o => (o is Folder) ? (o as Folder).Name == p : ((FileWrapper) o).Name == p);
 		}
 
 		public Folder FindParent(Folder f)
 		{
-			if (this.Files.Contains(f))
-				return this;
-			else
-				foreach (Folder p in Files)
-				{
-					Folder ret = p.FindParent(f);
-					if (ret != null)
-						return ret;
-				}
-
-			return null;
+			return Files.Contains(f) ? this : (from Folder p in Files select p.FindParent(f)).FirstOrDefault(ret => ret != null);
 		}
 	}
 }

@@ -114,4 +114,53 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+	<data name="MainWindow_FolderBrowser_Description" xml:space="preserve">
+    <value>Select a Folder to Import</value>
+    <comment>For import folder browser dialog</comment>
+  </data>
+	<data name="MainWindow_OutputBrowser_Description" xml:space="preserve">
+    <value>Select a folder to Output to</value>
+    <comment>Folder ouput browser dialog description</comment>
+  </data>
+	<data name="MainWindow__fileBrowser_Title" xml:space="preserve">
+    <value>Import Images...</value>
+    <comment>Import image dialog title</comment>
+  </data>
+	<data name="MainWindow__fileBrowser_Filter" xml:space="preserve">
+    <value>Image Files|*.jpg;*.jpeg</value>
+    <comment>Image import dialog filter</comment>
+  </data>
+	<data name="MainWindow__watermarkFileBrowser_Title" xml:space="preserve">
+    <value>Select Watermark Image...</value>
+  </data>
+	<data name="MainWindow__watermarkFileBrowser_Filter" xml:space="preserve">
+    <value>Image Files|*.jpg;*.jpeg;*.png</value>
+  </data>
+	<data name="MainWindow_MainWindow_Output_Folder_Name" xml:space="preserve">
+    <value>Output Folder</value>
+  </data>
+	<data name="MainWindow_RenameFolderMenuItem_Title" xml:space="preserve">
+    <value>Rename Folder</value>
+  </data>
+	<data name="MainWindow_importFolderBtn_Recursion_Ask" xml:space="preserve">
+    <value>This folder has folders within it. Would you like to add those as well?</value>
+  </data>
+	<data name="MainWindow_importFolderBtn_Recursion_Ask_Title" xml:space="preserve">
+    <value>Import Folder</value>
+  </data>
+	<data name="MainWindow_addFolderBtn_NewFolder_Title" xml:space="preserve">
+    <value>Name New Folder</value>
+  </data>
+	<data name="OkText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+	<data name="CancelText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+	<data name="New_Folder_Name" xml:space="preserve">
+    <value>New Folder</value>
+  </data>
+	<data name="ViewModel__outputPath__No_Path_Set" xml:space="preserve">
+    <value>&lt;No Path Set&gt;</value>
+  </data>
 </root>

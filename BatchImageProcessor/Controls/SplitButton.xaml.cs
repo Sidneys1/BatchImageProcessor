@@ -1,25 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace BatchImageProcessor.Controls
 {
 	/// <summary>
 	/// Interaction logic for SplitButton.xaml
 	/// </summary>
-	public partial class SplitButton : UserControl
+	public partial class SplitButton
 	{
 		public event Action<Object, EventArgs> Click = delegate { };
 
@@ -29,17 +19,12 @@ namespace BatchImageProcessor.Controls
 			DataContext = this;
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
-		{
-			
-		}
-
 		private void Button_Click_1(object sender, RoutedEventArgs e)
 		{
-			this.ContextMenu.IsEnabled = true;
-			this.ContextMenu.PlacementTarget = (sender as Button);
-			this.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-			this.ContextMenu.IsOpen = true;
+			ContextMenu.IsEnabled = true;
+			ContextMenu.PlacementTarget = (sender as Button);
+			ContextMenu.Placement = PlacementMode.Bottom;
+			ContextMenu.IsOpen = true;
 
 		}
 

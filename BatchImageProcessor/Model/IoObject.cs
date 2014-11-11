@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace BatchImageProcessor.Model
 {
 	public abstract class IoObject : INotifyPropertyChanged, IDisposable
 	{
-		string _path = null;
+		string _path;
 		public string Path
 		{
 			get { return _path; }
@@ -25,7 +19,7 @@ namespace BatchImageProcessor.Model
 			}
 		}
 
-		string _name = null;
+		string _name;
 		public string Name 
 		{
 			get
@@ -34,28 +28,30 @@ namespace BatchImageProcessor.Model
 			}
 		}
 
-		FileSystemWatcher Watcher = null;
+		readonly FileSystemWatcher _watcher;
 
 		public bool IsFile { get; set; }
 
-		public abstract ImageSource Thumbnail { get; }
+		public abstract WeakThumbnail Thumbnail { get; protected set; }
 
-		public IoObject(string path)
+		protected IoObject(string path)
 		{
-			bool file = System.IO.File.Exists(path);
-			if (!(file || System.IO.Directory.Exists(path)))
+			var file = System.IO.File.Exists(path);
+			if (!(file || Directory.Exists(path)))
 				throw new FileNotFoundException(string.Format(@"File/folder at ""{0}"" does not exist.", path));
 
 			IsFile = file;
 			Path = path;
 
-			Watcher = new FileSystemWatcher(IsFile ? new FileInfo(Path).Directory.FullName : Path);
+			var directoryInfo = new FileInfo(Path).Directory;
+			if (directoryInfo != null)
+				_watcher = new FileSystemWatcher(IsFile ? directoryInfo.FullName : Path);
 			if (IsFile)
-				Watcher.Filter = System.IO.Path.GetFileName(path);
+				_watcher.Filter = System.IO.Path.GetFileName(path);
 
-			Watcher.Renamed += watcher_Renamed;
-			Watcher.Deleted += Watcher_Deleted;
-			Watcher.EnableRaisingEvents = true;
+			_watcher.Renamed += watcher_Renamed;
+			_watcher.Deleted += Watcher_Deleted;
+			_watcher.EnableRaisingEvents = true;
 		}
 
 		void Watcher_Deleted(object sender, FileSystemEventArgs e)
@@ -68,33 +64,32 @@ namespace BatchImageProcessor.Model
 			if (IsFile)
 			{
 				Path = e.FullPath;
-				Watcher.Filter = e.Name;
+				_watcher.Filter = e.Name;
 			}
 		}
 
-		public IoObject() { }
+		protected IoObject() { }
 
-		public static string GetName(string Path)
+		public static string GetName(string path)
 		{
-			if (Directory.Exists(Path) && (System.IO.File.GetAttributes(Path) & FileAttributes.Directory) == FileAttributes.Directory)
-				return System.IO.Path.GetFileName(Path);
-			else if (System.IO.File.Exists(Path))
-				return System.IO.Path.GetFileNameWithoutExtension(Path);
-			else
-				throw new FileNotFoundException(string.Format(@"File/folder at ""{0}"" does not exist.", Path));
+			if (Directory.Exists(path) && (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
+				return System.IO.Path.GetFileName(path);
+			if (System.IO.File.Exists(path))
+				return System.IO.Path.GetFileNameWithoutExtension(path);
+			throw new FileNotFoundException(string.Format(@"File/folder at ""{0}"" does not exist.", path));
 		}
 
-		public void PropChanged(string PropertyName)
+		public void PropChanged(string propertyName)
 		{
 			if (PropertyChanged != null)
-				PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public void Dispose()
 		{
-			Watcher.Dispose();
+			_watcher.Dispose();
 			GC.SuppressFinalize(this);
 		}
 	}

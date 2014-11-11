@@ -242,7 +242,7 @@
 						<TextBlock Text="{Binding Name, BindsDirectlyToSource=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="5,1,5,1">
 							<TextBlock.ToolTip>
 								<StackPanel>
-									<Image Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" Effect="{DynamicResource tdse}"/>
+									<Image Source="{Binding Thumbnail.Source, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" Effect="{DynamicResource tdse}"/>
 									<TextBlock Grid.Row="1" Text="{Binding Path}"/>
 								</StackPanel>
 							</TextBlock.ToolTip>
@@ -323,7 +323,7 @@
 					<Grid VerticalAlignment="Center" Margin="0,3,0,0" MouseRightButtonUp="Grid_MouseRightButtonUp">
 						<Grid.ToolTip>
 							<StackPanel>
-								<Image HorizontalAlignment="Center" Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" Effect="{DynamicResource tdse}"/>
+								<Image HorizontalAlignment="Center" Source="{Binding Thumbnail.Source}" StretchDirection="DownOnly" Effect="{DynamicResource tdse}"/>
 								<TextBlock Text="{Binding Path}"/>
 							</StackPanel>
 						</Grid.ToolTip>
@@ -332,8 +332,8 @@
 							<RowDefinition Height="Auto"/>
 							<RowDefinition Height="Auto"/>
 						</Grid.RowDefinitions>
-						<Image Grid.RowSpan="2" Source="{Binding Thumbnail, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" MaxWidth="128" Height="128" Margin="3" Effect="{DynamicResource tdse}"/>
-						<CheckBox IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False"/>
+						<Image Grid.RowSpan="2" Source="{Binding Thumbnail.Source, FallbackValue={StaticResource fallback}, IsAsync=False}" StretchDirection="DownOnly" MaxWidth="128" Height="128" Margin="3" Effect="{DynamicResource tdse}"/>
+						<CheckBox Grid.Row="0" IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False"/>
 						<StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Effect="{StaticResource tdse}">
 							<Image Width="16" Height="16" Visibility="{Binding Path=RotationOverride, Converter={StaticResource enumVis}, ConverterParameter=None}" StretchDirection="DownOnly" Source="Images/arrow-noturn.png" ToolTip="Override: No Rotation"/>
 							<Image Width="16" Height="16" Visibility="{Binding Path=RotationOverride, Converter={StaticResource enumVis}, ConverterParameter=Clockwise}" StretchDirection="DownOnly" Source="Images/arrow-circle-cwise.png" ToolTip="Override: Rotate Clockwise"/>

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="About Batch Image Processor" Height="300" Width="450" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize" Loaded="Window_Loaded" Icon="Images/ImageRotator.ico">
 	<Window.Resources>
-		<DropShadowEffect x:Key="dse" BlurRadius="6" Opacity="0.6" ShadowDepth="0" RenderingBias="Performance"/>
+		<DropShadowEffect x:Key="Dse" BlurRadius="6" Opacity="0.6" ShadowDepth="0" RenderingBias="Performance"/>
 	</Window.Resources>
     <Grid>
 		<Grid.ColumnDefinitions>
@@ -15,7 +15,7 @@
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		<Image Source="Images/ImageRotator.png" StretchDirection="DownOnly" Margin="10" />
-		<Grid Grid.Column="1" Margin="10">
+		<Grid Grid.Row="0" Grid.Column="1" Margin="10">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="*"/>
@@ -28,19 +28,19 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
-			<Label Content="Batch Image Processor" Grid.ColumnSpan="2" FontSize="16" HorizontalContentAlignment="Center" Effect="{DynamicResource dse}"/>
-			<TextBlock Grid.Row="1" Text="Version:" Margin="0,0,10,0"/>
-			<TextBlock x:Name="versionTxt" Grid.Row="1" Grid.Column="1" />
+			<Label Content="Batch Image Processor" Grid.ColumnSpan="2" FontSize="16" HorizontalContentAlignment="Center" Effect="{DynamicResource Dse}"/>
+			<TextBlock Grid.Row="1" Grid.Column="0" Text="Version:" Margin="0,0,10,0"/>
+			<TextBlock x:Name="VersionTxt" Grid.Row="1" Grid.Column="1" />
 			
-			<TextBlock Grid.Row="2" Text="Copyright:" Margin="0,0,10,0"/>
-			<TextBlock x:Name="copyrightTxt" Grid.Row="2" Grid.Column="1" />
+			<TextBlock Grid.Row="2" Grid.Column="0" Text="Copyright:" Margin="0,0,10,0"/>
+			<TextBlock x:Name="CopyrightTxt" Grid.Row="2" Grid.Column="1" />
 			
-			<TextBlock Grid.Row="3" Text="Company:" Margin="0,0,10,0"/>
-			<TextBlock x:Name="companyTxt" Grid.Row="3" Grid.Column="1" />
+			<TextBlock Grid.Row="3" Grid.Column="0" Text="Company:" Margin="0,0,10,0"/>
+			<TextBlock x:Name="CompanyTxt" Grid.Row="3" Grid.Column="1" />
 			
-			<TextBlock Grid.Row="4" Text="Description:" Margin="0,0,10,0"/>
-			<TextBlock x:Name="descriptionTxt" Grid.Row="5" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="10,0"/>
+			<TextBlock Grid.Row="4" Grid.Column="0" Text="Description:" Margin="0,0,10,0"/>
+			<TextBlock x:Name="DescriptionTxt" Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0" TextWrapping="Wrap" Margin="10,0"/>
 		</Grid>
-		<Button x:Name="okBtn" Grid.Column="1" Grid.Row="1" Content="OK" Padding="25,3" Margin="10" HorizontalAlignment="Right" Click="okBtn_Click"/>
+		<Button x:Name="OkBtn" Grid.Column="1" Grid.Row="1" Content="OK" Padding="25,3" Margin="10" HorizontalAlignment="Right" Click="okBtn_Click"/>
     </Grid>
 </Window>
