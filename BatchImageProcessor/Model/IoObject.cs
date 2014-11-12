@@ -6,33 +6,9 @@ namespace BatchImageProcessor.Model
 {
 	public abstract class IoObject : INotifyPropertyChanged, IDisposable
 	{
-		string _path;
-		public string Path
-		{
-			get { return _path; }
-			set
-			{
-				_path = value;
-				_name = GetName(_path);
-				PropChanged("Name");
-				PropChanged("Path");
-			}
-		}
-
-		string _name;
-		public string Name 
-		{
-			get
-			{
-				return _name ?? (_name = GetName(Path));
-			}
-		}
-
-		readonly FileSystemWatcher _watcher;
-
-		public bool IsFile { get; set; }
-
-		public abstract WeakThumbnail Thumbnail { get; protected set; }
+		private readonly FileSystemWatcher _watcher;
+		private string _name;
+		private string _path;
 
 		protected IoObject(string path)
 		{
@@ -54,12 +30,44 @@ namespace BatchImageProcessor.Model
 			_watcher.EnableRaisingEvents = true;
 		}
 
-		void Watcher_Deleted(object sender, FileSystemEventArgs e)
+		protected IoObject()
 		{
-			
 		}
 
-		void watcher_Renamed(object sender, RenamedEventArgs e)
+		public string Path
+		{
+			get { return _path; }
+			set
+			{
+				_path = value;
+				_name = GetName(_path);
+				PropChanged("Name");
+				PropChanged("Path");
+			}
+		}
+
+		public string Name
+		{
+			get { return _name ?? (_name = GetName(Path)); }
+		}
+
+		public bool IsFile { get; set; }
+
+		public abstract WeakThumbnail Thumbnail { get; protected set; }
+
+		public void Dispose()
+		{
+			_watcher.Dispose();
+			GC.SuppressFinalize(this);
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void Watcher_Deleted(object sender, FileSystemEventArgs e)
+		{
+		}
+
+		private void watcher_Renamed(object sender, RenamedEventArgs e)
 		{
 			if (IsFile)
 			{
@@ -68,11 +76,10 @@ namespace BatchImageProcessor.Model
 			}
 		}
 
-		protected IoObject() { }
-
 		public static string GetName(string path)
 		{
-			if (Directory.Exists(path) && (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
+			if (Directory.Exists(path) &&
+			    (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
 				return System.IO.Path.GetFileName(path);
 			if (System.IO.File.Exists(path))
 				return System.IO.Path.GetFileNameWithoutExtension(path);
@@ -83,14 +90,6 @@ namespace BatchImageProcessor.Model
 		{
 			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		public void Dispose()
-		{
-			_watcher.Dispose();
-			GC.SuppressFinalize(this);
 		}
 	}
 }

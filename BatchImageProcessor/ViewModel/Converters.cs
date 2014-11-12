@@ -8,13 +8,13 @@ namespace BatchImageProcessor.ViewModel
 	public class TypeConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter,
-		  CultureInfo culture)
+			CultureInfo culture)
 		{
 			return value.GetType();
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter,
-		  CultureInfo culture)
+			CultureInfo culture)
 		{
 			throw new NotImplementedException();
 		}
@@ -23,6 +23,7 @@ namespace BatchImageProcessor.ViewModel
 	public class EnumBooleanConverter : IValueConverter
 	{
 		#region IValueConverter Members
+
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			var parameterString = parameter as string;
@@ -45,12 +46,14 @@ namespace BatchImageProcessor.ViewModel
 
 			return Enum.Parse(targetType, parameterString);
 		}
+
 		#endregion
 	}
 
 	public class EnumVisibilityConverter : IValueConverter
 	{
 		#region IValueConverter Members
+
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			var parameterString = parameter as string;
@@ -73,12 +76,14 @@ namespace BatchImageProcessor.ViewModel
 
 			return Enum.Parse(targetType, parameterString);
 		}
+
 		#endregion
 	}
 
 	public class EnumStringConverter : IValueConverter
 	{
 		#region IValueConverter Members
+
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			var parameterString = value.ToString().Replace('_', ' ');
@@ -91,6 +96,7 @@ namespace BatchImageProcessor.ViewModel
 			// TODO: write ConvertBack for EnumStringConverter
 			throw new NotImplementedException();
 		}
+
 		#endregion
 	}
 }

@@ -14,91 +14,257 @@ namespace BatchImageProcessor.ViewModel
 
 		public ObservableCollection<Folder> Folders { get; private set; }
 
+		public bool Ready
+		{
+			get { return OutputSet && (DoneImages == TotalImages); }
+		}
+
 		#region Rotate Settings
 
-		Rotation _defaultRotation = Rotation.None;
-		public Rotation DefaultRotation { get { return _defaultRotation; } set { _defaultRotation = value; PropChanged("DefaultRotation"); } } 
+		private Rotation _defaultRotation = Rotation.None;
+
+		public Rotation DefaultRotation
+		{
+			get { return _defaultRotation; }
+			set
+			{
+				_defaultRotation = value;
+				PropChanged("DefaultRotation");
+			}
+		}
 
 		#endregion
 
 		#region Crop Settings
 
-		Alignment _defaultCropAlignment = Alignment.Middle_Center;
-		public Alignment DefaultCropAlignment { get { return _defaultCropAlignment; } set { _defaultCropAlignment = value; PropChanged("DefaultCropAlignment"); } }
+		private int _cropHeight = 600;
+		private int _cropWidth = 800;
+		private Alignment _defaultCropAlignment = Alignment.Middle_Center;
 
-		int _cropWidth = 800;
-		public int CropWidth { get { return _cropWidth; } set { _cropWidth = value; PropChanged("CropWidth"); } }
+		public Alignment DefaultCropAlignment
+		{
+			get { return _defaultCropAlignment; }
+			set
+			{
+				_defaultCropAlignment = value;
+				PropChanged("DefaultCropAlignment");
+			}
+		}
 
-		int _cropHeight = 600;
-		public int CropHeight { get { return _cropHeight; } set { _cropHeight = value; PropChanged("CropHeight"); } }
+		public int CropWidth
+		{
+			get { return _cropWidth; }
+			set
+			{
+				_cropWidth = value;
+				PropChanged("CropWidth");
+			}
+		}
+
+		public int CropHeight
+		{
+			get { return _cropHeight; }
+			set
+			{
+				_cropHeight = value;
+				PropChanged("CropHeight");
+			}
+		}
 
 		#endregion
 
 		#region Resize Settings
 
-		ResizeMode _defaultResizeMode = ResizeMode.Smaller;
-		public ResizeMode DefaultResizeMode { get { return _defaultResizeMode; } set { _defaultResizeMode = value; PropChanged("DefaultResizeMode"); } }
+		private ResizeMode _defaultResizeMode = ResizeMode.Smaller;
+		private int _resizeHeight = 600;
+		private int _resizeWidth = 800;
 
-		bool _useAspectRatio = true;
-		public bool UseAspectRatio { get { return _useAspectRatio; } set { _useAspectRatio = value; PropChanged("UseAspectRatio"); } }
+		private bool _useAspectRatio = true;
 
-		int _resizeWidth = 800;
-		public int ResizeWidth { get { return _resizeWidth; } set { _resizeWidth = value; PropChanged("ResizeWidth"); } }
+		public ResizeMode DefaultResizeMode
+		{
+			get { return _defaultResizeMode; }
+			set
+			{
+				_defaultResizeMode = value;
+				PropChanged("DefaultResizeMode");
+			}
+		}
 
-		int _resizeHeight = 600;
-		public int ResizeHeight { get { return _resizeHeight; } set { _resizeHeight = value; PropChanged("ResizeHeight"); } }
+		public bool UseAspectRatio
+		{
+			get { return _useAspectRatio; }
+			set
+			{
+				_useAspectRatio = value;
+				PropChanged("UseAspectRatio");
+			}
+		}
+
+		public int ResizeWidth
+		{
+			get { return _resizeWidth; }
+			set
+			{
+				_resizeWidth = value;
+				PropChanged("ResizeWidth");
+			}
+		}
+
+		public int ResizeHeight
+		{
+			get { return _resizeHeight; }
+			set
+			{
+				_resizeHeight = value;
+				PropChanged("ResizeHeight");
+			}
+		}
 
 		#endregion
 
 		#region Watermark Settings
 
-		WatermarkType _defaultWatermarkType = WatermarkType.Text;
-		public WatermarkType DefaultWatermarkType { get { return _defaultWatermarkType; } set { _defaultWatermarkType = value; PropChanged("DefaultWatermarkType"); } }
+		private WatermarkType _defaultWatermarkType = WatermarkType.Text;
+		private Alignment _watermarkAlignment = Alignment.Bottom_Right;
+		private Font _watermarkFont = new Font("Calibri", 12f);
+		private bool _watermarkGreyscale = true;
+		private string _watermarkImagePath = "<No File Set>";
+		private double _watermarkOpacity = 0.7;
 
-		string _watermarkText = "Watermark Text";
-		public string WatermarkText { get { return _watermarkText; } set { _watermarkText = value; PropChanged("WatermarkText"); } }
+		private string _watermarkText = "Watermark Text";
 
-		Font _watermarkFont = new Font("Calibri", 12f);
-		public Font WatermarkFont { get { return _watermarkFont; } set { _watermarkFont = value; PropChanged("WatermarkFont"); PropChanged("WatermarkFontString"); } }
-
-		public string WatermarkFontString 
+		public WatermarkType DefaultWatermarkType
 		{
-			get 
+			get { return _defaultWatermarkType; }
+			set
 			{
-				return string.Format("{0}, {1}pt", WatermarkFont.FontFamily.Name, WatermarkFont.SizeInPoints);
+				_defaultWatermarkType = value;
+				PropChanged("DefaultWatermarkType");
 			}
 		}
 
-		double _watermarkOpacity = 0.7;
-		public double WatermarkOpacity { get { return _watermarkOpacity; } set { _watermarkOpacity = value; PropChanged("WatermarkOpacity"); } }
+		public string WatermarkText
+		{
+			get { return _watermarkText; }
+			set
+			{
+				_watermarkText = value;
+				PropChanged("WatermarkText");
+			}
+		}
 
-		Alignment _watermarkAlignment = Alignment.Bottom_Right;
-		public Alignment WatermarkAlignment { get { return _watermarkAlignment; } set { _watermarkAlignment = value; PropChanged("WatermarkAlignment"); } }
+		public Font WatermarkFont
+		{
+			get { return _watermarkFont; }
+			set
+			{
+				_watermarkFont = value;
+				PropChanged("WatermarkFont");
+				PropChanged("WatermarkFontString");
+			}
+		}
 
-		string _watermarkImagePath = "<No File Set>";
-		public string WatermarkImagePath { get { return _watermarkImagePath; } set { _watermarkImagePath = value; PropChanged("WatermarkImagePath"); } }
+		public string WatermarkFontString
+		{
+			get { return string.Format("{0}, {1}pt", WatermarkFont.FontFamily.Name, WatermarkFont.SizeInPoints); }
+		}
 
-		bool _watermarkGreyscale = true;
-		public bool WatermarkGreyscale { get { return _watermarkGreyscale; } set { _watermarkGreyscale = value; PropChanged("WatermarkGreyscale"); } }
+		public double WatermarkOpacity
+		{
+			get { return _watermarkOpacity; }
+			set
+			{
+				_watermarkOpacity = value;
+				PropChanged("WatermarkOpacity");
+			}
+		}
+
+		public Alignment WatermarkAlignment
+		{
+			get { return _watermarkAlignment; }
+			set
+			{
+				_watermarkAlignment = value;
+				PropChanged("WatermarkAlignment");
+			}
+		}
+
+		public string WatermarkImagePath
+		{
+			get { return _watermarkImagePath; }
+			set
+			{
+				_watermarkImagePath = value;
+				PropChanged("WatermarkImagePath");
+			}
+		}
+
+		public bool WatermarkGreyscale
+		{
+			get { return _watermarkGreyscale; }
+			set
+			{
+				_watermarkGreyscale = value;
+				PropChanged("WatermarkGreyscale");
+			}
+		}
 
 		#endregion
 
 		#region OutputSettings
 
-		string _outputPath = Resources.ViewModel__outputPath__No_Path_Set;
-		public string OutputPath { get { return _outputPath; } set { _outputPath = value; PropChanged("OutputPath"); } }
+		private NameType _nameOption = NameType.Original;
+		private string _outputPath = Resources.ViewModel__outputPath__No_Path_Set;
 
-		bool _outputSet;
-		public bool OutputSet { get { return _outputSet; } set { _outputSet = value; PropChanged("OutputSet"); PropChanged("Ready"); } }
+		private bool _outputSet;
+		private string _outputTemplate = "{o} - Processed";
 
-		NameType _nameOption = NameType.Original;
-		public NameType NameOption { get { return _nameOption; } set { _nameOption = value; PropChanged("NameOption"); } }
+		public string OutputPath
+		{
+			get { return _outputPath; }
+			set
+			{
+				_outputPath = value;
+				PropChanged("OutputPath");
+			}
+		}
 
-		string _outputTemplate = "{o} - Processed";
-		public string OutputTemplate { get { return _outputTemplate; } set { _outputTemplate = value; PropChanged("OutputTemplate"); PropChanged("OutputTemplateExample"); } }
+		public bool OutputSet
+		{
+			get { return _outputSet; }
+			set
+			{
+				_outputSet = value;
+				PropChanged("OutputSet");
+				PropChanged("Ready");
+			}
+		}
+
+		public NameType NameOption
+		{
+			get { return _nameOption; }
+			set
+			{
+				_nameOption = value;
+				PropChanged("NameOption");
+			}
+		}
+
+		public string OutputTemplate
+		{
+			get { return _outputTemplate; }
+			set
+			{
+				_outputTemplate = value;
+				PropChanged("OutputTemplate");
+				PropChanged("OutputTemplateExample");
+			}
+		}
+
 		public string OutputTemplateExample
 		{
-			get 
+			get
 			{
 				var str = OutputTemplate.Trim() + ".jpg";
 				str = str.Replace("{o}", "DSCF3013");
@@ -112,29 +278,62 @@ namespace BatchImageProcessor.ViewModel
 
 		#region Checkboxes
 
-		bool _enableRotation;
-		public bool EnableRotation { get { return _enableRotation; } set { _enableRotation = value; PropChanged("EnableRotation"); } }
+		private bool _enableCrop;
+		private bool _enableResize;
+		private bool _enableRotation;
+		private bool _enableWatermark;
 
-		bool _enableCrop;
-		public bool EnableCrop { get { return _enableCrop; } set { _enableCrop = value; PropChanged("EnableCrop"); } }
+		public bool EnableRotation
+		{
+			get { return _enableRotation; }
+			set
+			{
+				_enableRotation = value;
+				PropChanged("EnableRotation");
+			}
+		}
 
-		bool _enableResize;
-		public bool EnableResize { get { return _enableResize; } set { _enableResize = value; PropChanged("EnableResize"); } }
+		public bool EnableCrop
+		{
+			get { return _enableCrop; }
+			set
+			{
+				_enableCrop = value;
+				PropChanged("EnableCrop");
+			}
+		}
 
-		bool _enableWatermark;
-		public bool EnableWatermark { get { return _enableWatermark; } set { _enableWatermark = value; PropChanged("EnableWatermark"); } }
+		public bool EnableResize
+		{
+			get { return _enableResize; }
+			set
+			{
+				_enableResize = value;
+				PropChanged("EnableResize");
+			}
+		}
+
+		public bool EnableWatermark
+		{
+			get { return _enableWatermark; }
+			set
+			{
+				_enableWatermark = value;
+				PropChanged("EnableWatermark");
+			}
+		}
 
 		#endregion
 
 		#region Progress
 
-		int _totalImages = 1;
+		private int _doneImages = 1;
+		private bool _showProgressBar;
+		private int _totalImages = 1;
+
 		public int TotalImages
 		{
-			get
-			{
-				return _totalImages;
-			}
+			get { return _totalImages; }
 			private set
 			{
 				_totalImages = value;
@@ -142,13 +341,9 @@ namespace BatchImageProcessor.ViewModel
 			}
 		}
 
-		int _doneImages = 1;
 		public int DoneImages
 		{
-			get
-			{
-				return _doneImages;
-			}
+			get { return _doneImages; }
 			private set
 			{
 				_doneImages = value;
@@ -159,18 +354,17 @@ namespace BatchImageProcessor.ViewModel
 			}
 		}
 
-		bool _showProgressBar;
-		public bool ShowProgressBar { get { return _showProgressBar; } set { _showProgressBar = value; PropChanged("ShowProgressBar"); } }
-
-		#endregion
-
-		public bool Ready
+		public bool ShowProgressBar
 		{
-			get 
+			get { return _showProgressBar; }
+			set
 			{
-				return OutputSet && (DoneImages == TotalImages);
+				_showProgressBar = value;
+				PropChanged("ShowProgressBar");
 			}
 		}
+
+		#endregion
 
 		#endregion
 
@@ -182,13 +376,13 @@ namespace BatchImageProcessor.ViewModel
 
 		#region Property Changed Stuff
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		public void PropChanged(string val)
 		{
 			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(val));
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged; 
 
 		#endregion
 
@@ -235,7 +429,7 @@ namespace BatchImageProcessor.ViewModel
 			}
 
 			return folder.Files.Cast<Folder>().Any(p => RemoveFile(file, p));
-		} 
+		}
 
 		#endregion
 
@@ -254,7 +448,7 @@ namespace BatchImageProcessor.ViewModel
 			Engine.Process(this);
 		}
 
-		void Engine_UpdateDone()
+		private void Engine_UpdateDone()
 		{
 			TotalImages = Engine.TotalImages;
 			DoneImages = Engine.DoneImages;

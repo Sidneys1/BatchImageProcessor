@@ -2,7 +2,7 @@
 
 namespace BatchImageProcessor.ViewModel
 {
-	public class FileCollectionView: CollectionViewSource
+	public class FileCollectionView : CollectionViewSource
 	{
 		public FileCollectionView()
 		{

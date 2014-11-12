@@ -1,26 +1,27 @@
 ﻿<UserControl x:Class="BatchImageProcessor.Controls.SplitButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
              d:DesignHeight="25" d:DesignWidth="100">
 	<Border BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" BorderThickness="1" Padding="1">
 		<Grid>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 
 			<Border MouseUp="Canvas_MouseUp" Padding="1" Margin="0,0,3,0">
 				<ContentPresenter />
 			</Border>
 
-			<Border Grid.Column="1" Cursor="Hand" BorderThickness="1,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
+			<Border Grid.Column="1" Cursor="Hand" BorderThickness="1,0,0,0"
+			        BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
 				<Button Content="6" FontFamily="Marlett" Cursor="Hand" Click="Button_Click_1" Background="{x:Null}">
 					<Button.Template>
 						<ControlTemplate TargetType="{x:Type Button}">
-							<ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+							<ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" />
 						</ControlTemplate>
 					</Button.Template>
 				</Button>

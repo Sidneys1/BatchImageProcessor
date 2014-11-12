@@ -7,17 +7,17 @@ using System.Windows.Input;
 namespace BatchImageProcessor.Controls
 {
 	/// <summary>
-	/// Interaction logic for SplitButton.xaml
+	///     Interaction logic for SplitButton.xaml
 	/// </summary>
 	public partial class SplitButton
 	{
-		public event Action<Object, EventArgs> Click = delegate { };
-
 		public SplitButton()
 		{
 			InitializeComponent();
 			DataContext = this;
 		}
+
+		public event Action<Object, EventArgs> Click = delegate { };
 
 		private void Button_Click_1(object sender, RoutedEventArgs e)
 		{
@@ -25,7 +25,6 @@ namespace BatchImageProcessor.Controls
 			ContextMenu.PlacementTarget = (sender as Button);
 			ContextMenu.Placement = PlacementMode.Bottom;
 			ContextMenu.IsOpen = true;
-
 		}
 
 		private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)

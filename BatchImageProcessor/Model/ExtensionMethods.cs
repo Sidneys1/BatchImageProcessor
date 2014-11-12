@@ -9,7 +9,7 @@ namespace BatchImageProcessor.Model
 	{
 		public static BitmapSource GetSource(this Bitmap bit)
 		{
-var bitmapImage = new BitmapImage();
+			var bitmapImage = new BitmapImage();
 			using (var memory = new MemoryStream())
 			{
 				bit.Save(memory, ImageFormat.Png);
@@ -19,7 +19,6 @@ var bitmapImage = new BitmapImage();
 				bitmapImage.StreamSource = memory;
 				bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
 				bitmapImage.EndInit();
-
 			}
 			return bitmapImage;
 		}

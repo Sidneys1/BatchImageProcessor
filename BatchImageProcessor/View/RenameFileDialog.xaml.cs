@@ -4,7 +4,7 @@ using System.Windows;
 namespace BatchImageProcessor.View
 {
 	/// <summary>
-	/// Interaction logic for RenameFileDialog.xaml
+	///     Interaction logic for RenameFileDialog.xaml
 	/// </summary>
 	public partial class RenameFileDialog : INotifyPropertyChanged
 	{

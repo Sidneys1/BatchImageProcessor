@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using BatchImageProcessor.ViewModel;
-using System.Diagnostics;
-using System.Drawing;
 
 namespace BatchImageProcessor.Model
 {
-	public static class Engine//(ViewModel.ViewModel model)
+	public static class Engine //(ViewModel.ViewModel model)
 	{
-		static ViewModel.ViewModel _model; //= model;
+		private static ViewModel.ViewModel _model; //= model;
 
 		public static int TotalImages = 0;
 		public static int DoneImages = 0;
@@ -66,7 +66,7 @@ namespace BatchImageProcessor.Model
 
 				// TODO: Watermark
 				//if (_model.EnableWatermark && !w.OverrideWatermark)
-					//WatermarkImage(w, b);
+				//WatermarkImage(w, b);
 
 				// Filename
 				string name = null;
@@ -118,7 +118,7 @@ namespace BatchImageProcessor.Model
 		//{
 		//	if (_model.DefaultWatermarkType == WatermarkType.Text)
 		//	{
- 
+
 		//	}
 		//	else
 		//	{
@@ -142,7 +142,7 @@ namespace BatchImageProcessor.Model
 				case Alignment.Middle_Left:
 				case Alignment.Middle_Center:
 				case Alignment.Middle_Right:
-					y = ((b.Height / 2) - (cropSize.Height / 2));
+					y = ((b.Height/2) - (cropSize.Height/2));
 					break;
 
 				case Alignment.Bottom_Left:
@@ -157,7 +157,7 @@ namespace BatchImageProcessor.Model
 				case Alignment.Top_Center:
 				case Alignment.Middle_Center:
 				case Alignment.Bottom_Center:
-					x = ((b.Width / 2) - (cropSize.Width / 2));
+					x = ((b.Width/2) - (cropSize.Width/2));
 					break;
 
 				case Alignment.Top_Right:
@@ -204,14 +204,14 @@ namespace BatchImageProcessor.Model
 				case ResizeMode.Smaller:
 					if (b.Width > targetSize.Width || b.Height > targetSize.Height)
 					{
-						var ratioX = targetSize.Width / (double)b.Width;
-						var ratioY = targetSize.Height / (double)b.Height;
+						var ratioX = targetSize.Width/(double) b.Width;
+						var ratioY = targetSize.Height/(double) b.Height;
 						// use whichever multiplier is smaller
 						var ratio = ratioX < ratioY ? ratioX : ratioY;
 
 						// now we can get the new height and width
-						var newHeight = Convert.ToInt32(b.Height * ratio);
-						var newWidth = Convert.ToInt32(b.Width * ratio);
+						var newHeight = Convert.ToInt32(b.Height*ratio);
+						var newWidth = Convert.ToInt32(b.Width*ratio);
 
 						newSize = new Size(newWidth, newHeight);
 					}
@@ -219,14 +219,14 @@ namespace BatchImageProcessor.Model
 				case ResizeMode.Larger:
 					if (b.Width < targetSize.Width || b.Height < targetSize.Height)
 					{
-						var ratioX = targetSize.Width / (double)b.Width;
-						var ratioY = targetSize.Height / (double)b.Height;
+						var ratioX = targetSize.Width/(double) b.Width;
+						var ratioY = targetSize.Height/(double) b.Height;
 						// use whichever multiplier is larger
 						var ratio = ratioX > ratioY ? ratioX : ratioY;
 
 						// now we can get the new height and width
-						var newHeight = Convert.ToInt32(b.Height * ratio);
-						var newWidth = Convert.ToInt32(b.Width * ratio);
+						var newHeight = Convert.ToInt32(b.Height*ratio);
+						var newWidth = Convert.ToInt32(b.Width*ratio);
 
 						newSize = new Size(newWidth, newHeight);
 					}

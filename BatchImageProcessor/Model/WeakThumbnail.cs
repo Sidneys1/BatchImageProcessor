@@ -1,26 +1,31 @@
-﻿using System.Runtime.Caching;
-using Microsoft.WindowsAPICodePack.Shell;
-using System;
-using System.ComponentModel;
+﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Runtime.Caching;
 using System.Threading;
 using System.Windows.Media;
+using Microsoft.WindowsAPICodePack.Shell;
 
 namespace BatchImageProcessor.Model
 {
 	public class WeakThumbnail
 	{
-		static readonly ObjectCache Cache = MemoryCache.Default;
+		private static readonly ObjectCache Cache = MemoryCache.Default;
+
+		private bool _set;
+		//WeakReference<ImageSource> weak = new WeakReference<ImageSource>(null);
+
+		public WeakThumbnail(string path)
+		{
+			Path = path;
+			//weak = new WeakReference<ImageSource>(null, true);
+			//gmaSource = new GenMeASource(GenMeSource);
+		}
 
 		public string Path { get; set; }
 
-		bool _set;
-		//WeakReference<ImageSource> weak = new WeakReference<ImageSource>(null);
-
 		public ImageSource Source
 		{
-
 			set
 			{
 				_set = true;
@@ -49,14 +54,7 @@ namespace BatchImageProcessor.Model
 			}
 		}
 
-		public WeakThumbnail(string path)
-		{
-			Path = path;
-			//weak = new WeakReference<ImageSource>(null, true);
-			//gmaSource = new GenMeASource(GenMeSource);
-		}
-
-		static Bitmap GetThumb(string path)
+		private static Bitmap GetThumb(string path)
 		{
 			if (System.IO.File.Exists(path))
 			{
@@ -73,7 +71,7 @@ namespace BatchImageProcessor.Model
 
 			var shellFile = ShellObject.FromParsingName(path);
 			return shellFile.Thumbnail.Bitmap;
-		} 
+		}
 
 		public void GenSource(object o = null)
 		{

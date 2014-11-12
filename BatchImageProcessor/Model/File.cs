@@ -7,7 +7,7 @@
 		//WeakThumbnail _thumb = null;
 		public override sealed WeakThumbnail Thumbnail { get; protected set; }
 		//{
-			//get { return _thumb != null ? _thumb.Source : (_thumb = new WeakThumbnail(Path)).Source; }
+		//get { return _thumb != null ? _thumb.Source : (_thumb = new WeakThumbnail(Path)).Source; }
 		//}
 
 		#endregion
@@ -16,7 +16,6 @@
 			: base(path)
 		{
 			Thumbnail = new WeakThumbnail(path);
-			
 		}
 	}
 }

@@ -1,86 +1,99 @@
-﻿using BatchImageProcessor.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Interop;
+using BatchImageProcessor.Model;
+using BatchImageProcessor.View;
+using BatchImageProcessor.ViewModel;
+using ContextMenu = System.Windows.Controls.ContextMenu;
+using Control = System.Windows.Forms.Control;
+using File = BatchImageProcessor.Model.File;
+using IWin32Window = System.Windows.Forms.IWin32Window;
+using MenuItem = System.Windows.Controls.MenuItem;
+using MessageBox = System.Windows.MessageBox;
 
 namespace BatchImageProcessor
 {
 	/// <summary>
-	/// Interaction logic for MainWindow.xaml
+	///     Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
+	public partial class MainWindow : IWin32Window
 	{
 		#region Properties/Variables
 
 		#region Dialogs
 
-		FolderBrowserDialog FolderBrowser = new FolderBrowserDialog()
+		private readonly OpenFileDialog _fileBrowser = new OpenFileDialog
 		{
-			Description = "Select a Folder to Import",
-			RootFolder = System.Environment.SpecialFolder.MyComputer,
+			Title = Properties.Resources.MainWindow__fileBrowser_Title,
+			CheckFileExists = true,
+			CheckPathExists = true,
+			Filter = Properties.Resources.MainWindow__fileBrowser_Filter,
+			Multiselect = true,
+			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
+		};
+
+		private readonly FolderBrowserDialog _folderBrowser = new FolderBrowserDialog
+		{
+			Description = Properties.Resources.MainWindow_FolderBrowser_Description,
+			RootFolder = Environment.SpecialFolder.MyComputer,
 			ShowNewFolderButton = false
 		};
 
-		FolderBrowserDialog OutputBrowser = new FolderBrowserDialog()
+		private readonly FolderBrowserDialog _outputBrowser = new FolderBrowserDialog
 		{
-			Description = "Select a folder to Output to",
+			Description = Properties.Resources.MainWindow_OutputBrowser_Description,
 			RootFolder = Environment.SpecialFolder.MyComputer,
 			ShowNewFolderButton = true
 		};
 
-		OpenFileDialog FileBrowser = new OpenFileDialog()
+		private readonly OpenFileDialog _watermarkFileBrowser = new OpenFileDialog
 		{
-			Title = "Import Images...",
+			Title = Properties.Resources.MainWindow__watermarkFileBrowser_Title,
 			CheckFileExists = true,
 			CheckPathExists = true,
-			Filter = "Image Files|*.jpg;*.jpeg",
-			Multiselect = true,
-			InitialDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyPictures)
-		};
-
-		OpenFileDialog WatermarkFileBrowser = new OpenFileDialog()
-		{
-			Title = "Select Watermark Image...",
-			CheckFileExists = true,
-			CheckPathExists = true,
-			Filter = "Image Files|*.jpg;*.jpeg;*.png",
+			Filter = Properties.Resources.MainWindow__watermarkFileBrowser_Filter,
 			Multiselect = false,
-			InitialDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyPictures)
+			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
 		};
 
-		FontDialog WatermarkFontDlg = new FontDialog()
+		private readonly FontDialog _watermarkFontDlg = new FontDialog
 		{
 			ShowColor = false
 		};
 
 		#endregion
 
-		System.IntPtr _hnadle;
-		public System.IntPtr Handle
-		{
-			get { return _hnadle; }
-		}
+		private readonly IntPtr _handle;
 
-		public ViewModel.ViewModel vModel { get; private set; }
+		public ViewModel.ViewModel VModel { get; private set; }
+
+		public IntPtr Handle
+		{
+			get { return _handle; }
+		}
 
 		#endregion
 
 		public MainWindow()
 		{
-			vModel = new ViewModel.ViewModel();
-			vModel.Folders.Add(new Folder(removable: false) { Name = "Output Folder" });
+			VModel = new ViewModel.ViewModel();
+			VModel.Folders.Add(new Folder(removable: false) {Name = "Output Folder"});
 
 			InitializeComponent();
 
 			//this.DataContext = vModel;
 
-			WatermarkFontDlg.Font = vModel.WatermarkFont;
+			_watermarkFontDlg.Font = VModel.WatermarkFont;
 
-			_hnadle = new WindowInteropHelper(this).Handle;
+			_handle = new WindowInteropHelper(this).Handle;
 
 #if !DEBUG
 			gcBtn.Visibility = System.Windows.Visibility.Collapsed;
@@ -89,9 +102,9 @@ namespace BatchImageProcessor
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			string[] args = Environment.GetCommandLineArgs();
+			var args = Environment.GetCommandLineArgs();
 
-			if (args.Length>1 && args.Contains("-noshaders"))
+			if (args.Length > 1 && args.Contains("-noshaders"))
 			{
 				Resources["tdse"] = null;
 			}
@@ -113,7 +126,7 @@ namespace BatchImageProcessor
 
 		private void checkAllBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (ViewModel.FileWrapper f in listView.SelectedItems)
+			foreach (FileWrapper f in listView.SelectedItems)
 			{
 				f.Selected = true;
 			}
@@ -121,7 +134,7 @@ namespace BatchImageProcessor
 
 		private void uncheckBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (ViewModel.FileWrapper f in listView.SelectedItems)
+			foreach (FileWrapper f in listView.SelectedItems)
 			{
 				f.Selected = false;
 			}
@@ -129,40 +142,41 @@ namespace BatchImageProcessor
 
 		#endregion
 
-		private void Grid_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		private void Grid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			List<FileInfo> files = new List<FileInfo>();
-			FileWrapper wrapper = null;
-			if (sender is System.Windows.Controls.Grid)
+			var files = new List<FileInfo>();
+			FileWrapper wrapper;
+			if (sender is Grid)
 			{
-				foreach (Model.File file in listView.SelectedItems)
-				{
-					files.Add(new FileInfo(file.Path));
-				}
+				files.AddRange(from File file in listView.SelectedItems select new FileInfo(file.Path));
 				wrapper = listView.SelectedItem as FileWrapper;
 			}
 			else
 			{
-				Model.File f = (e.Source as FrameworkElement).DataContext as Model.File;
-				files.Add(new FileInfo(f.Path));
+				var frameworkElement = e.Source as FrameworkElement;
+				if (frameworkElement != null)
+				{
+					var f = frameworkElement.DataContext as File;
+					if (f != null) files.Add(new FileInfo(f.Path));
+				}
 				wrapper = treeView.SelectedItem as FileWrapper;
 			}
 
-			if ((System.Windows.Forms.Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+			if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
 			{
-				var scm = new View.ShellContextMenu();
+				var scm = new ShellContextMenu();
 
-				scm.ShowContextMenu(new WindowInteropHelper(this).Handle, files.ToArray(), System.Windows.Forms.Control.MousePosition);
+				scm.ShowContextMenu(new WindowInteropHelper(this).Handle, files.ToArray(), Control.MousePosition);
 			}
 			else
 			{
-				System.Windows.Controls.ContextMenu ctxMnu = this.Resources["imageCtxMenu"] as System.Windows.Controls.ContextMenu;
+				var ctxMnu = Resources["imageCtxMenu"] as ContextMenu;
 				if (ctxMnu == null) return;
-				ctxMnu.Placement = System.Windows.Controls.Primitives.PlacementMode.Mouse;
+				ctxMnu.Placement = PlacementMode.Mouse;
 				ctxMnu.DataContext = wrapper;
 				ctxMnu.IsOpen = true;
 			}
-		} 
+		}
 
 		#endregion
 
@@ -172,7 +186,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in listView.SelectedItems)
 			{
-				item.RotationOverride = Model.Rotation.CounterClockwise;
+				item.RotationOverride = Rotation.CounterClockwise;
 			}
 		}
 
@@ -180,7 +194,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in listView.SelectedItems)
 			{
-				item.RotationOverride = Model.Rotation.None;
+				item.RotationOverride = Rotation.None;
 			}
 		}
 
@@ -188,7 +202,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in listView.SelectedItems)
 			{
-				item.RotationOverride = Model.Rotation.Default;
+				item.RotationOverride = Rotation.Default;
 			}
 		}
 
@@ -196,7 +210,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in listView.SelectedItems)
 			{
-				item.RotationOverride = Model.Rotation.UpsideDown;
+				item.RotationOverride = Rotation.UpsideDown;
 			}
 		}
 
@@ -204,7 +218,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in listView.SelectedItems)
 			{
-				item.RotationOverride = Model.Rotation.Clockwise;
+				item.RotationOverride = Rotation.Clockwise;
 			}
 		}
 
@@ -212,7 +226,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in listView.SelectedItems)
 			{
-				item.RotationOverride = Model.Rotation.Portrait;
+				item.RotationOverride = Rotation.Portrait;
 			}
 		}
 
@@ -220,7 +234,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in listView.SelectedItems)
 			{
-				item.RotationOverride = Model.Rotation.Landscape;
+				item.RotationOverride = Rotation.Landscape;
 			}
 		}
 
@@ -230,154 +244,155 @@ namespace BatchImageProcessor
 
 		private void importFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
-			if (FolderBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			if (_folderBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
-				DirectoryInfo inf = new DirectoryInfo(FolderBrowser.SelectedPath);
-				bool recurs = false;
+				var inf = new DirectoryInfo(_folderBrowser.SelectedPath);
+				var recurs = false;
 				if (inf.GetDirectories().Length > 0)
 				{
-					MessageBoxResult res = System.Windows.MessageBox.Show(this, "This folder has folders within it. Would you like to add those as well?", "Import Folder", MessageBoxButton.YesNoCancel);
+					var res = MessageBox.Show(this,
+						"This folder has folders within it. Would you like to add those as well?",
+						"Import Folder", MessageBoxButton.YesNoCancel);
 					if (res == MessageBoxResult.Cancel)
 						return;
-					else if (res == MessageBoxResult.Yes)
+					if (res == MessageBoxResult.Yes)
 						recurs = true;
 				}
 
-				ViewModel.Folder f = new Folder(FolderBrowser.SelectedPath, recurs);
+				var f = new Folder(_folderBrowser.SelectedPath, recurs);
 
-				Folder parent = null;
+				Folder parent;
 
-				if (e.Source is System.Windows.Controls.MenuItem)
+				if (e.Source is MenuItem)
 				{
-					parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
+					parent = (e.Source as MenuItem).DataContext as Folder;
 				}
 				else
 				{
-
 					if (treeView.SelectedItem is Folder)
 						parent = (treeView.SelectedItem as Folder);
 					else
-						parent = vModel.Folders[0];
+						parent = VModel.Folders[0];
 				}
 
-				if (parent.ContainsFile(f.Name))
+				if (parent != null && parent.ContainsFile(f.Name))
 				{
-					string s = f.Name + " ({0})";
-					int i = 0;
-					while (parent.ContainsFile(string.Format(s, ++i))) ;
+					var s = f.Name + " ({0})";
+					var i = 0;
+					while (parent.ContainsFile(string.Format(s, ++i)))
+					{
+					}
 
 					f.Name = string.Format(s, i);
 				}
 
-				parent.Files.Add(f);
+				if (parent != null) parent.Files.Add(f);
 			}
 		}
 
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			Folder parent = null;
+			Folder parent;
 
-			if (e.Source is System.Windows.Controls.MenuItem)
+			if (e.Source is MenuItem)
 			{
-				parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
+				parent = (e.Source as MenuItem).DataContext as Folder;
 			}
 			else
 			{
-
 				if (treeView.SelectedItem is Folder)
 					parent = (treeView.SelectedItem as Folder);
 				else
-					parent = vModel.Folders[0];
+					parent = VModel.Folders[0];
 			}
 
-			if (parent.Removable)
-				vModel.RemoveFolder(parent);
+			if (parent != null && parent.Removable)
+				VModel.RemoveFolder(parent);
 		}
 
 		private void addFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
-			View.RenameFileDialog fdlg = new View.RenameFileDialog();
-			Folder f = new Folder();
+			var fdlg = new RenameFileDialog();
+			var f = new Folder();
 			fdlg.DataContext = f;
 			fdlg.Owner = this;
 			fdlg.Title = "Name New Folder";
-			if (fdlg.ShowDialog().GetValueOrDefault(false))
+			if (!fdlg.ShowDialog().GetValueOrDefault(false)) return;
+			Folder parent;
+
+			if (e.Source is MenuItem)
 			{
-				Folder parent = null;
-
-				if (e.Source is System.Windows.Controls.MenuItem)
-				{
-					parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
-				}
-				else
-				{
-
-					if (treeView.SelectedItem is Folder)
-						parent = (treeView.SelectedItem as Folder);
-					else
-						parent = vModel.Folders[0];
-				}
-
-				f.Name = f.Name.Trim();
-
-				if (parent.ContainsFile(f.Name))
-				{
-					string s = f.Name + " ({0})";
-					int i = 0;
-					while (parent.ContainsFile(string.Format(s, ++i))) ;
-
-					f.Name = string.Format(s, i);
-				}
-
-				parent.Files.Add(f);
+				parent = (e.Source as MenuItem).DataContext as Folder;
 			}
+			else
+			{
+				if (treeView.SelectedItem is Folder)
+					parent = (treeView.SelectedItem as Folder);
+				else
+					parent = VModel.Folders[0];
+			}
+
+			f.Name = f.Name.Trim();
+
+			if (parent != null && parent.ContainsFile(f.Name))
+			{
+				var s = f.Name + " ({0})";
+				var i = 0;
+				while (parent.ContainsFile(string.Format(s, ++i)))
+				{
+				}
+
+				f.Name = string.Format(s, i);
+			}
+
+			if (parent != null) parent.Files.Add(f);
 		}
 
 		private void importImageBtn_Click(object sender, RoutedEventArgs e)
 		{
-			if (FileBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			if (_fileBrowser.ShowDialog(this) != System.Windows.Forms.DialogResult.OK) return;
+			Folder parent;
+
+			if (e.Source is MenuItem)
 			{
-				Folder parent = null;
-
-				if (e.Source is System.Windows.Controls.MenuItem)
-				{
-					parent = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
-				}
+				parent = (e.Source as MenuItem).DataContext as Folder;
+			}
+			else
+			{
+				if (treeView.SelectedItem is Folder)
+					parent = (treeView.SelectedItem as Folder);
 				else
-				{
+					parent = VModel.Folders[0];
+			}
 
-					if (treeView.SelectedItem is Folder)
-						parent = (treeView.SelectedItem as Folder);
-					else
-						parent = vModel.Folders[0];
-				}
-
-				foreach (string str in FileBrowser.FileNames)
-				{
-					parent.Files.Add(new FileWrapper(str));
-				}
+			foreach (var str in _fileBrowser.FileNames.Where(str => parent != null))
+			{
+// ReSharper disable once PossibleNullReferenceException
+				parent.Files.Add(new FileWrapper(str));
 			}
 		}
 
 		private void RenameFolderMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			Folder target = (e.Source as System.Windows.Controls.MenuItem).DataContext as Folder;
+			var menuItem = e.Source as MenuItem;
+			if (menuItem == null) return;
+			var target = menuItem.DataContext as Folder;
 
-			string oldName = target.Name;
-			View.RenameFileDialog fdlg = new View.RenameFileDialog();
-			fdlg.DataContext = target;
-			fdlg.Owner = this;
-			fdlg.Title = "Rename Folder";
+			if (target == null) return;
+			var oldName = target.Name;
+			var fdlg = new RenameFileDialog {DataContext = target, Owner = this, Title = "Rename Folder"};
 
 			if (fdlg.ShowDialog().GetValueOrDefault(false))
 			{
-				Folder parent = vModel.Folders[0];
+				var parent = VModel.Folders[0];
 
 				if (parent.ContainsFile(target.Name))
 				{
-					string s = target.Name + " ({0})";
-					int i = 0;
-					while (parent.ContainsFile(string.Format(s, ++i))) ;
+					var s = target.Name + " ({0})";
+					var i = 0;
+					while (parent.ContainsFile(string.Format(s, ++i)))
+					{
+					}
 
 					target.Name = string.Format(s, i);
 				}
@@ -386,7 +401,7 @@ namespace BatchImageProcessor
 			}
 			else
 				target.Name = oldName;
-		} 
+		}
 
 		#endregion
 
@@ -394,123 +409,119 @@ namespace BatchImageProcessor
 
 		private void gcBtn_Click(object sender, RoutedEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine("Forcing GC");
-			System.GC.Collect();
+			Debug.WriteLine("Forcing GC");
+			GC.Collect();
 		}
 
 		private void aboutBtn_Click(object sender, RoutedEventArgs e)
 		{
-			AboutBox b = new AboutBox();
-			b.Owner = this;
+			var b = new AboutBox {Owner = this};
 			b.ShowDialog();
-		} 
+		}
 
 		#endregion
 
 		#region Settings Handlers
 
-		private void ListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (RotateSettings != null)
-			{
-				RotateSettings.Visibility = ResizeSettings.Visibility = CropSettings.Visibility = WatermarkSettings.Visibility = OutputSettings.Visibility = Visibility.Collapsed;
-				if (SettingsPresenter != null)
-				{
-					if (OptionsBox.SelectedItem == RotateBox)
-						RotateSettings.Visibility = Visibility.Visible;
-					else if (OptionsBox.SelectedItem == ResizeBox)
-						ResizeSettings.Visibility = Visibility.Visible;
-					else if (OptionsBox.SelectedItem == CropBox)
-						CropSettings.Visibility = Visibility.Visible;
-					else if (OptionsBox.SelectedItem == WatermarkBox)
-						WatermarkSettings.Visibility = Visibility.Visible;
-					else if (OptionsBox.SelectedItem == OutputBox)
-						OutputSettings.Visibility = Visibility.Visible;
-				}
-			}
+			if (RotateSettings == null) return;
+			RotateSettings.Visibility =
+				ResizeSettings.Visibility =
+					CropSettings.Visibility = WatermarkSettings.Visibility = OutputSettings.Visibility = Visibility.Collapsed;
+			if (SettingsPresenter == null) return;
+			if (Equals(OptionsBox.SelectedItem, RotateBox))
+				RotateSettings.Visibility = Visibility.Visible;
+			else if (Equals(OptionsBox.SelectedItem, ResizeBox))
+				ResizeSettings.Visibility = Visibility.Visible;
+			else if (Equals(OptionsBox.SelectedItem, CropBox))
+				CropSettings.Visibility = Visibility.Visible;
+			else if (Equals(OptionsBox.SelectedItem, WatermarkBox))
+				WatermarkSettings.Visibility = Visibility.Visible;
+			else if (Equals(OptionsBox.SelectedItem, OutputBox))
+				OutputSettings.Visibility = Visibility.Visible;
 		}
 
 		private void CropBtn_Click(object sender, RoutedEventArgs e)
 		{
-			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
+			var model = DataContext as ViewModel.ViewModel;
 
-			if (sender == cropTlBtn)
+			if (model == null) return;
+
+			if (Equals(sender, CropTopLeftBtn))
 				model.DefaultCropAlignment = Alignment.Top_Left;
-			else if (sender == cropTcBtn)
+			else if (Equals(sender, CropTopCenterBtn))
 				model.DefaultCropAlignment = Alignment.Top_Center;
-			else if (sender == cropTrBtn)
+			else if (Equals(sender, CropTopRightBtn))
 				model.DefaultCropAlignment = Alignment.Top_Right;
 
-			else if (sender == cropMlBtn)
+			else if (Equals(sender, CropMiddleLeftBtn))
 				model.DefaultCropAlignment = Alignment.Middle_Left;
-			else if (sender == cropMcButton)
+			else if (Equals(sender, CropMiddleCenterButton))
 				model.DefaultCropAlignment = Alignment.Middle_Center;
-			else if (sender == cropMrBtn)
+			else if (Equals(sender, CropMiddleRightBtn))
 				model.DefaultCropAlignment = Alignment.Middle_Right;
 
-			else if (sender == CropBlBtn)
+			else if (Equals(sender, CropBottomLeftBtn))
 				model.DefaultCropAlignment = Alignment.Bottom_Left;
-			else if (sender == cropBcBtn)
+			else if (Equals(sender, CropBottomCenterBtn))
 				model.DefaultCropAlignment = Alignment.Bottom_Center;
-			else if (sender == cropBrBtn)
+			else if (Equals(sender, CropBottomRightBtn))
 				model.DefaultCropAlignment = Alignment.Bottom_Right;
 		}
 
 		private void watermarkFontBtn_Click(object sender, RoutedEventArgs e)
 		{
-			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
-			WatermarkFontDlg.Font = model.WatermarkFont;
-			if (WatermarkFontDlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-			{
-				model.WatermarkFont = WatermarkFontDlg.Font;
-			}
+			var model = DataContext as ViewModel.ViewModel;
+			if (model == null) return;
+			_watermarkFontDlg.Font = model.WatermarkFont;
+			if (_watermarkFontDlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				model.WatermarkFont = _watermarkFontDlg.Font;
 		}
 
 		private void WatermarkBtn_Click(object sender, RoutedEventArgs e)
 		{
-			ViewModel.ViewModel model = this.DataContext as ViewModel.ViewModel;
-
-			if (sender == watermarkTlBtn)
+			var model = DataContext as ViewModel.ViewModel;
+			if (model == null) return;
+			if (Equals(sender, watermarkTlBtn))
 				model.WatermarkAlignment = Alignment.Top_Left;
-			else if (sender == watermarkTcBtn)
+			else if (Equals(sender, watermarkTcBtn))
 				model.WatermarkAlignment = Alignment.Top_Center;
-			else if (sender == watermarkTrBtn)
+			else if (Equals(sender, watermarkTrBtn))
 				model.WatermarkAlignment = Alignment.Top_Right;
 
-			else if (sender == watermarkMlBtn)
+			else if (Equals(sender, watermarkMlBtn))
 				model.WatermarkAlignment = Alignment.Middle_Left;
-			else if (sender == watermarkMcButton)
+			else if (Equals(sender, watermarkMcButton))
 				model.WatermarkAlignment = Alignment.Middle_Center;
-			else if (sender == watermarkMrBtn)
+			else if (Equals(sender, watermarkMrBtn))
 				model.WatermarkAlignment = Alignment.Middle_Right;
 
-			else if (sender == watermarkBlBtn)
+			else if (Equals(sender, watermarkBlBtn))
 				model.WatermarkAlignment = Alignment.Bottom_Left;
-			else if (sender == watermarkBcBtn)
+			else if (Equals(sender, watermarkBcBtn))
 				model.WatermarkAlignment = Alignment.Bottom_Center;
-			else if (sender == watermarkBrBtn)
+			else if (Equals(sender, watermarkBrBtn))
 				model.WatermarkAlignment = Alignment.Bottom_Right;
 		}
 
 		private void watermarkImageBtn_Click(object sender, RoutedEventArgs e)
 		{
-			if (WatermarkFileBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			if (_watermarkFileBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
-				vModel.WatermarkImagePath = WatermarkFileBrowser.FileName;
+				VModel.WatermarkImagePath = _watermarkFileBrowser.FileName;
 			}
-		} 
+		}
 
 		private void outputBtn_Click(object sender, RoutedEventArgs e)
 		{
-			if (OutputBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			if (_outputBrowser.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
-				vModel.OutputPath = OutputBrowser.SelectedPath;
-				vModel.OutputSet = true;
+				VModel.OutputPath = _outputBrowser.SelectedPath;
+				VModel.OutputSet = true;
 			}
 		}
 
 		#endregion
-
-		
 	}
 }

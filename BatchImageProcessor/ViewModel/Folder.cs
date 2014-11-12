@@ -2,21 +2,31 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel
 {
 	public class Folder : INotifyPropertyChanged, IFolderable
 	{
+		private static Regex _nameCheck;
+
+		private string _name = Resources.New_Folder_Name;
+
+		public Folder(string fromPath = null, bool recursion = true, bool removable = true)
+		{
+			IsValidName = true;
+			Files = new ObservableCollection<IFolderable>();
+			if (fromPath != null)
+				Populate(fromPath, recursion);
+			Removable = removable;
+		}
+
 		public ObservableCollection<IFolderable> Files { get; private set; }
 
 		public bool Removable { get; private set; }
 
-		static Regex _nameCheck;
-
-		string _name = Resources.New_Folder_Name;
 		public string Name
 		{
 			get { return _name; }
@@ -24,7 +34,9 @@ namespace BatchImageProcessor.ViewModel
 			{
 				if (!_name.Equals(value))
 				{
-					var containsABadCharacter = _nameCheck ?? (_nameCheck = new Regex("[" + Regex.Escape(new string(Path.GetInvalidPathChars())) + "]"));
+					var containsABadCharacter = _nameCheck ??
+					                              (_nameCheck =
+						                              new Regex("[" + Regex.Escape(new string(Path.GetInvalidPathChars())) + "]"));
 					if (string.IsNullOrWhiteSpace(value) || containsABadCharacter.IsMatch(value))
 					{
 						IsValidName = false;
@@ -42,14 +54,7 @@ namespace BatchImageProcessor.ViewModel
 
 		public bool IsValidName { get; private set; }
 
-		public Folder(string fromPath = null, bool recursion = true, bool removable = true)
-		{
-			IsValidName = true;
-			Files = new ObservableCollection<IFolderable>();
-			if (fromPath!=null)
-				Populate(fromPath, recursion);
-			Removable = removable;
-		}
+		public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
 		private void Populate(string path, bool recursive)
 		{
@@ -67,7 +72,7 @@ namespace BatchImageProcessor.ViewModel
 				}
 			}
 
-			foreach (var str in new[] { "*.jpg", "*.jpeg" })
+			foreach (var str in new[] {"*.jpg", "*.jpeg"})
 			{
 				var files = info.GetFiles(str);
 
@@ -76,10 +81,7 @@ namespace BatchImageProcessor.ViewModel
 					Files.Add(new FileWrapper(inf.FullName));
 				}
 			}
-			
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
 		internal bool ContainsFile(string p)
 		{
