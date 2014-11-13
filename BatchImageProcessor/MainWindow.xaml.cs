@@ -116,17 +116,17 @@ namespace BatchImageProcessor
 
 		private void selectAllBtn_Click(object sender, RoutedEventArgs e)
 		{
-			listView.SelectAll();
+			ThumbnailView.SelectAll();
 		}
 
 		private void deselectBtn_Click(object sender, RoutedEventArgs e)
 		{
-			listView.SelectedIndex = -1;
+			ThumbnailView.SelectedIndex = -1;
 		}
 
 		private void checkAllBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper f in listView.SelectedItems)
+			foreach (FileWrapper f in ThumbnailView.SelectedItems)
 			{
 				f.Selected = true;
 			}
@@ -134,7 +134,7 @@ namespace BatchImageProcessor
 
 		private void uncheckBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper f in listView.SelectedItems)
+			foreach (FileWrapper f in ThumbnailView.SelectedItems)
 			{
 				f.Selected = false;
 			}
@@ -148,8 +148,8 @@ namespace BatchImageProcessor
 			FileWrapper wrapper;
 			if (sender is Grid)
 			{
-				files.AddRange(from File file in listView.SelectedItems select new FileInfo(file.Path));
-				wrapper = listView.SelectedItem as FileWrapper;
+				files.AddRange(from File file in ThumbnailView.SelectedItems select new FileInfo(file.Path));
+				wrapper = ThumbnailView.SelectedItem as FileWrapper;
 			}
 			else
 			{
@@ -159,7 +159,7 @@ namespace BatchImageProcessor
 					var f = frameworkElement.DataContext as File;
 					if (f != null) files.Add(new FileInfo(f.Path));
 				}
-				wrapper = treeView.SelectedItem as FileWrapper;
+				wrapper = TreeView.SelectedItem as FileWrapper;
 			}
 
 			if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
@@ -170,7 +170,7 @@ namespace BatchImageProcessor
 			}
 			else
 			{
-				var ctxMnu = Resources["imageCtxMenu"] as ContextMenu;
+				var ctxMnu = Resources["ImageCtxMenu"] as ContextMenu;
 				if (ctxMnu == null) return;
 				ctxMnu.Placement = PlacementMode.Mouse;
 				ctxMnu.DataContext = wrapper;
@@ -184,7 +184,7 @@ namespace BatchImageProcessor
 
 		private void ccRotBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper item in listView.SelectedItems)
+			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
 				item.RotationOverride = Rotation.CounterClockwise;
 			}
@@ -192,7 +192,7 @@ namespace BatchImageProcessor
 
 		private void noRotBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper item in listView.SelectedItems)
+			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
 				item.RotationOverride = Rotation.None;
 			}
@@ -200,7 +200,7 @@ namespace BatchImageProcessor
 
 		private void defRotBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper item in listView.SelectedItems)
+			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
 				item.RotationOverride = Rotation.Default;
 			}
@@ -208,7 +208,7 @@ namespace BatchImageProcessor
 
 		private void upRotBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper item in listView.SelectedItems)
+			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
 				item.RotationOverride = Rotation.UpsideDown;
 			}
@@ -216,7 +216,7 @@ namespace BatchImageProcessor
 
 		private void cRotBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper item in listView.SelectedItems)
+			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
 				item.RotationOverride = Rotation.Clockwise;
 			}
@@ -224,7 +224,7 @@ namespace BatchImageProcessor
 
 		private void portRotBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper item in listView.SelectedItems)
+			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
 				item.RotationOverride = Rotation.Portrait;
 			}
@@ -232,7 +232,7 @@ namespace BatchImageProcessor
 
 		private void landRotBtn_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (FileWrapper item in listView.SelectedItems)
+			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
 				item.RotationOverride = Rotation.Landscape;
 			}
@@ -269,8 +269,8 @@ namespace BatchImageProcessor
 				}
 				else
 				{
-					if (treeView.SelectedItem is Folder)
-						parent = (treeView.SelectedItem as Folder);
+					if (TreeView.SelectedItem is Folder)
+						parent = (TreeView.SelectedItem as Folder);
 					else
 						parent = VModel.Folders[0];
 				}
@@ -300,8 +300,8 @@ namespace BatchImageProcessor
 			}
 			else
 			{
-				if (treeView.SelectedItem is Folder)
-					parent = (treeView.SelectedItem as Folder);
+				if (TreeView.SelectedItem is Folder)
+					parent = (TreeView.SelectedItem as Folder);
 				else
 					parent = VModel.Folders[0];
 			}
@@ -326,8 +326,8 @@ namespace BatchImageProcessor
 			}
 			else
 			{
-				if (treeView.SelectedItem is Folder)
-					parent = (treeView.SelectedItem as Folder);
+				if (TreeView.SelectedItem is Folder)
+					parent = (TreeView.SelectedItem as Folder);
 				else
 					parent = VModel.Folders[0];
 			}
@@ -359,8 +359,8 @@ namespace BatchImageProcessor
 			}
 			else
 			{
-				if (treeView.SelectedItem is Folder)
-					parent = (treeView.SelectedItem as Folder);
+				if (TreeView.SelectedItem is Folder)
+					parent = (TreeView.SelectedItem as Folder);
 				else
 					parent = VModel.Folders[0];
 			}
@@ -483,25 +483,25 @@ namespace BatchImageProcessor
 		{
 			var model = DataContext as ViewModel.ViewModel;
 			if (model == null) return;
-			if (Equals(sender, watermarkTlBtn))
+			if (Equals(sender, WatermarkTopLeftBtn))
 				model.WatermarkAlignment = Alignment.Top_Left;
-			else if (Equals(sender, watermarkTcBtn))
+			else if (Equals(sender, WatermarkTopCenterBtn))
 				model.WatermarkAlignment = Alignment.Top_Center;
-			else if (Equals(sender, watermarkTrBtn))
+			else if (Equals(sender, WatermarkTopRightBtn))
 				model.WatermarkAlignment = Alignment.Top_Right;
 
-			else if (Equals(sender, watermarkMlBtn))
+			else if (Equals(sender, WatermarkMiddleLeftBtn))
 				model.WatermarkAlignment = Alignment.Middle_Left;
-			else if (Equals(sender, watermarkMcButton))
+			else if (Equals(sender, WatermarkMiddleCenterButton))
 				model.WatermarkAlignment = Alignment.Middle_Center;
-			else if (Equals(sender, watermarkMrBtn))
+			else if (Equals(sender, WatermarkMiddleRightBtn))
 				model.WatermarkAlignment = Alignment.Middle_Right;
 
-			else if (Equals(sender, watermarkBlBtn))
+			else if (Equals(sender, WatermarkBottopLeftBtn))
 				model.WatermarkAlignment = Alignment.Bottom_Left;
-			else if (Equals(sender, watermarkBcBtn))
+			else if (Equals(sender, WatermarkBottomCenterBtn))
 				model.WatermarkAlignment = Alignment.Bottom_Center;
-			else if (Equals(sender, watermarkBrBtn))
+			else if (Equals(sender, WatermarkBottomRightBtn))
 				model.WatermarkAlignment = Alignment.Bottom_Right;
 		}
 

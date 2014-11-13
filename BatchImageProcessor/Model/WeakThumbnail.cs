@@ -30,7 +30,7 @@ namespace BatchImageProcessor.Model
 			{
 				_set = true;
 				//weak.SetTarget(value);
-				Cache.Add(Path, value, new DateTimeOffset(DateTime.UtcNow + new TimeSpan(0, 0, 10)));
+				Cache.Add(Path, value, new DateTimeOffset(DateTime.UtcNow + new TimeSpan(0, 3, 0)));
 				SourceUpdated();
 			}
 			get
@@ -56,21 +56,28 @@ namespace BatchImageProcessor.Model
 
 		private static Bitmap GetThumb(string path)
 		{
-			if (System.IO.File.Exists(path))
+			try
 			{
+				if (System.IO.File.Exists(path))
+				{
+					if (!ShellObject.IsPlatformSupported)
+						throw new NotSupportedException("Platform does not support ShellFiles.");
+
+					var sFile = ShellFile.FromFilePath(path);
+					return sFile.Thumbnail.LargeBitmap;
+				}
+				if (!Directory.Exists(path))
+					throw new FileNotFoundException(string.Format(@"File at ""{0}"" does not exist.", path));
 				if (!ShellObject.IsPlatformSupported)
-					throw new NotSupportedException("Platform does not support ShellFiles.");
+					throw new NotSupportedException("Platform does not support ShellFolders.");
 
-				var sFile = ShellFile.FromFilePath(path);
-				return sFile.Thumbnail.LargeBitmap;
+				var shellFile = ShellObject.FromParsingName(path);
+				return shellFile.Thumbnail.Bitmap;
 			}
-			if (!Directory.Exists(path))
-				throw new FileNotFoundException(string.Format(@"File at ""{0}"" does not exist.", path));
-			if (!ShellObject.IsPlatformSupported)
-				throw new NotSupportedException("Platform does not support ShellFolders.");
-
-			var shellFile = ShellObject.FromParsingName(path);
-			return shellFile.Thumbnail.Bitmap;
+			catch
+			{
+				return null;
+			}
 		}
 
 		public void GenSource(object o = null)

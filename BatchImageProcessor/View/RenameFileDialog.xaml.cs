@@ -1,19 +1,18 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 
 namespace BatchImageProcessor.View
 {
 	/// <summary>
 	///     Interaction logic for RenameFileDialog.xaml
 	/// </summary>
-	public partial class RenameFileDialog : INotifyPropertyChanged
+	public partial class RenameFileDialog// : INotifyPropertyChanged
 	{
 		public RenameFileDialog()
 		{
 			InitializeComponent();
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		//public event PropertyChangedEventHandler PropertyChanged;
 
 		private void cancelBtn_Click(object sender, RoutedEventArgs e)
 		{

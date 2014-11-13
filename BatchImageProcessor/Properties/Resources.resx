@@ -46,7 +46,7 @@
     
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
@@ -60,6 +60,7 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -68,9 +69,10 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
@@ -85,9 +87,10 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -109,58 +112,277 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-	<data name="MainWindow_FolderBrowser_Description" xml:space="preserve">
+  <data name="MainWindow_FolderBrowser_Description" xml:space="preserve">
     <value>Select a Folder to Import</value>
     <comment>For import folder browser dialog</comment>
   </data>
-	<data name="MainWindow_OutputBrowser_Description" xml:space="preserve">
+  <data name="MainWindow_OutputBrowser_Description" xml:space="preserve">
     <value>Select a folder to Output to</value>
     <comment>Folder ouput browser dialog description</comment>
   </data>
-	<data name="MainWindow__fileBrowser_Title" xml:space="preserve">
+  <data name="MainWindow__fileBrowser_Title" xml:space="preserve">
     <value>Import Images...</value>
     <comment>Import image dialog title</comment>
   </data>
-	<data name="MainWindow__fileBrowser_Filter" xml:space="preserve">
+  <data name="MainWindow__fileBrowser_Filter" xml:space="preserve">
     <value>Image Files|*.jpg;*.jpeg</value>
     <comment>Image import dialog filter</comment>
   </data>
-	<data name="MainWindow__watermarkFileBrowser_Title" xml:space="preserve">
+  <data name="MainWindow__watermarkFileBrowser_Title" xml:space="preserve">
     <value>Select Watermark Image...</value>
   </data>
-	<data name="MainWindow__watermarkFileBrowser_Filter" xml:space="preserve">
+  <data name="MainWindow__watermarkFileBrowser_Filter" xml:space="preserve">
     <value>Image Files|*.jpg;*.jpeg;*.png</value>
   </data>
-	<data name="MainWindow_MainWindow_Output_Folder_Name" xml:space="preserve">
+  <data name="MainWindow_MainWindow_Output_Folder_Name" xml:space="preserve">
     <value>Output Folder</value>
   </data>
-	<data name="MainWindow_RenameFolderMenuItem_Title" xml:space="preserve">
+  <data name="MainWindow_RenameFolderMenuItem_Title" xml:space="preserve">
     <value>Rename Folder</value>
   </data>
-	<data name="MainWindow_importFolderBtn_Recursion_Ask" xml:space="preserve">
+  <data name="MainWindow_importFolderBtn_Recursion_Ask" xml:space="preserve">
     <value>This folder has folders within it. Would you like to add those as well?</value>
   </data>
-	<data name="MainWindow_importFolderBtn_Recursion_Ask_Title" xml:space="preserve">
+  <data name="MainWindow_importFolderBtn_Recursion_Ask_Title" xml:space="preserve">
     <value>Import Folder</value>
   </data>
-	<data name="MainWindow_addFolderBtn_NewFolder_Title" xml:space="preserve">
+  <data name="MainWindow_addFolderBtn_NewFolder_Title" xml:space="preserve">
     <value>Name New Folder</value>
   </data>
-	<data name="OkText" xml:space="preserve">
+  <data name="OkText" xml:space="preserve">
     <value>OK</value>
   </data>
-	<data name="CancelText" xml:space="preserve">
+  <data name="CancelText" xml:space="preserve">
     <value>Cancel</value>
   </data>
-	<data name="New_Folder_Name" xml:space="preserve">
+  <data name="New_Folder_Name" xml:space="preserve">
     <value>New Folder</value>
   </data>
-	<data name="ViewModel__outputPath__No_Path_Set" xml:space="preserve">
+  <data name="ViewModel__outputPath__No_Path_Set" xml:space="preserve">
     <value>&lt;No Path Set&gt;</value>
+  </data>
+  <data name="ImageMenu_Header" xml:space="preserve">
+    <value>Rotation Override</value>
+  </data>
+  <data name="ImageMenu_DefaultRotationMenuItem_Header" xml:space="preserve">
+    <value>Use Default Settings</value>
+  </data>
+  <data name="ImageMenu_CCRotationMenuItem_Header" xml:space="preserve">
+    <value>270° Rotation</value>
+  </data>
+  <data name="ImageMenu_NoRotationMenuItem_Header" xml:space="preserve">
+    <value>No Rotation</value>
+  </data>
+  <data name="ImageMenu_180RotationMenuItem_Header" xml:space="preserve">
+    <value>180° Rotation</value>
+  </data>
+  <data name="ImageMenu_PortRotationMenuItem_Header" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
+  <data name="ImageMenu_LandRotationMenuItem_Header" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="FoldersLabel_Text" xml:space="preserve">
+    <value>Folders</value>
+  </data>
+  <data name="ImportImageBtn_ToolTip" xml:space="preserve">
+    <value>Import Image(s)...</value>
+  </data>
+  <data name="AddFolderBtn_ToolTip" xml:space="preserve">
+    <value>Add New Folder...</value>
+  </data>
+  <data name="ImportFolderBtn_ToolTip" xml:space="preserve">
+    <value>Import Folder(s)...</value>
+  </data>
+  <data name="RemoveItemBtn_ToolTip" xml:space="preserve">
+    <value>Remove Item</value>
+  </data>
+  <data name="FolderMenu_RenameMenuItem_Header" xml:space="preserve">
+    <value>Rename Folder</value>
+  </data>
+  <data name="FolderMenu_RemoveMenuItem_Header" xml:space="preserve">
+    <value>Remove Folder</value>
+  </data>
+  <data name="FilesLabel_Text" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="CheckAllBtn_ToolTip" xml:space="preserve">
+    <value>Enable Selected Items</value>
+  </data>
+  <data name="UncheckBtn_ToolTip" xml:space="preserve">
+    <value>Disable Selected Items</value>
+  </data>
+  <data name="SelectAllBtn_ToolTip" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="DeselectBtn_ToolTip" xml:space="preserve">
+    <value>Select None</value>
+  </data>
+  <data name="DefaultSettingsLabel_Content" xml:space="preserve">
+    <value>Default Settings</value>
+  </data>
+  <data name="GcBtn_ToolTip" xml:space="preserve">
+    <value>Manually GC all Generations</value>
+  </data>
+  <data name="AboutBtn_ToolTip" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="RotChck_ToolTip" xml:space="preserve">
+    <value>Enable/Disable Rotation</value>
+  </data>
+  <data name="RotateOptionLabel_Text" xml:space="preserve">
+    <value>Rotate</value>
+  </data>
+  <data name="ResizeChck_ToolTip" xml:space="preserve">
+    <value>Enable/Disable Resizing</value>
+  </data>
+  <data name="ResizeOptionLabel_Text" xml:space="preserve">
+    <value>Resize</value>
+  </data>
+  <data name="CropChck_ToolTip" xml:space="preserve">
+    <value>Enable/Disable Cropping</value>
+  </data>
+  <data name="CropOptionLabel_Text" xml:space="preserve">
+    <value>Crop</value>
+  </data>
+  <data name="WatermarkChck_ToolTip" xml:space="preserve">
+    <value>Enable/Disable Watermarking</value>
+  </data>
+  <data name="WatermarkOptionLabel_Text" xml:space="preserve">
+    <value>Watermark</value>
+  </data>
+  <data name="OutputOptionLabel_Text" xml:space="preserve">
+    <value>Output</value>
+  </data>
+  <data name="RotationSettings_Title" xml:space="preserve">
+    <value>Rotation Settings</value>
+  </data>
+  <data name="RotateAllImagesLabel_Text" xml:space="preserve">
+    <value>Rotate All Images:</value>
+  </data>
+  <data name="ImageMenu_CRotationMenuItem_Header" xml:space="preserve">
+    <value>90° Rotation</value>
+  </data>
+  <data name="ResizeSettings_Title" xml:space="preserve">
+    <value>Resize Settings</value>
+  </data>
+  <data name="ResizeModeLabel_Text" xml:space="preserve">
+    <value>Resize Mode:</value>
+  </data>
+  <data name="ResizeMode_LargerRadioBtn_Text" xml:space="preserve">
+    <value>Larger Than</value>
+  </data>
+  <data name="ResizeMode_SmallerRadioBtn_Text" xml:space="preserve">
+    <value>Smaller Than</value>
+  </data>
+  <data name="ResizeMode_ExactRadioBtn_Text" xml:space="preserve">
+    <value>Exact Size</value>
+  </data>
+  <data name="SmartSizingLabel_Text" xml:space="preserve">
+    <value>Smart Sizing:</value>
+  </data>
+  <data name="SmartSizing_EnabledChk_ToolTip" xml:space="preserve">
+    <value>Automatically swaps the width and height of the resize to match the longer and shorter dimension of the image.</value>
+  </data>
+  <data name="SmartSizing_EnabledChk_Text" xml:space="preserve">
+    <value>Use Aspect Ratio</value>
+  </data>
+  <data name="ResizeDimsLabel_Text" xml:space="preserve">
+    <value>Size:</value>
+  </data>
+  <data name="ResizeDims_WidthUpDwn_Label" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="ResizeDims_HeightUpDwn_Label" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="CropSettings_Title" xml:space="preserve">
+    <value>Crop Settings</value>
+  </data>
+  <data name="CropOptsLabel_Text" xml:space="preserve">
+    <value>Crop down to:</value>
+  </data>
+  <data name="CropOpts_WidthUpDwn_Text" xml:space="preserve">
+    <value>Width:</value>
+  </data>
+  <data name="CropOpts_HeightUpDwn_Text" xml:space="preserve">
+    <value>Height:</value>
+  </data>
+  <data name="WatermarkSettings_Title" xml:space="preserve">
+    <value>Watermark Settings</value>
+  </data>
+  <data name="WatermarkSettings_TypeLabel_Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="WatermarkSettings_TextOpt_Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="WatermarkSettings_ImageOpt_Text" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="WatermarkSettings_TextOpts_Title" xml:space="preserve">
+    <value>Text Options</value>
+  </data>
+  <data name="WatermarkSettings_TextBox_Text" xml:space="preserve">
+    <value>Text:</value>
+  </data>
+  <data name="WatermarkSettings_FontBtn_Text" xml:space="preserve">
+    <value>Font:</value>
+  </data>
+  <data name="WatermarkSettings_ImageOpts_Title" xml:space="preserve">
+    <value>Image Options</value>
+  </data>
+  <data name="WatermarkSettings_ImageBtn_Text" xml:space="preserve">
+    <value>Image File:</value>
+  </data>
+  <data name="WatermarkSettings_ImageGreyChk_Text" xml:space="preserve">
+    <value>Convert to Greyscale</value>
+  </data>
+  <data name="WatermarkSettings_OtherOpts_Title" xml:space="preserve">
+    <value>Other Options</value>
+  </data>
+  <data name="WatermarkSettings_OpacUpDwn_Text" xml:space="preserve">
+    <value>Opacity:</value>
+  </data>
+  <data name="OutSettings_Title" xml:space="preserve">
+    <value>Output Settings</value>
+  </data>
+  <data name="OutSettings_LocationBtn_Text" xml:space="preserve">
+    <value>Output Location:</value>
+  </data>
+  <data name="OutSettings_NameOpt_Title" xml:space="preserve">
+    <value>File Naming Mode:</value>
+  </data>
+  <data name="OutSettings_NameOpt_OrigOpt_Text" xml:space="preserve">
+    <value>Original Filename</value>
+  </data>
+  <data name="OutSettings_NameOpt_NumOpt_Text" xml:space="preserve">
+    <value>Numbered Sequentially</value>
+  </data>
+  <data name="OutSettings_NameOpt_CustOpt_Text" xml:space="preserve">
+    <value>Custom Template</value>
+  </data>
+  <data name="OutSettings_CustomNameSettings_Title" xml:space="preserve">
+    <value>Custom Template Settings:</value>
+  </data>
+  <data name="OutSettings_CustomNameSettings_TemplateTxtBx_Text" xml:space="preserve">
+    <value>Template:</value>
+  </data>
+  <data name="OutSettings_CustomNameSettings_ExampleLbl_Text" xml:space="preserve">
+    <value>Example:</value>
+  </data>
+  <data name="OutSettings_CustomNameSettings_Tutorial_Text" xml:space="preserve">
+    <value>Repalcement Codes:
+{o} - Original Filename
+{w} - Output Width
+{h} - Output Height</value>
+  </data>
+	<data name="StartBtn_Text" xml:space="preserve">
+    <value>Start Processing</value>
   </data>
 </root>

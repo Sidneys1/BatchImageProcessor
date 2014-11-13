@@ -61,17 +61,17 @@ namespace BatchImageProcessor.View
 				IntPtr.Zero,
 				out pUnknownContextMenu);
 
-			if (SOk == nResult)
+			if (S_OK == nResult)
 			{
 				_oContextMenu = (IContextMenu) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu, typeof (IContextMenu));
 
 				IntPtr pUnknownContextMenu2;
-				if (SOk == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu2, out pUnknownContextMenu2))
+				if (S_OK == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu2, out pUnknownContextMenu2))
 				{
 					_oContextMenu2 = (IContextMenu2) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu2, typeof (IContextMenu2));
 				}
 				IntPtr pUnknownContextMenu3;
-				if (SOk == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu3, out pUnknownContextMenu3))
+				if (S_OK == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu3, out pUnknownContextMenu3))
 				{
 					_oContextMenu3 = (IContextMenu3) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu3, typeof (IContextMenu3));
 				}
@@ -90,9 +90,9 @@ namespace BatchImageProcessor.View
 			var invoke = new CmInvokeCommandInfoEx
 			{
 				cbSize = CbInvokeCommand,
-				lpVerb = (IntPtr) (nCmd - CmdFirst),
+				lpVerb = (IntPtr) (nCmd - CMD_FIRST),
 				lpDirectory = strFolder,
-				lpVerbW = (IntPtr) (nCmd - CmdFirst),
+				lpVerbW = (IntPtr) (nCmd - CMD_FIRST),
 				lpDirectoryW = strFolder,
 				fMask = Cmic.Unicode | Cmic.Ptinvoke |
 				        ((Control.ModifierKeys & Keys.Control) != 0 ? Cmic.ControlDown : 0) |
@@ -160,7 +160,7 @@ namespace BatchImageProcessor.View
 				// Get desktop IShellFolder
 				IntPtr pUnkownDesktopFolder;
 				var nResult = SHGetDesktopFolder(out pUnkownDesktopFolder);
-				if (SOk != nResult)
+				if (S_OK != nResult)
 				{
 					throw new ShellContextMenuException("Failed to get the desktop shell folder");
 				}
@@ -195,16 +195,16 @@ namespace BatchImageProcessor.View
 				Sfgao pdwAttributes = 0;
 				var nResult = oDesktopFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, folderName, ref pchEaten, out pPidl,
 					ref pdwAttributes);
-				if (SOk != nResult)
+				if (S_OK != nResult)
 				{
 					return null;
 				}
 
-				var pStrRet = Marshal.AllocCoTaskMem(MaxPath*2 + 4);
+				var pStrRet = Marshal.AllocCoTaskMem(MAX_PATH*2 + 4);
 				Marshal.WriteInt32(pStrRet, 0, 0);
 				_oDesktopFolder.GetDisplayNameOf(pPidl, Shgno.ForParsing, pStrRet);
-				var strFolder = new StringBuilder(MaxPath);
-				StrRetToBuf(pStrRet, pPidl, strFolder, MaxPath);
+				var strFolder = new StringBuilder(MAX_PATH);
+				StrRetToBuf(pStrRet, pPidl, strFolder, MAX_PATH);
 				Marshal.FreeCoTaskMem(pStrRet);
 				_strParentFolder = strFolder.ToString();
 
@@ -213,7 +213,7 @@ namespace BatchImageProcessor.View
 				nResult = oDesktopFolder.BindToObject(pPidl, IntPtr.Zero, ref _iidIShellFolder, out pUnknownParentFolder);
 				// Free the PIDL first
 				Marshal.FreeCoTaskMem(pPidl);
-				if (SOk != nResult)
+				if (S_OK != nResult)
 				{
 					return null;
 				}
@@ -255,7 +255,7 @@ namespace BatchImageProcessor.View
 				IntPtr pPidl;
 				var nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPidl,
 					ref pdwAttributes);
-				if (SOk != nResult)
+				if (S_OK != nResult)
 				{
 					FreePidLs(arrPidLs);
 					return null;
@@ -388,8 +388,8 @@ namespace BatchImageProcessor.View
 				_oContextMenu.QueryContextMenu(
 					pMenu,
 					0,
-					CmdFirst,
-					CmdLast,
+					CMD_FIRST,
+					CMD_LAST,
 					Cmf.Explore |
 					Cmf.Normal |
 					((Control.ModifierKeys & Keys.Shift) != 0 ? Cmf.ExtendedVerbs : 0));
@@ -439,14 +439,14 @@ namespace BatchImageProcessor.View
 			     cwp.message == (int) Wm.MeasureItem ||
 			     cwp.message == (int) Wm.DrawItem))
 			{
-				if (_oContextMenu2.HandleMenuMsg((uint) cwp.message, cwp.wparam, cwp.lparam) == SOk)
+				if (_oContextMenu2.HandleMenuMsg((uint) cwp.message, cwp.wparam, cwp.lparam) == S_OK)
 				{
 					return;
 				}
 			}
 
 			if (_oContextMenu3 == null || cwp.message != (int) Wm.MenuChar) return;
-			if (_oContextMenu3.HandleMenuMsg2((uint) cwp.message, cwp.wparam, cwp.lparam, IntPtr.Zero) == SOk)
+			if (_oContextMenu3.HandleMenuMsg2((uint) cwp.message, cwp.wparam, cwp.lparam, IntPtr.Zero) == S_OK)
 			{
 			}
 		}
@@ -467,11 +467,11 @@ namespace BatchImageProcessor.View
 
 		#region Variables and Constants
 
-		private const int MaxPath = 260;
-		private const uint CmdFirst = 1;
-		private const uint CmdLast = 30000;
+		private const int MAX_PATH = 260;
+		private const uint CMD_FIRST = 1;
+		private const uint CMD_LAST = 30000;
 
-		private const int SOk = 0;
+		private const int S_OK = 0;
 
 /*
 	    private static readonly int CbMenuItemInfo = Marshal.SizeOf(typeof(MenuItemInfo));
