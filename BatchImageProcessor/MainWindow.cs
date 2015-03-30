@@ -41,7 +41,7 @@ namespace BatchImageProcessor
             Handle = new WindowInteropHelper(this).Handle;
 
 #if !DEBUG
-			gcBtn.Visibility = System.Windows.Visibility.Collapsed;
+			GcBtn.Visibility = Visibility.Collapsed;
 #endif
         }
 
@@ -133,6 +133,27 @@ namespace BatchImageProcessor
             foreach (FileWrapper f in ThumbnailView.SelectedItems)
             {
                 f.Selected = false;
+            }
+        }
+
+        private void SelectInvBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var obj = new object[ThumbnailView.SelectedItems.Count];
+            ThumbnailView.SelectedItems.CopyTo(obj,0);
+            ThumbnailView.SelectedIndex = -1;
+            foreach (var item in ThumbnailView.Items)
+            {
+                if (!obj.Contains(item))
+                    ThumbnailView.SelectedItems.Add(item);
+            }
+            
+        }
+
+        private void CheckInvBtn_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (FileWrapper f in ThumbnailView.SelectedItems)
+            {
+                f.Selected = !f.Selected;
             }
         }
 
@@ -544,5 +565,7 @@ namespace BatchImageProcessor
         }
 
         #endregion
+
+        
     }
 }

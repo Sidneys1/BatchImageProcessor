@@ -26,7 +26,10 @@
 		<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 		<viewmodel:FileCollectionView x:Key="FileFilterCollection"
 		                              Source="{Binding SelectedItem.Files, ElementName=TreeView}" />
-
+        
+		<!-- #region Effects -->
+		<DropShadowEffect x:Key="DropShadowFx" Opacity="0.6" BlurRadius="6" ShadowDepth="0" RenderingBias="Quality" />
+        
 		<!-- #region Converters -->
 
 		<viewmodel:TypeConverter x:Key="TypeConv" />
@@ -34,9 +37,10 @@
 		<viewmodel:EnumVisibilityConverter x:Key="EnumVisConv" />
 		<viewmodel:EnumStringConverter x:Key="EnumStrConv" />
 		<viewmodel:BooleanToVisibilityConverter x:Key="InvBoolVisConv" True="Visible" False="Collapsed" />
+        <viewmodel:BooleanToOpacityConverter x:Key="BoolOpacConv" True="1" False="0.5"/>
+        <viewmodel:BooleanToEffectConverter x:Key="BoolEffConv" True="{StaticResource DropShadowFx}" False="{x:Null}"/>
 
-		<!-- #region Effects -->
-		<DropShadowEffect x:Key="DropShadowFx" Opacity="0.6" BlurRadius="6" ShadowDepth="0" RenderingBias="Quality" />
+
 
 		<!-- Simple Button Control Template -->
 		<ControlTemplate x:Key="ButtonTemplate" TargetType="{x:Type Button}">
@@ -320,7 +324,11 @@
 			        Click="checkAllBtn_Click">
 				<Image Width="18" Height="18" Source="Images/ui-check-box.png" Stretch="None" />
 			</Button>
-			<Button x:Name="UncheckBtn" ToolTip="{x:Static properties:Resources.UncheckBtn_ToolTip}" Cursor="Hand"
+            <Button x:Name="CheckInvBtn" ToolTip="{x:Static properties:Resources.CheckInvBtn_ToolTip}" Cursor="Hand"
+			        Click="CheckInvBtn_Click">
+                <Image Width="18" Height="18" Source="Images/ui-check-boxes.png" Stretch="None" />
+            </Button>
+            <Button x:Name="UncheckBtn" ToolTip="{x:Static properties:Resources.UncheckBtn_ToolTip}" Cursor="Hand"
 			        Click="uncheckBtn_Click">
 				<Image Width="18" Height="18" Source="Images/ui-check-box-uncheck.png" Stretch="None" />
 			</Button>
@@ -362,7 +370,11 @@
 			        Click="selectAllBtn_Click">
 				<Image Width="18" Height="18" Source="Images/selection-select.png" Stretch="None" />
 			</Button>
-			<Button x:Name="DeselectBtn" ToolTip="{x:Static properties:Resources.DeselectBtn_ToolTip}" Cursor="Hand"
+            <Button x:Name="SelectInvBtn" ToolTip="{x:Static properties:Resources.SelectInvBtn_ToolTip}" Cursor="Hand"
+			        Click="SelectInvBtn_Click">
+                <Image Width="18" Height="18" Source="Images/selection-exclude.png" Stretch="None" />
+            </Button>
+            <Button x:Name="DeselectBtn" ToolTip="{x:Static properties:Resources.DeselectBtn_ToolTip}" Cursor="Hand"
 			        Click="deselectBtn_Click">
 				<Image Width="18" Height="18" Source="Images/selection.png" Stretch="None" />
 			</Button>
@@ -401,7 +413,8 @@
 						</Grid.RowDefinitions>
 						<Image Grid.RowSpan="2"
 						       Source="{Binding Thumbnail.Source, FallbackValue={StaticResource LoadingImage}, IsAsync=False}"
-						       StretchDirection="DownOnly" MaxWidth="128" Height="128" Margin="3" Effect="{DynamicResource DropShadowFx}" />
+						       StretchDirection="DownOnly" MaxWidth="128" Height="128" Margin="3" Effect="{Binding Selected, Converter={StaticResource BoolEffConv}}"
+                               Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}" />
 						<CheckBox Grid.Row="0" IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False" />
 						<StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft"
 						            Effect="{StaticResource DropShadowFx}">
@@ -435,7 +448,7 @@
 							       StretchDirection="DownOnly" Source="Images/image-resize-actual--cross.png" ToolTip="Resize Overridden" />
 						</StackPanel>
 						<TextBlock Grid.Row="2" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" MaxWidth="128"
-						           MaxHeight="40" TextAlignment="Center" />
+						           MaxHeight="40" TextAlignment="Center" Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}" />
 					</Grid>
 				</DataTemplate>
 			</ListView.ItemTemplate>

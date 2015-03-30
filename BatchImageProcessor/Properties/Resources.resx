@@ -385,4 +385,10 @@
   <data name="StartBtn_Text" xml:space="preserve">
     <value>Start Processing</value>
   </data>
+  <data name="CheckInvBtn_ToolTip" xml:space="preserve">
+    <value>Invert Enabled State of Selected Items</value>
+  </data>
+  <data name="SelectInvBtn_ToolTip" xml:space="preserve">
+    <value>Invert Selection</value>
+  </data>
 </root>

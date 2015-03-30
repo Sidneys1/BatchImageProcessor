@@ -125,6 +125,8 @@
     </Compile>
     <Compile Include="ViewModel\Alignment.cs" />
     <Compile Include="ViewModel\BooleanConverter.cs" />
+    <Compile Include="ViewModel\BooleanToEffectConverter.cs" />
+    <Compile Include="ViewModel\BooleanToOpacityConverter.cs" />
     <Compile Include="ViewModel\BooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModel\EnumBooleanConverter.cs" />
     <Compile Include="ViewModel\EnumStringConverter.cs" />
@@ -329,6 +331,12 @@
   <ItemGroup>
     <Resource Include="Images\image-resize-actual--cross.png" />
     <Resource Include="Images\image-saturation--cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ui-check-boxes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\selection-exclude.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
