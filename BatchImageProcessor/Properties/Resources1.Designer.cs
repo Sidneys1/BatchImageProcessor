@@ -8,10 +8,15 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.CodeDom.Compiler;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Resources;
+using System.Runtime.CompilerServices;
+
 namespace BatchImageProcessor.Properties {
-    using System;
-    
-    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -19,27 +24,27 @@ namespace BatchImageProcessor.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    [GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [DebuggerNonUserCode()]
+    [CompilerGenerated()]
     public class Resources {
         
-        private static global::System.Resources.ResourceManager resourceMan;
+        private static ResourceManager resourceMan;
         
-        private static global::System.Globalization.CultureInfo resourceCulture;
+        private static CultureInfo resourceCulture;
         
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public static ResourceManager ResourceManager {
             get {
-                if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BatchImageProcessor.Properties.Resources", typeof(Resources).Assembly);
+                if (ReferenceEquals(resourceMan, null)) {
+                    ResourceManager temp = new ResourceManager("BatchImageProcessor.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -50,8 +55,8 @@ namespace BatchImageProcessor.Properties {
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public static CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -210,78 +215,6 @@ namespace BatchImageProcessor.Properties {
         public static string GcBtn_ToolTip {
             get {
                 return ResourceManager.GetString("GcBtn_ToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 180° Rotation.
-        /// </summary>
-        public static string ImageMenu_180RotationMenuItem_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_180RotationMenuItem_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 270° Rotation.
-        /// </summary>
-        public static string ImageMenu_CCRotationMenuItem_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_CCRotationMenuItem_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 90° Rotation.
-        /// </summary>
-        public static string ImageMenu_CRotationMenuItem_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_CRotationMenuItem_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use Default Settings.
-        /// </summary>
-        public static string ImageMenu_DefaultRotationMenuItem_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_DefaultRotationMenuItem_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rotation Override.
-        /// </summary>
-        public static string ImageMenu_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Landscape.
-        /// </summary>
-        public static string ImageMenu_LandRotationMenuItem_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_LandRotationMenuItem_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No Rotation.
-        /// </summary>
-        public static string ImageMenu_NoRotationMenuItem_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_NoRotationMenuItem_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Portrait.
-        /// </summary>
-        public static string ImageMenu_PortRotationMenuItem_Header {
-            get {
-                return ResourceManager.GetString("ImageMenu_PortRotationMenuItem_Header", resourceCulture);
             }
         }
         
@@ -636,6 +569,78 @@ namespace BatchImageProcessor.Properties {
         public static string RotateOptionLabel_Text {
             get {
                 return ResourceManager.GetString("RotateOptionLabel_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 180° Rotation.
+        /// </summary>
+        public static string RotationMenu_180RotationMenuItem_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_180RotationMenuItem_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 270° Rotation.
+        /// </summary>
+        public static string RotationMenu_CCRotationMenuItem_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_CCRotationMenuItem_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 90° Rotation.
+        /// </summary>
+        public static string RotationMenu_CRotationMenuItem_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_CRotationMenuItem_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Default Settings.
+        /// </summary>
+        public static string RotationMenu_DefaultRotationMenuItem_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_DefaultRotationMenuItem_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rotation Override.
+        /// </summary>
+        public static string RotationMenu_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Landscape.
+        /// </summary>
+        public static string RotationMenu_LandRotationMenuItem_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_LandRotationMenuItem_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Rotation.
+        /// </summary>
+        public static string RotationMenu_NoRotationMenuItem_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_NoRotationMenuItem_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Portrait.
+        /// </summary>
+        public static string RotationMenu_PortRotationMenuItem_Header {
+            get {
+                return ResourceManager.GetString("RotationMenu_PortRotationMenuItem_Header", resourceCulture);
             }
         }
         

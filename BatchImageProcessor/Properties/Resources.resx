@@ -166,25 +166,25 @@
   <data name="ViewModel__outputPath__No_Path_Set" xml:space="preserve">
     <value>&lt;No Path Set&gt;</value>
   </data>
-  <data name="ImageMenu_Header" xml:space="preserve">
+  <data name="RotationMenu_Header" xml:space="preserve">
     <value>Rotation Override</value>
   </data>
-  <data name="ImageMenu_DefaultRotationMenuItem_Header" xml:space="preserve">
+  <data name="RotationMenu_DefaultRotationMenuItem_Header" xml:space="preserve">
     <value>Use Default Settings</value>
   </data>
-  <data name="ImageMenu_CCRotationMenuItem_Header" xml:space="preserve">
+  <data name="RotationMenu_CCRotationMenuItem_Header" xml:space="preserve">
     <value>270° Rotation</value>
   </data>
-  <data name="ImageMenu_NoRotationMenuItem_Header" xml:space="preserve">
+  <data name="RotationMenu_NoRotationMenuItem_Header" xml:space="preserve">
     <value>No Rotation</value>
   </data>
-  <data name="ImageMenu_180RotationMenuItem_Header" xml:space="preserve">
+  <data name="RotationMenu_180RotationMenuItem_Header" xml:space="preserve">
     <value>180° Rotation</value>
   </data>
-  <data name="ImageMenu_PortRotationMenuItem_Header" xml:space="preserve">
+  <data name="RotationMenu_PortRotationMenuItem_Header" xml:space="preserve">
     <value>Portrait</value>
   </data>
-  <data name="ImageMenu_LandRotationMenuItem_Header" xml:space="preserve">
+  <data name="RotationMenu_LandRotationMenuItem_Header" xml:space="preserve">
     <value>Landscape</value>
   </data>
   <data name="FoldersLabel_Text" xml:space="preserve">
@@ -265,7 +265,7 @@
   <data name="RotateAllImagesLabel_Text" xml:space="preserve">
     <value>Rotate All Images:</value>
   </data>
-  <data name="ImageMenu_CRotationMenuItem_Header" xml:space="preserve">
+  <data name="RotationMenu_CRotationMenuItem_Header" xml:space="preserve">
     <value>90° Rotation</value>
   </data>
   <data name="ResizeSettings_Title" xml:space="preserve">
@@ -382,7 +382,7 @@
 {w} - Output Width
 {h} - Output Height</value>
   </data>
-	<data name="StartBtn_Text" xml:space="preserve">
+  <data name="StartBtn_Text" xml:space="preserve">
     <value>Start Processing</value>
   </data>
 </root>

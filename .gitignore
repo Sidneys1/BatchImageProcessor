@@ -154,6 +154,8 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+
+# NuGet stuff
 packages/Extended.Wpf.Toolkit.2.2.1/Extended.Wpf.Toolkit.2.2.1.nupkg
 packages/Extended.Wpf.Toolkit.2.2.1/lib/net35/WPFToolkit.dll
 packages/Extended.Wpf.Toolkit.2.2.1/lib/net35/Xceed.Wpf.Toolkit.dll
