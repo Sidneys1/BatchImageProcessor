@@ -56,7 +56,7 @@ namespace BatchImageProcessor
 
 			if (args.Length > 1 && args.Contains("-noshaders"))
 			{
-				Resources["tdse"] = null;
+				Resources["DropShadowFx"] = null;
 			}
 
 		    //if (!DwmApiInterop.IsCompositionEnabled()) return;
@@ -69,10 +69,12 @@ namespace BatchImageProcessor
 
         private void MainWindow_OnSourceInitialized(object sender, EventArgs e)
         {
+            
             try
             {
                 //FolderLabel.FontSize = FileLabel.FontSize = SettingsLabel.FontSize = 12;
-                FolderLabel.Padding = FileLabel.Padding = SettingsLabel.Padding = new Thickness(5,0,5,5);
+                //FolderLabel.Padding = FileLabel.Padding = SettingsLabel.Padding = new Thickness(5,0,5,5);
+                FolderLabel.Visibility = FileLabel.Visibility = SettingsLabel.Visibility = Visibility.Collapsed;
 
                 if ((hwnd = new WindowInteropHelper(this).Handle) == IntPtr.Zero)
                 {
@@ -132,21 +134,21 @@ namespace BatchImageProcessor
             int x = lParam << 16 >> 16, y = lParam >> 16;
             var point = PointFromScreen(new Point(x, y));
 
-            return !(point.Y >= (int) (RootGrid.ActualHeight - ContentRectangle.ActualHeight));
+            //return !(point.Y >= (int) (RootGrid.ActualHeight - ContentRectangle.ActualHeight));
 
-            //// In XAML: <Grid x:Name="windowGrid">...</Grid>
-            //var result = VisualTreeHelper.HitTest(RootGrid, point);
+            // In XAML: <Grid x:Name="windowGrid">...</Grid>
+            var result = VisualTreeHelper.HitTest(RootGrid, point);
 
-            //if (result != null)
-            //{
-            //    // A control was hit - it may be the grid if it has a background
-            //    // texture or gradient over the extended window frame
-            //    Trace.WriteLine(result.VisualHit);
-            //    return (!(result.VisualHit.GetType() == typeof(Border)));
-            //}
+            if (result != null)
+            {
+                // A control was hit - it may be the grid if it has a background
+                // texture or gradient over the extended window frame
+                Trace.WriteLine(result.VisualHit);
+                return (Equals(result.VisualHit, RootGrid));
+            }
 
-            //// Nothing was hit - assume that this area is covered by frame extensions anyway
-            //return true;
+            // Nothing was hit - assume that this area is covered by frame extensions anyway
+            return true;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

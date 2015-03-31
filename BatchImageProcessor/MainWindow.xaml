@@ -220,11 +220,11 @@
 
         <!-- #region Left Column -->
 
-        <Rectangle x:Name="ContentRectangle" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="3" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+        <Rectangle x:Name="ContentRectangle" Grid.Row="2" Grid.ColumnSpan="3" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
 
         <!-- #region Left Column -->
 
-        <Label x:Name="FolderLabel" Grid.Row="0" Grid.Column="0" Content="{x:Static properties:Resources.FoldersLabel_Text}" HorizontalAlignment="Center" />
+        <Label x:Name="FolderLabel" Grid.Row="0" Grid.Column="0" Content="{x:Static properties:Resources.FoldersLabel_Text}" HorizontalAlignment="Center" Visibility="Collapsed"/>
 
         <!-- Left Toolbar -->
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Margin="15,0" HorizontalAlignment="Center">
@@ -325,7 +325,7 @@
         <!-- #region Middle Column -->
 
         <Label x:Name="FileLabel"  Grid.Row="0" Grid.Column="1" Content="{x:Static properties:Resources.FilesLabel_Text}"
-		       HorizontalAlignment="Center" />
+		       HorizontalAlignment="Center" Visibility="Collapsed" />
 
         <!-- Middle Toolbar -->
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="15,0" HorizontalAlignment="Center">
@@ -473,7 +473,7 @@
         <!-- #region Right Column -->
 
         <Label x:Name="SettingsLabel"  Grid.Row="0" Grid.Column="2" Content="{x:Static properties:Resources.DefaultSettingsLabel_Content}"
-		       HorizontalAlignment="Center" />
+		       HorizontalAlignment="Center" Visibility="Collapsed"/>
 
         <!-- Toolbar -->
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="15,0" HorizontalAlignment="Center">
