@@ -30,24 +30,23 @@ namespace BatchImageProcessor.ViewModel
             get { return _name; }
             set
             {
-                if (!_name.Equals(value, StringComparison.Ordinal))
-                {
-                    var containsABadCharacter = _nameCheck ??
-                                                (_nameCheck =
-                                                    new Regex("[" + Regex.Escape(new string(Path.GetInvalidPathChars())) +
-                                                              "]"));
-                    if (string.IsNullOrWhiteSpace(value) || containsABadCharacter.IsMatch(value))
-                    {
-                        IsValidName = false;
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
-                        throw new Exception("Data Validation Error");
-                    }
+                if (_name.Equals(value, StringComparison.Ordinal)) return;
 
-                    _name = value;
-                    IsValidName = true;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
+                var containsABadCharacter = _nameCheck ??
+                                            (_nameCheck =
+                                                new Regex("[" + Regex.Escape(new string(Path.GetInvalidPathChars())) +
+                                                          "]"));
+                if (string.IsNullOrWhiteSpace(value) || containsABadCharacter.IsMatch(value))
+                {
+                    IsValidName = false;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
+                    throw new Exception("Data Validation Error");
                 }
+
+                _name = value;
+                IsValidName = true;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
             }
         }
 
@@ -70,14 +69,9 @@ namespace BatchImageProcessor.ViewModel
                 }
             }
 
-            foreach (var str in new[] {"*.jpg", "*.jpeg"})
+            foreach (var inf in new[] {"*.jpg", "*.jpeg", "*.png"}.Select(str => info.GetFiles(str)).SelectMany(files => files))
             {
-                var files = info.GetFiles(str);
-
-                foreach (var inf in files)
-                {
-                    Files.Add(new FileWrapper(inf.FullName));
-                }
+                Files.Add(new FileWrapper(inf.FullName));
             }
         }
 

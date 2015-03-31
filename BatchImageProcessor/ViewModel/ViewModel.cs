@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
+using Env= System.Environment;
 using System.Linq;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
@@ -36,8 +37,9 @@ namespace BatchImageProcessor.ViewModel
             TotalImages = Engine.TotalImages;
             DoneImages = Engine.DoneImages;
 
-            if (DoneImages == TotalImages)
-                ShowProgressBar = false;
+            if (DoneImages != TotalImages) return;
+            ShowProgressBar = false;
+            Engine.Cancel = false;
         }
 
         #region Properties
@@ -240,7 +242,8 @@ namespace BatchImageProcessor.ViewModel
         #region OutputSettings
 
         private NameType _nameOption = NameType.Original;
-        private string _outputPath = Resources.ViewModel__outputPath__No_Path_Set;
+        // TODO: switch back
+        private string _outputPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures); //Resources.ViewModel__outputPath__No_Path_Set;
 
         private bool _outputSet;
         private string _outputTemplate = "{o} - Processed";
@@ -352,9 +355,9 @@ namespace BatchImageProcessor.ViewModel
 
         #region Progress
 
-        private int _doneImages = 1;
-        private bool _showProgressBar;
-        private int _totalImages = 1;
+        private int _doneImages = 0;
+        private bool _showProgressBar = false;
+        private int _totalImages = 0;
 
         public int TotalImages
         {

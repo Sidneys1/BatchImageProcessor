@@ -9,266 +9,271 @@ using BatchImageProcessor.ViewModel;
 
 namespace BatchImageProcessor.Model
 {
-    public static class Engine //(ViewModel.ViewModel model)
-    {
-        private static ViewModel.ViewModel _model; //= model;
-        public static int TotalImages;
-        public static int DoneImages;
-        public static event EventHandler UpdateDone;
+	public static class Engine //(ViewModel.ViewModel model)
+	{
+		private static ViewModel.ViewModel _model; //= model;
+		public static int TotalImages;
+		public static int DoneImages;
+		public static event EventHandler UpdateDone;
+	    public static bool Cancel=false;
 
-        public static void Process(ViewModel.ViewModel vm)
-        {
-            _model = vm;
-            TotalImages = 0;
-            DoneImages = 0;
-            QueueItems(vm.Folders[0], vm.OutputPath);
-        }
+		public static void Process(ViewModel.ViewModel vm)
+		{
+			_model = vm;
+			TotalImages = 0;
+			DoneImages = 0;
+		    int m,n;
+            ThreadPool.GetMaxThreads(out m, out n);
+            Trace.WriteLine(string.Format("Max threads: {0}", m));
+			QueueItems(vm.Folders[0], vm.OutputPath);
+		}
 
-        private static void QueueItems(Folder folder, string path)
-        {
-            foreach (var wrapper in folder.Files.OfType<FileWrapper>())
-            {
-                if (wrapper.Selected)
-                {
-                    wrapper.OutputPath = path;
-                    wrapper.ImageNumber = TotalImages;
-                    if (!ThreadPool.QueueUserWorkItem(ProcessImage, wrapper))
-                        Debug.WriteLine("Could not queue #{0}: {1}", TotalImages, wrapper.Name);
-                    else
-                        TotalImages++;
-                }
-            }
+		private static void QueueItems(Folder folder, string path)
+		{
+			foreach (var wrapper in folder.Files.OfType<FileWrapper>().Where(wrapper => wrapper.Selected))
+			{
+				wrapper.OutputPath = path;
+				wrapper.ImageNumber = TotalImages;
+				if (!ThreadPool.QueueUserWorkItem(ProcessImage, wrapper))
+					Debug.WriteLine("Could not queue #{0}: {1}", TotalImages, wrapper.Name);
+				else
+					TotalImages++;
+			}
 
-            foreach (var fold in folder.Files.OfType<Folder>())
-            {
-                QueueItems(fold, Path.Combine(path, fold.Name));
-            }
-        }
+			foreach (var fold in folder.Files.OfType<Folder>())
+			{
+				QueueItems(fold, Path.Combine(path, fold.Name));
+			}
+		}
 
-        public static void ProcessImage(object o)
-        {
-            var w = (o as FileWrapper);
+		public static void ProcessImage(object o)
+		{
+		    if (Cancel)
+		    {
+		        Interlocked.Decrement(ref TotalImages);
+                UpdateDone?.Invoke(null, EventArgs.Empty);
+		        return;
+		    }
 
-            if (w != null)
-            {
-                var b = Image.FromFile(w.Path);
-                // Process
-                if (w.RotationOverride != Rotation.Default || _model.EnableRotation)
-                    RotateImage(w, b);
+		    var w = (o as FileWrapper);
 
-                if (_model.EnableResize && !w.OverrideResize)
-                    b = ResizeImage(b);
+			if (w != null)
+			{
+				var b = Image.FromFile(w.Path);
+				// Process
+				if (w.RotationOverride != Rotation.Default || _model.EnableRotation)
+					RotateImage(w, b);
 
-                if (_model.EnableCrop && !w.OverrideCrop)
-                    b = CropImage(b);
+				if (_model.EnableResize && !w.OverrideResize)
+					b = ResizeImage(b);
 
-                // TODO: Watermark
-                //if (_model.EnableWatermark && !w.OverrideWatermark)
-                //WatermarkImage(w, b);
+				if (_model.EnableCrop && !w.OverrideCrop)
+					b = CropImage(b);
 
-                // Filename
-                string name = null;
-                switch (_model.NameOption)
-                {
-                    case NameType.Original:
-                        name = w.Name;
-                        break;
-                    case NameType.Numbered:
-                        name = w.ImageNumber.ToString(CultureInfo.InvariantCulture);
-                        break;
-                    case NameType.Custom:
-                        name = _model.OutputTemplate;
-                        name = name.Replace("{o}", w.Name);
-                        name = name.Replace("{w}", b.Width.ToString(CultureInfo.InvariantCulture));
-                        name = name.Replace("{h}", b.Height.ToString(CultureInfo.InvariantCulture));
-                        break;
-                }
+				// TODO: Watermark
+				//if (_model.EnableWatermark && !w.OverrideWatermark)
+				//WatermarkImage(w, b);
 
-                // output path
-                var outpath = Path.Combine(w.OutputPath, name + ".jpg");
-                if (!Directory.Exists(w.OutputPath))
-                    Directory.CreateDirectory(w.OutputPath);
+				// Filename
+				string name = null;
+				switch (_model.NameOption)
+				{
+					case NameType.Original:
+						name = w.Name;
+						break;
+					case NameType.Numbered:
+						name = w.ImageNumber.ToString(CultureInfo.InvariantCulture);
+						break;
+					case NameType.Custom:
+						name = _model.OutputTemplate;
+						name = name.Replace("{o}", w.Name);
+						name = name.Replace("{w}", b.Width.ToString(CultureInfo.InvariantCulture));
+						name = name.Replace("{h}", b.Height.ToString(CultureInfo.InvariantCulture));
+						break;
+				}
 
-                var outpathFormat = outpath.Replace(".jpg", " ({0}).jpg");
+				// output path
+				var outpath = Path.Combine(w.OutputPath, name + ".jpg");
+				if (!Directory.Exists(w.OutputPath))
+					Directory.CreateDirectory(w.OutputPath);
 
-                if (System.IO.File.Exists(outpath))
-                {
-                    var i = 0;
-                    while (System.IO.File.Exists(string.Format(outpathFormat, ++i)))
-                    {
-                    }
-                    outpath = string.Format(outpathFormat, i);
-                }
+				var outpathFormat = outpath.Replace(".jpg", " ({0}).jpg");
 
-                // Save
-                b.Save(outpath);
-                b.Dispose();
-            }
+				if (System.IO.File.Exists(outpath))
+				{
+					var i = 0;
+				    while (System.IO.File.Exists(string.Format(outpathFormat, ++i))) ;
+					outpath = string.Format(outpathFormat, i);
+				}
 
-            Interlocked.Increment(ref DoneImages);
-            //if (UpdateDone != null)
-            UpdateDone?.Invoke(null, EventArgs.Empty);
-        }
+				// Save
+				b.Save(outpath);
+				b.Dispose();
+			}
 
-        // TODO: Watermark
+			Interlocked.Increment(ref DoneImages);
+			//if (UpdateDone != null)
+			UpdateDone?.Invoke(null, EventArgs.Empty);
+		}
 
-        //private static void WatermarkImage(FileWrapper w, Image b)
-        //{
-        //	if (_model.DefaultWatermarkType == WatermarkType.Text)
-        //	{
+		// TODO: Watermark
 
-        //	}
-        //	else
-        //	{
+		//private static void WatermarkImage(FileWrapper w, Image b)
+		//{
+		//	if (_model.DefaultWatermarkType == WatermarkType.Text)
+		//	{
 
-        //	}
-        //}
+		//	}
+		//	else
+		//	{
 
-        private static Image CropImage(Image b)
-        {
-            var cropSize = new Size(_model.CropWidth, _model.CropHeight);
+		//	}
+		//}
 
-            if (cropSize.Width > b.Width || cropSize.Height > b.Height)
-                cropSize = new Size(
-                    cropSize.Width > b.Width ? b.Width : cropSize.Width,
-                    cropSize.Height > b.Height ? b.Height : cropSize.Height);
+		private static Image CropImage(Image b)
+		{
+			var cropSize = new Size(_model.CropWidth, _model.CropHeight);
 
-            int x = 0, y = 0;
+			if (cropSize.Width > b.Width || cropSize.Height > b.Height)
+				cropSize = new Size(
+					cropSize.Width > b.Width ? b.Width : cropSize.Width,
+					cropSize.Height > b.Height ? b.Height : cropSize.Height);
 
-            switch (_model.DefaultCropAlignment)
-            {
-                case Alignment.Middle_Left:
-                case Alignment.Middle_Center:
-                case Alignment.Middle_Right:
-                    y = ((b.Height/2) - (cropSize.Height/2));
-                    break;
+			int x = 0, y = 0;
 
-                case Alignment.Bottom_Left:
-                case Alignment.Bottom_Center:
-                case Alignment.Bottom_Right:
-                    y = (b.Height - cropSize.Height);
-                    break;
-            }
+			switch (_model.DefaultCropAlignment)
+			{
+				case Alignment.Middle_Left:
+				case Alignment.Middle_Center:
+				case Alignment.Middle_Right:
+					y = ((b.Height/2) - (cropSize.Height/2));
+					break;
 
-            switch (_model.DefaultCropAlignment)
-            {
-                case Alignment.Top_Center:
-                case Alignment.Middle_Center:
-                case Alignment.Bottom_Center:
-                    x = ((b.Width/2) - (cropSize.Width/2));
-                    break;
+				case Alignment.Bottom_Left:
+				case Alignment.Bottom_Center:
+				case Alignment.Bottom_Right:
+					y = (b.Height - cropSize.Height);
+					break;
+			}
 
-                case Alignment.Top_Right:
-                case Alignment.Middle_Right:
-                case Alignment.Bottom_Right:
-                    x = b.Width - cropSize.Width;
-                    break;
-            }
+			switch (_model.DefaultCropAlignment)
+			{
+				case Alignment.Top_Center:
+				case Alignment.Middle_Center:
+				case Alignment.Bottom_Center:
+					x = ((b.Width/2) - (cropSize.Width/2));
+					break;
 
-            var r = new Rectangle(new Point(x, y), cropSize);
+				case Alignment.Top_Right:
+				case Alignment.Middle_Right:
+				case Alignment.Bottom_Right:
+					x = b.Width - cropSize.Width;
+					break;
+			}
 
-            Image ret = new Bitmap(cropSize.Width, cropSize.Height);
+			var r = new Rectangle(new Point(x, y), cropSize);
 
-            using (var g = Graphics.FromImage(ret))
-                g.DrawImage(b, new Rectangle(Point.Empty, cropSize), r, GraphicsUnit.Pixel);
+			Image ret = new Bitmap(cropSize.Width, cropSize.Height);
 
-            b.Dispose();
-            return ret;
-        }
+			using (var g = Graphics.FromImage(ret))
+				g.DrawImage(b, new Rectangle(Point.Empty, cropSize), r, GraphicsUnit.Pixel);
 
-        private static Image ResizeImage(Image b)
-        {
-            var newSize = b.Size;
-            var targetSize = new Size(_model.ResizeWidth, _model.ResizeHeight);
+			b.Dispose();
+			return ret;
+		}
 
-            if (_model.UseAspectRatio)
-            {
-                if (b.Width > b.Height) // landscape
-                {
-                    targetSize = new Size(
-                        targetSize.Width > targetSize.Height ? targetSize.Width : targetSize.Height,
-                        targetSize.Width > targetSize.Height ? targetSize.Height : targetSize.Width);
-                }
-                else if (b.Height > b.Width) // Portrait
-                {
-                    targetSize = new Size(
-                        targetSize.Height > targetSize.Width ? targetSize.Width : targetSize.Height,
-                        targetSize.Height > targetSize.Width ? targetSize.Height : targetSize.Width);
-                }
-            }
+		private static Image ResizeImage(Image b)
+		{
+			var newSize = b.Size;
+			var targetSize = new Size(_model.ResizeWidth, _model.ResizeHeight);
 
-            switch (_model.DefaultResizeMode)
-            {
-                case ResizeMode.Smaller:
-                    if (b.Width > targetSize.Width || b.Height > targetSize.Height)
-                    {
-                        var ratioX = targetSize.Width/(double) b.Width;
-                        var ratioY = targetSize.Height/(double) b.Height;
-                        // use whichever multiplier is smaller
-                        var ratio = ratioX < ratioY ? ratioX : ratioY;
+			if (_model.UseAspectRatio)
+			{
+				if (b.Width > b.Height) // landscape
+				{
+					targetSize = new Size(
+						targetSize.Width > targetSize.Height ? targetSize.Width : targetSize.Height,
+						targetSize.Width > targetSize.Height ? targetSize.Height : targetSize.Width);
+				}
+				else if (b.Height > b.Width) // Portrait
+				{
+					targetSize = new Size(
+						targetSize.Height > targetSize.Width ? targetSize.Width : targetSize.Height,
+						targetSize.Height > targetSize.Width ? targetSize.Height : targetSize.Width);
+				}
+			}
 
-                        // now we can get the new height and width
-                        var newHeight = Convert.ToInt32(b.Height*ratio);
-                        var newWidth = Convert.ToInt32(b.Width*ratio);
+			switch (_model.DefaultResizeMode)
+			{
+				case ResizeMode.Smaller:
+					if (b.Width > targetSize.Width || b.Height > targetSize.Height)
+					{
+						var ratioX = targetSize.Width/(double) b.Width;
+						var ratioY = targetSize.Height/(double) b.Height;
+						// use whichever multiplier is smaller
+						var ratio = ratioX < ratioY ? ratioX : ratioY;
 
-                        newSize = new Size(newWidth, newHeight);
-                    }
-                    break;
-                case ResizeMode.Larger:
-                    if (b.Width < targetSize.Width || b.Height < targetSize.Height)
-                    {
-                        var ratioX = targetSize.Width/(double) b.Width;
-                        var ratioY = targetSize.Height/(double) b.Height;
-                        // use whichever multiplier is larger
-                        var ratio = ratioX > ratioY ? ratioX : ratioY;
+						// now we can get the new height and width
+						var newHeight = Convert.ToInt32(b.Height*ratio);
+						var newWidth = Convert.ToInt32(b.Width*ratio);
 
-                        // now we can get the new height and width
-                        var newHeight = Convert.ToInt32(b.Height*ratio);
-                        var newWidth = Convert.ToInt32(b.Width*ratio);
+						newSize = new Size(newWidth, newHeight);
+					}
+					break;
+				case ResizeMode.Larger:
+					if (b.Width < targetSize.Width || b.Height < targetSize.Height)
+					{
+						var ratioX = targetSize.Width/(double) b.Width;
+						var ratioY = targetSize.Height/(double) b.Height;
+						// use whichever multiplier is larger
+						var ratio = ratioX > ratioY ? ratioX : ratioY;
 
-                        newSize = new Size(newWidth, newHeight);
-                    }
-                    break;
-                case ResizeMode.Exact:
-                    if (b.Size != targetSize)
-                    {
-                        newSize = new Size(targetSize.Width, targetSize.Height);
-                    }
-                    break;
-            }
+						// now we can get the new height and width
+						var newHeight = Convert.ToInt32(b.Height*ratio);
+						var newWidth = Convert.ToInt32(b.Width*ratio);
 
-            if (b.Size == newSize) return b;
-            var one = b;
-            Image two = new Bitmap(b, newSize);
-            one.Dispose();
-            return two;
-        }
+						newSize = new Size(newWidth, newHeight);
+					}
+					break;
+				case ResizeMode.Exact:
+					if (b.Size != targetSize)
+					{
+						newSize = new Size(targetSize.Width, targetSize.Height);
+					}
+					break;
+			}
 
-        private static void RotateImage(FileWrapper w, Image b)
-        {
-            var r = w.RotationOverride == Rotation.Default ? _model.DefaultRotation : w.RotationOverride;
+			if (b.Size == newSize) return b;
+			var one = b;
+			Image two = new Bitmap(b, newSize);
+			one.Dispose();
+			return two;
+		}
 
-            switch (r)
-            {
-                case Rotation.Clockwise:
-                    b.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                    break;
-                case Rotation.CounterClockwise:
-                    b.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                    break;
-                case Rotation.UpsideDown:
-                    b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                    break;
-                case Rotation.Portrait:
-                    if (b.Width > b.Height)
-                        b.RotateFlip(RotateFlipType.Rotate270FlipNone);
+		private static void RotateImage(FileWrapper w, Image b)
+		{
+			var r = w.RotationOverride == Rotation.Default ? _model.DefaultRotation : w.RotationOverride;
 
-                    break;
-                case Rotation.Landscape:
-                    if (b.Width < b.Height)
-                        b.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                    break;
-            }
-        }
-    }
+			switch (r)
+			{
+				case Rotation.Clockwise:
+					b.RotateFlip(RotateFlipType.Rotate90FlipNone);
+					break;
+				case Rotation.CounterClockwise:
+					b.RotateFlip(RotateFlipType.Rotate270FlipNone);
+					break;
+				case Rotation.UpsideDown:
+					b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+					break;
+				case Rotation.Portrait:
+					if (b.Width > b.Height)
+						b.RotateFlip(RotateFlipType.Rotate270FlipNone);
+					break;
+				case Rotation.Landscape:
+					if (b.Width < b.Height)
+						b.RotateFlip(RotateFlipType.Rotate90FlipNone);
+					break;
+			}
+		}
+	}
 }

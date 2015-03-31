@@ -130,7 +130,7 @@
     <comment>Import image dialog title</comment>
   </data>
   <data name="MainWindow__fileBrowser_Filter" xml:space="preserve">
-    <value>Image Files|*.jpg;*.jpeg</value>
+    <value>Image Files|*.jpg;*.jpeg;*.png</value>
     <comment>Image import dialog filter</comment>
   </data>
   <data name="MainWindow__watermarkFileBrowser_Title" xml:space="preserve">
