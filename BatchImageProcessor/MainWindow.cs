@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
@@ -17,11 +15,11 @@ using BatchImageProcessor.View;
 using BatchImageProcessor.ViewModel;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
+using Env = System.Environment;
 using File = BatchImageProcessor.Model.File;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
-using Env = System.Environment;
 
 namespace BatchImageProcessor
 {
@@ -48,8 +46,8 @@ namespace BatchImageProcessor
 #endif
 		}
 
-	    private IntPtr hwnd;
-	    private HwndSource hsource;
+	    private IntPtr _hwnd;
+	    private HwndSource _hsource;
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			var args = Env.GetCommandLineArgs();
@@ -76,13 +74,13 @@ namespace BatchImageProcessor
                 //FolderLabel.Padding = FileLabel.Padding = SettingsLabel.Padding = new Thickness(5,0,5,5);
                 FolderLabel.Visibility = FileLabel.Visibility = SettingsLabel.Visibility = Visibility.Collapsed;
 
-                if ((hwnd = new WindowInteropHelper(this).Handle) == IntPtr.Zero)
+                if ((_hwnd = new WindowInteropHelper(this).Handle) == IntPtr.Zero)
                 {
                     throw new InvalidOperationException("Could not get window handle for the main window.");
                 }
 
-                hsource = HwndSource.FromHwnd(hwnd);
-                hsource.AddHook(WndProc);
+                _hsource = HwndSource.FromHwnd(_hwnd);
+                _hsource?.AddHook(WndProc);
 
                 AdjustWindowFrame();
             }
@@ -109,11 +107,11 @@ namespace BatchImageProcessor
         private void ExtendFrameIntoClientArea(int left, int right, int top, int bottom)
         {
             var margins = new Margins { cxLeftWidth = left, cxRightWidth = right, cyTopHeight = top, cyBottomHeight = bottom };
-            var hresult = DwmApiInterop.ExtendFrameIntoClientArea(hwnd, ref margins);
+            var hresult = DwmApiInterop.ExtendFrameIntoClientArea(_hwnd, ref margins);
 
             if (hresult == 0)
             {
-                if (hsource.CompositionTarget != null) hsource.CompositionTarget.BackgroundColor = Colors.Transparent;
+                if (_hsource.CompositionTarget != null) _hsource.CompositionTarget.BackgroundColor = Colors.Transparent;
                 Background = Brushes.Transparent;
             }
             else
@@ -209,7 +207,8 @@ namespace BatchImageProcessor
 		private readonly FolderBrowserDialog _outputBrowser = new FolderBrowserDialog
 		{
 			Description = Properties.Resources.MainWindow_OutputBrowser_Description,
-			RootFolder = Env.SpecialFolder.MyPictures,
+			RootFolder = Env.SpecialFolder.MyComputer,
+            SelectedPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures),
 			ShowNewFolderButton = true
 		};
 
