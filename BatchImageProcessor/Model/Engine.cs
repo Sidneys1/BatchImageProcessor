@@ -102,8 +102,10 @@ namespace BatchImageProcessor.Model
 				if (System.IO.File.Exists(outpath))
 				{
 					var i = 0;
-				    while (System.IO.File.Exists(string.Format(outpathFormat, ++i))) ;
-					outpath = string.Format(outpathFormat, i);
+				    while (System.IO.File.Exists(string.Format(outpathFormat, ++i)))
+				    {
+				    }
+				    outpath = string.Format(outpathFormat, i);
 				}
 
 				// Save

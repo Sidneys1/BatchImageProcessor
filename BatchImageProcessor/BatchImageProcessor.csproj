@@ -112,6 +112,7 @@
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
+    <Compile Include="DwmApiInteropt.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\Engine.cs" />
     <Compile Include="Model\Rotation.cs" />
