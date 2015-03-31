@@ -9,13 +9,9 @@
         Title="Batch Image Processor" Height="720" Width="1280" MinWidth="1024" MinHeight="650"
         UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Images/ImageRotator.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
-        DataContext="{Binding VModel, Mode=OneWay, RelativeSource={RelativeSource Self}}">
+        DataContext="{Binding VModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" SourceInitialized="MainWindow_OnSourceInitialized">
     <Window.Resources>
         <!--<viewmodel:FolderCollectionView x:Key="focv" Source="{Binding Children}" />-->
-
-
-
-
 
         <!-- #region Styles and Templates -->
 
@@ -99,7 +95,7 @@
         <!-- Label Header Style (Global Override) -->
         <Style TargetType="{x:Type Label}">
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Effect" Value="{DynamicResource DropShadowFx}" />
+            <!--<Setter Property="Effect" Value="{DynamicResource DropShadowFx}" />-->
         </Style>
 
         <!-- Simple Button Style (Global Override) -->
@@ -210,800 +206,801 @@
         </ContextMenu>
     </Window.Resources>
 
-    <Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Name="Headers" Height="Auto" />
-			<RowDefinition Name="Toolbars" Height="Auto" />
-			<RowDefinition Name="ContentRow" Height="*" />
-		</Grid.RowDefinitions>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Name="TreeViewCol" Width="200" MinWidth="200" MaxWidth="400" />
-			<ColumnDefinition Name="Grid" Width="*" MinWidth="400" />
-			<ColumnDefinition Name="Settings" Width="300" MinWidth="300" />
-		</Grid.ColumnDefinitions>
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Name="Headers" Height="Auto" />
+            <RowDefinition Name="Toolbars" Height="Auto" />
+            <RowDefinition Name="ContentRow" Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Name="TreeViewCol" Width="200" MinWidth="200" MaxWidth="400" />
+            <ColumnDefinition Name="Grid" Width="*" MinWidth="400" />
+            <ColumnDefinition Name="Settings" Width="300" MinWidth="300" />
+        </Grid.ColumnDefinitions>
 
-		<!-- #region Left Column -->
+        <!-- #region Left Column -->
 
-		<Label Content="{x:Static properties:Resources.FoldersLabel_Text}" HorizontalAlignment="Center" />
+        <Rectangle x:Name="ContentRectangle" Grid.Row="2" Grid.ColumnSpan="3" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
 
-		<!-- Left Toolbar -->
-		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Margin="15,0" HorizontalAlignment="Center">
-			<Button x:Name="ImportImageBtn" ToolTip="{x:Static properties:Resources.ImportImageBtn_ToolTip}" Cursor="Hand"
+        <!-- #region Left Column -->
+
+        <Label x:Name="FolderLabel" Grid.Row="0" Grid.Column="0" Content="{x:Static properties:Resources.FoldersLabel_Text}" HorizontalAlignment="Center" Visibility="Collapsed"/>
+
+        <!-- Left Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Margin="15,0" HorizontalAlignment="Center">
+            <Button x:Name="ImportImageBtn" ToolTip="{x:Static properties:Resources.ImportImageBtn_ToolTip}" Cursor="Hand"
 			        Click="importImageBtn_Click">
-				<Image Width="18" Height="18" Source="Images/image-import.png" Stretch="None" />
-			</Button>
-			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
+                <Image Width="18" Height="18" Source="Images/image-import.png" Stretch="None" />
+            </Button>
+            <Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
 			      Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
 			      Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
-			<Button x:Name="AddFolderBtn" ToolTip="{x:Static properties:Resources.AddFolderBtn_ToolTip}" Cursor="Hand"
+            <Button x:Name="AddFolderBtn" ToolTip="{x:Static properties:Resources.AddFolderBtn_ToolTip}" Cursor="Hand"
 			        Click="addFolderBtn_Click">
-				<Image Width="18" Height="18" Source="Images/folder--plus.png" Stretch="None" />
-			</Button>
-			<Button x:Name="ImportFolderBtn" ToolTip="{x:Static properties:Resources.ImportFolderBtn_ToolTip}" Cursor="Hand"
+                <Image Width="18" Height="18" Source="Images/folder--plus.png" Stretch="None" />
+            </Button>
+            <Button x:Name="ImportFolderBtn" ToolTip="{x:Static properties:Resources.ImportFolderBtn_ToolTip}" Cursor="Hand"
 			        Click="importFolderBtn_Click">
-				<Image Width="18" Height="18" Source="Images/folder-import.png" Stretch="None" />
-			</Button>
-			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
+                <Image Width="18" Height="18" Source="Images/folder-import.png" Stretch="None" />
+            </Button>
+            <Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
 			      Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
 			      Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
-			<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-			<Button x:Name="RemoveItemBtn" ToolTip="{x:Static properties:Resources.RemoveItemBtn_ToolTip}" Cursor="Hand"
+            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+            <Button x:Name="RemoveItemBtn" ToolTip="{x:Static properties:Resources.RemoveItemBtn_ToolTip}" Cursor="Hand"
 			        IsEnabled="{Binding SelectedItem.Removable, ElementName=TreeView}">
-				<Image Width="18" Height="18" Source="Images/cross.png" Stretch="None" />
-			</Button>
-		</StackPanel>
+                <Image Width="18" Height="18" Source="Images/cross.png" Stretch="None" />
+            </Button>
+        </StackPanel>
 
-		<!-- Treeview File Explorer -->
-		<TreeView x:Name="TreeView" Grid.Row="2" Grid.Column="0" ItemsSource="{Binding Folders}" BorderThickness="0"
+        <!-- Treeview File Explorer -->
+        <TreeView x:Name="TreeView" Grid.Row="2" Grid.Column="0" ItemsSource="{Binding Folders}" BorderThickness="0"
 		          VirtualizingPanel.IsVirtualizing="True">
-			<TreeView.Resources>
-				<HierarchicalDataTemplate DataType="{x:Type viewmodel:Folder}" ItemsSource="{Binding Files}">
-					<StackPanel Orientation="Horizontal" Cursor="Hand">
-						<StackPanel.ContextMenu>
-							<ContextMenu>
-								<MenuItem Header="{x:Static properties:Resources.ImportImageBtn_ToolTip}" Click="importImageBtn_Click">
-									<MenuItem.Icon>
-										<Image Stretch="None" StretchDirection="DownOnly" Source="Images/image-import.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<Separator />
-								<MenuItem Header="{x:Static properties:Resources.AddFolderBtn_ToolTip}" Click="addFolderBtn_Click">
-									<MenuItem.Icon>
-										<Image Stretch="None" StretchDirection="DownOnly" Source="Images/folder--plus.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="{x:Static properties:Resources.ImportFolderBtn_ToolTip}" Click="importFolderBtn_Click">
-									<MenuItem.Icon>
-										<Image Stretch="None" StretchDirection="DownOnly" Source="Images/folder-import.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<Separator />
-								<MenuItem Header="{x:Static properties:Resources.FolderMenu_RenameMenuItem_Header}"
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type viewmodel:Folder}" ItemsSource="{Binding Files}">
+                    <StackPanel Orientation="Horizontal" Cursor="Hand">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{x:Static properties:Resources.ImportImageBtn_ToolTip}" Click="importImageBtn_Click">
+                                    <MenuItem.Icon>
+                                        <Image Stretch="None" StretchDirection="DownOnly" Source="Images/image-import.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="{x:Static properties:Resources.AddFolderBtn_ToolTip}" Click="addFolderBtn_Click">
+                                    <MenuItem.Icon>
+                                        <Image Stretch="None" StretchDirection="DownOnly" Source="Images/folder--plus.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="{x:Static properties:Resources.ImportFolderBtn_ToolTip}" Click="importFolderBtn_Click">
+                                    <MenuItem.Icon>
+                                        <Image Stretch="None" StretchDirection="DownOnly" Source="Images/folder-import.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="{x:Static properties:Resources.FolderMenu_RenameMenuItem_Header}"
 								          Click="RenameFolderMenuItem_Click" IsEnabled="{Binding Removable}">
-									<MenuItem.Icon>
-										<Image StretchDirection="DownOnly" Source="Images/ui-text-field.png" Stretch="None" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="{x:Static properties:Resources.FolderMenu_RemoveMenuItem_Header}"
+                                    <MenuItem.Icon>
+                                        <Image StretchDirection="DownOnly" Source="Images/ui-text-field.png" Stretch="None" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="{x:Static properties:Resources.FolderMenu_RemoveMenuItem_Header}"
 								          Click="RemoveFolderMenuItem_Click" IsEnabled="{Binding Removable}">
-									<MenuItem.Icon>
-										<Image StretchDirection="DownOnly" Source="Images/cross.png" Stretch="None" />
-									</MenuItem.Icon>
-								</MenuItem>
-							</ContextMenu>
-						</StackPanel.ContextMenu>
-						<Image Source="Images/folder.png" />
-						<TextBlock Text="{Binding Name}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="5,1,5,1"
+                                    <MenuItem.Icon>
+                                        <Image StretchDirection="DownOnly" Source="Images/cross.png" Stretch="None" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                        <Image Source="Images/folder.png" />
+                        <TextBlock Text="{Binding Name}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="5,1,5,1"
 						           ToolTip="{Binding Name}" />
-					</StackPanel>
-				</HierarchicalDataTemplate>
-				<DataTemplate DataType="{x:Type model:File}">
-					<StackPanel Orientation="Horizontal" MouseRightButtonUp="Grid_MouseRightButtonUp">
-						<Image Source="Images/image.png" />
-						<TextBlock Text="{Binding Name, BindsDirectlyToSource=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type model:File}">
+                    <StackPanel Orientation="Horizontal" MouseRightButtonUp="Grid_MouseRightButtonUp">
+                        <Image Source="Images/image.png" />
+                        <TextBlock Text="{Binding Name, BindsDirectlyToSource=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 						           TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="5,1,5,1">
-							<TextBlock.ToolTip>
-								<StackPanel>
-									<Image Source="{Binding Thumbnail.Source, FallbackValue={StaticResource LoadingImage}, IsAsync=False}"
+                            <TextBlock.ToolTip>
+                                <StackPanel>
+                                    <Image Source="{Binding Thumbnail.Source, FallbackValue={StaticResource LoadingImage}, IsAsync=False}"
 									       StretchDirection="DownOnly" Effect="{DynamicResource DropShadowFx}" />
-									<TextBlock Text="{Binding Path}" />
-								</StackPanel>
-							</TextBlock.ToolTip>
+                                    <TextBlock Text="{Binding Path}" />
+                                </StackPanel>
+                            </TextBlock.ToolTip>
 						</TextBlock>
-					</StackPanel>
-				</DataTemplate>
-				<Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeVwItmStyle}">
-					<Style.Triggers>
-						<DataTrigger Value="{x:Type model:File}" Binding="{Binding Converter={StaticResource TypeConv}, Mode=OneWay}">
-							<Setter Property="Focusable" Value="False" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</TreeView.Resources>
-		</TreeView>
+                    </StackPanel>
+                </DataTemplate>
+                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeVwItmStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Value="{x:Type model:File}" Binding="{Binding Converter={StaticResource TypeConv}, Mode=OneWay}">
+                            <Setter Property="Focusable" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.Resources>
+        </TreeView>
 
-		<!-- #endregion -->
+        <!-- #region Middle Column -->
 
-		<!-- #region Middle Column -->
+        <Label x:Name="FileLabel"  Grid.Row="0" Grid.Column="1" Content="{x:Static properties:Resources.FilesLabel_Text}"
+		       HorizontalAlignment="Center" Visibility="Collapsed" />
 
-		<Label Grid.Row="0" Grid.Column="1" Content="{x:Static properties:Resources.FilesLabel_Text}"
-		       HorizontalAlignment="Center" />
-
-		<!-- Middle Toolbar -->
-		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="15,0" HorizontalAlignment="Center">
-			<Button x:Name="CheckAllBtn" ToolTip="{x:Static properties:Resources.CheckAllBtn_ToolTip}" Cursor="Hand"
+        <!-- Middle Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="15,0" HorizontalAlignment="Center">
+            <Button x:Name="CheckAllBtn" ToolTip="{x:Static properties:Resources.CheckAllBtn_ToolTip}" Cursor="Hand"
 			        Click="checkAllBtn_Click">
-				<Image Width="18" Height="18" Source="Images/ui-check-box.png" Stretch="None" />
-			</Button>
+                <Image Width="18" Height="18" Source="Images/ui-check-box.png" Stretch="None" />
+            </Button>
             <Button x:Name="CheckInvBtn" ToolTip="{x:Static properties:Resources.CheckInvBtn_ToolTip}" Cursor="Hand"
 			        Click="CheckInvBtn_Click">
                 <Image Width="18" Height="18" Source="Images/ui-check-boxes.png" Stretch="None" />
             </Button>
             <Button x:Name="UncheckBtn" ToolTip="{x:Static properties:Resources.UncheckBtn_ToolTip}" Cursor="Hand"
 			        Click="uncheckBtn_Click">
-				<Image Width="18" Height="18" Source="Images/ui-check-box-uncheck.png" Stretch="None" />
-			</Button>
-			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
+                <Image Width="18" Height="18" Source="Images/ui-check-box-uncheck.png" Stretch="None" />
+            </Button>
+            <Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
 			      Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
 			      Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
-			<Button x:Name="LandRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}"
+            <Button x:Name="LandRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}"
 			        Cursor="Hand" Click="landRotBtn_Click">
-				<Image Width="18" Height="18" Source="Images/image.png" Stretch="None" />
-			</Button>
-			<Button x:Name="CcRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}"
+                <Image Width="18" Height="18" Source="Images/image.png" Stretch="None" />
+            </Button>
+            <Button x:Name="CcRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}"
 			        Cursor="Hand" Click="ccRotBtn_Click">
-				<Image Width="18" Height="18" Source="Images/arrow-circle-ccwise.png" Stretch="None" />
-			</Button>
-			<Button x:Name="NoRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}"
+                <Image Width="18" Height="18" Source="Images/arrow-circle-ccwise.png" Stretch="None" />
+            </Button>
+            <Button x:Name="NoRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}"
 			        Cursor="Hand" Click="noRotBtn_Click">
-				<Image Width="18" Height="18" Source="Images/arrow-noturn.png" Stretch="None" />
-			</Button>
-			<Button x:Name="DefRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_DefaultRotationMenuItem_Header}"
+                <Image Width="18" Height="18" Source="Images/arrow-noturn.png" Stretch="None" />
+            </Button>
+            <Button x:Name="DefRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_DefaultRotationMenuItem_Header}"
 			        Cursor="Hand" Click="defRotBtn_Click">
-				<Image Width="18" Height="18" Source="Images/image-rotate--asterisk.png" Stretch="None" />
-			</Button>
-			<Button x:Name="UpRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}"
+                <Image Width="18" Height="18" Source="Images/image-rotate--asterisk.png" Stretch="None" />
+            </Button>
+            <Button x:Name="UpRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}"
 			        Cursor="Hand" Click="upRotBtn_Click">
-				<Image Width="18" Height="18" Source="Images/arrow-circle-180.png" Stretch="None" />
-			</Button>
-			<Button x:Name="CRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}"
+                <Image Width="18" Height="18" Source="Images/arrow-circle-180.png" Stretch="None" />
+            </Button>
+            <Button x:Name="CRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}"
 			        Cursor="Hand" Click="cRotBtn_Click">
-				<Image Width="18" Height="18" Source="Images/arrow-circle-cwise.png" Stretch="None" />
-			</Button>
-			<Button x:Name="PortRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}"
+                <Image Width="18" Height="18" Source="Images/arrow-circle-cwise.png" Stretch="None" />
+            </Button>
+            <Button x:Name="PortRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}"
 			        Cursor="Hand" Click="portRotBtn_Click">
-				<Image Width="18" Height="18" Source="Images/image-vertical.png" Stretch="None" />
-			</Button>
-			<Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
+                <Image Width="18" Height="18" Source="Images/image-vertical.png" Stretch="None" />
+            </Button>
+            <Line StrokeThickness="1" Margin="3" X1="0" X2="0" Y1="0"
 			      Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
 			      Y2="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
-			<Button x:Name="SelectAllBtn" ToolTip="{x:Static properties:Resources.SelectAllBtn_ToolTip}" Cursor="Hand"
+            <Button x:Name="SelectAllBtn" ToolTip="{x:Static properties:Resources.SelectAllBtn_ToolTip}" Cursor="Hand"
 			        Click="selectAllBtn_Click">
-				<Image Width="18" Height="18" Source="Images/selection-select.png" Stretch="None" />
-			</Button>
+                <Image Width="18" Height="18" Source="Images/selection-select.png" Stretch="None" />
+            </Button>
             <Button x:Name="SelectInvBtn" ToolTip="{x:Static properties:Resources.SelectInvBtn_ToolTip}" Cursor="Hand"
 			        Click="SelectInvBtn_Click">
                 <Image Width="18" Height="18" Source="Images/selection-exclude.png" Stretch="None" />
             </Button>
             <Button x:Name="DeselectBtn" ToolTip="{x:Static properties:Resources.DeselectBtn_ToolTip}" Cursor="Hand"
 			        Click="deselectBtn_Click">
-				<Image Width="18" Height="18" Source="Images/selection.png" Stretch="None" />
-			</Button>
-		</StackPanel>
+                <Image Width="18" Height="18" Source="Images/selection.png" Stretch="None" />
+            </Button>
+        </StackPanel>
 
-		<!-- Grid Splitter -->
-		<GridSplitter Grid.Row="2" Grid.Column="1" Width="3" ResizeDirection="Columns" HorizontalAlignment="Left"
+        <!-- Grid Splitter -->
+        <GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Width="3" ResizeDirection="Columns" HorizontalAlignment="Left"
 		              IsTabStop="False">
-			<GridSplitter.Background>
-				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="Transparent" Offset="0" />
-					<GradientStop Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}" Offset="0.5" />
-					<GradientStop Color="Transparent" Offset="1" />
-				</LinearGradientBrush>
-			</GridSplitter.Background>
-		</GridSplitter>
+            <GridSplitter.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Transparent" Offset="0" />
+                    <GradientStop Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}" Offset="0.4" />
+                    <GradientStop Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}" Offset="0.6" />
+                    <GradientStop Color="Transparent" Offset="1" />
+                </LinearGradientBrush>
+            </GridSplitter.Background>
+        </GridSplitter>
 
-		<!-- Item View -->
-		<ListView Grid.Row="2" Grid.Column="1" x:Name="ThumbnailView" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+        <!-- Item View -->
+        <ListView Grid.Row="2" Grid.Column="1" x:Name="ThumbnailView" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 		          ScrollViewer.VerticalScrollBarVisibility="Auto"
 		          ItemsSource="{Binding Source={StaticResource FileFilterCollection}}" Margin="3,0,0,0">
-			<ListView.ItemTemplate>
-				<DataTemplate DataType="{x:Type viewmodel:FileWrapper}">
-					<Grid VerticalAlignment="Center" Margin="0,3,0,0" MouseRightButtonUp="Grid_MouseRightButtonUp">
-						<Grid.ToolTip>
-							<StackPanel>
-								<Image HorizontalAlignment="Center" Source="{Binding Thumbnail.Source}" StretchDirection="DownOnly"
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewmodel:FileWrapper}">
+                    <Grid VerticalAlignment="Center" Margin="0,3,0,0" MouseRightButtonUp="Grid_MouseRightButtonUp">
+                        <Grid.ToolTip>
+                            <StackPanel>
+                                <Image HorizontalAlignment="Center" Source="{Binding Thumbnail.Source}" StretchDirection="DownOnly"
 								       Effect="{DynamicResource DropShadowFx}" />
-								<TextBlock Text="{Binding Path}" />
-							</StackPanel>
-						</Grid.ToolTip>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="*" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-						</Grid.RowDefinitions>
-						<Image Grid.RowSpan="2"
+                                <TextBlock Text="{Binding Path}" />
+                            </StackPanel>
+                        </Grid.ToolTip>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Image Grid.RowSpan="2"
 						       Source="{Binding Thumbnail.Source, FallbackValue={StaticResource LoadingImage}, IsAsync=False}"
 						       StretchDirection="DownOnly" MaxWidth="128" Height="128" Margin="3" Effect="{Binding Selected, Converter={StaticResource BoolEffConv}}"
                                Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}" />
-						<CheckBox Grid.Row="0" IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False" />
-						<StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft"
+                        <CheckBox Grid.Row="0" IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False" />
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft"
 						            Effect="{StaticResource DropShadowFx}">
-							<Image Width="16" Height="16"
-							       Visibility="{Binding Path=RotationOverride, Converter={StaticResource EnumVisConv}, ConverterParameter=None}"
+                            <Image Width="16" Height="16"
+							       Visibility="{Binding RotationOverride, ConverterParameter=None, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/arrow-noturn.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}" />
-							<Image Width="16" Height="16"
-							       Visibility="{Binding Path=RotationOverride, Converter={StaticResource EnumVisConv}, ConverterParameter=Clockwise}"
+                            <Image Width="16" Height="16"
+							       Visibility="{Binding RotationOverride, ConverterParameter=Clockwise, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/arrow-circle-cwise.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}" />
-							<Image Width="16" Height="16"
-							       Visibility="{Binding Path=RotationOverride, Converter={StaticResource EnumVisConv}, ConverterParameter=UpsideDown}"
+                            <Image Width="16" Height="16"
+							       Visibility="{Binding RotationOverride, ConverterParameter=UpsideDown, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/arrow-circle-180.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}" />
-							<Image Width="16" Height="16"
-							       Visibility="{Binding Path=RotationOverride, Converter={StaticResource EnumVisConv}, ConverterParameter=CounterClockwise}"
+                            <Image Width="16" Height="16"
+							       Visibility="{Binding RotationOverride, ConverterParameter=CounterClockwise, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/arrow-circle-ccwise.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}" />
-							<Image Width="16" Height="16"
-							       Visibility="{Binding Path=RotationOverride, Converter={StaticResource EnumVisConv}, ConverterParameter=Portrait}"
+                            <Image Width="16" Height="16"
+							       Visibility="{Binding RotationOverride, ConverterParameter=Portrait, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/image-vertical.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}" />
-							<Image Width="16" Height="16"
-							       Visibility="{Binding Path=RotationOverride, Converter={StaticResource EnumVisConv}, ConverterParameter=Landscape}"
+                            <Image Width="16" Height="16"
+							       Visibility="{Binding RotationOverride, ConverterParameter=Landscape, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/image.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}" />
 
-							<Image Width="16" Height="16"
-							       Visibility="{Binding Path=OverrideResize, Converter={StaticResource InvBoolVisConv}}"
+                            <Image Width="16" Height="16"
+							       Visibility="{Binding OverrideResize, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/image-resize-actual--cross.png" ToolTip="Resize Overridden" />
                             <Image Width="16" Height="16"
-							       Visibility="{Binding Path=OverrideCrop, Converter={StaticResource InvBoolVisConv}}"
+							       Visibility="{Binding OverrideCrop, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/image-crop--cross.png" ToolTip="Crop Overridden" />
                             <Image Width="16" Height="16"
-							       Visibility="{Binding Path=OverrideWatermark, Converter={StaticResource InvBoolVisConv}}"
+							       Visibility="{Binding OverrideWatermark, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/image-saturation--cross.png" ToolTip="Watermark Overridden" />
-						</StackPanel>
-						<TextBlock Grid.Row="2" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" MaxWidth="128"
+                        </StackPanel>
+                        <TextBlock Grid.Row="2" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" MaxWidth="128"
 						           MaxHeight="40" TextAlignment="Center" Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}" />
-					</Grid>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
-		<!-- #endregion -->
+        <!-- #region Right Column -->
 
-		<!-- #region Right Column -->
+        <Label x:Name="SettingsLabel"  Grid.Row="0" Grid.Column="2" Content="{x:Static properties:Resources.DefaultSettingsLabel_Content}"
+		       HorizontalAlignment="Center" Visibility="Collapsed"/>
 
-		<Label Grid.Row="0" Grid.Column="2" Content="{x:Static properties:Resources.DefaultSettingsLabel_Content}"
-		       HorizontalAlignment="Center" />
-
-		<!-- Toolbar -->
-		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="15,0" HorizontalAlignment="Center">
-			<Button x:Name="GcBtn" ToolTip="{x:Static properties:Resources.GcBtn_ToolTip}" Cursor="Hand" Click="gcBtn_Click">
-				<Image Width="18" Height="18" Source="Images/bin.png" Stretch="None" StretchDirection="DownOnly" />
-			</Button>
-			<Button x:Name="AboutBtn" ToolTip="{x:Static properties:Resources.AboutBtn_ToolTip}" Cursor="Hand"
+        <!-- Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="15,0" HorizontalAlignment="Center">
+            <Button x:Name="GcBtn" ToolTip="{x:Static properties:Resources.GcBtn_ToolTip}" Cursor="Hand" Click="gcBtn_Click">
+                <Image Width="18" Height="18" Source="Images/bin.png" Stretch="None" StretchDirection="DownOnly" />
+            </Button>
+            <Button x:Name="AboutBtn" ToolTip="{x:Static properties:Resources.AboutBtn_ToolTip}" Cursor="Hand"
 			        Click="aboutBtn_Click">
-				<Image Width="18" Height="18" Source="Images/information.png" Stretch="None" StretchDirection="DownOnly" />
-			</Button>
-		</StackPanel>
+                <Image Width="18" Height="18" Source="Images/information.png" Stretch="None" StretchDirection="DownOnly" />
+            </Button>
+        </StackPanel>
 
-		<Grid Grid.Column="2" Grid.Row="2">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
+        <Grid Grid.Column="2" Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
+            </Grid.RowDefinitions>
 
-			<!-- Option tabs -->
-			<ListBox x:Name="OptionsBox" VerticalAlignment="Top" Height="Auto" BorderThickness="0" SelectedIndex="0"
+            <!-- Option tabs -->
+            <ListBox x:Name="OptionsBox" VerticalAlignment="Top" Height="Auto" BorderThickness="0" SelectedIndex="0"
 			         SelectionChanged="ListBox_SelectionChanged">
-				<ListBox.Resources>
-					<Style TargetType="{x:Type CheckBox}">
-						<Style.Triggers>
-							<EventTrigger RoutedEvent="ToggleButton.Checked">
-								<BeginStoryboard>
-									<Storyboard>
-										<DoubleAnimation Duration="0:0:0.1" To="1" Storyboard.TargetProperty="Content.Opacity" />
-									</Storyboard>
-								</BeginStoryboard>
-							</EventTrigger>
-							<EventTrigger RoutedEvent="ToggleButton.Unchecked">
-								<BeginStoryboard>
-									<Storyboard>
-										<DoubleAnimation Duration="0:0:0.1" To="0.5" Storyboard.TargetProperty="Content.Opacity" />
-									</Storyboard>
-								</BeginStoryboard>
-							</EventTrigger>
-						</Style.Triggers>
-					</Style>
-				</ListBox.Resources>
-				<ListBoxItem x:Name="RotateBox">
-					<StackPanel Orientation="Horizontal">
-						<CheckBox VerticalContentAlignment="Center" x:Name="RotChck"
+                <ListBox.Resources>
+                    <Style TargetType="{x:Type CheckBox}">
+                        <Style.Triggers>
+                            <EventTrigger RoutedEvent="ToggleButton.Checked">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.1" To="1" Storyboard.TargetProperty="Content.Opacity" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.1" To="0.5" Storyboard.TargetProperty="Content.Opacity" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Resources>
+                <ListBoxItem x:Name="RotateBox">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox VerticalContentAlignment="Center" x:Name="RotChck"
 						          ToolTip="{x:Static properties:Resources.RotChck_ToolTip}"
 						          IsChecked="{Binding EnableRotation}">
-							<Border Opacity="0.5" Focusable="False" />
-						</CheckBox>
-						<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=RotChck, Path=Content.Opacity}">
-							<Image Source="Images/image-rotate.png" />
-							<Label Content="{x:Static properties:Resources.RotateOptionLabel_Text}" />
-						</StackPanel>
-					</StackPanel>
-				</ListBoxItem>
-				<ListBoxItem x:Name="ResizeBox">
-					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="ResChck" VerticalContentAlignment="Center"
+                            <Border Opacity="0.5" Focusable="False" />
+                        </CheckBox>
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                        <StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=RotChck}">
+                            <Image Source="Images/image-rotate.png" />
+                            <Label Content="{x:Static properties:Resources.RotateOptionLabel_Text}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem x:Name="ResizeBox">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox x:Name="ResChck" VerticalContentAlignment="Center"
 						          ToolTip="{x:Static properties:Resources.ResizeChck_ToolTip}"
 						          IsChecked="{Binding EnableResize}">
-							<Border Opacity="0.5" Focusable="False" />
-						</CheckBox>
-						<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=ResChck, Path=Content.Opacity}">
-							<Image Source="Images/image-resize-actual.png" />
-							<Label Content="{x:Static properties:Resources.ResizeOptionLabel_Text}" />
-						</StackPanel>
-					</StackPanel>
-				</ListBoxItem>
-				<ListBoxItem x:Name="CropBox">
-					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="CrpChck" VerticalContentAlignment="Center"
+                            <Border Opacity="0.5" Focusable="False" />
+                        </CheckBox>
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                        <StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=ResChck}">
+                            <Image Source="Images/image-resize-actual.png" />
+                            <Label Content="{x:Static properties:Resources.ResizeOptionLabel_Text}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem x:Name="CropBox">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox x:Name="CrpChck" VerticalContentAlignment="Center"
 						          ToolTip="{x:Static properties:Resources.CropChck_ToolTip}"
 						          IsChecked="{Binding EnableCrop}">
-							<Border Opacity="0.5" Focusable="False" />
-						</CheckBox>
-						<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-						<StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=CrpChck}">
-							<Image Source="Images/image-crop.png" />
-							<Label Content="{x:Static properties:Resources.CropOptionLabel_Text}" />
-						</StackPanel>
-					</StackPanel>
-				</ListBoxItem>
-				<ListBoxItem x:Name="WatermarkBox" IsEnabled="False">
-					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="WtrChck" VerticalContentAlignment="Center"
+                            <Border Opacity="0.5" Focusable="False" />
+                        </CheckBox>
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                        <StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=CrpChck}">
+                            <Image Source="Images/image-crop.png" />
+                            <Label Content="{x:Static properties:Resources.CropOptionLabel_Text}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem x:Name="WatermarkBox" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox x:Name="WtrChck" VerticalContentAlignment="Center"
 						          ToolTip="{x:Static properties:Resources.WatermarkChck_ToolTip}"
 						          IsChecked="{Binding EnableWatermark}">
-							<Border Opacity="0.5" Focusable="False" />
-						</CheckBox>
-						<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-						<StackPanel Orientation="Horizontal" Opacity="{Binding ElementName=WtrChck, Path=Content.Opacity}">
-							<Image Source="Images/image-saturation.png" />
-							<Label Content="{x:Static properties:Resources.WatermarkOptionLabel_Text}" />
-						</StackPanel>
-					</StackPanel>
-				</ListBoxItem>
-				<ListBoxItem x:Name="OutputBox">
-					<StackPanel Orientation="Horizontal" Margin="20,0">
-						<Image Source="Images/image-export.png" />
-						<Label Content="{x:Static properties:Resources.OutputOptionLabel_Text}" />
-					</StackPanel>
-				</ListBoxItem>
-			</ListBox>
+                            <Border Opacity="0.5" Focusable="False" />
+                        </CheckBox>
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                        <StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=WtrChck}">
+                            <Image Source="Images/image-saturation.png" />
+                            <Label Content="{x:Static properties:Resources.WatermarkOptionLabel_Text}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem x:Name="OutputBox">
+                    <StackPanel Orientation="Horizontal" Margin="20,0">
+                        <Image Source="Images/image-export.png" />
+                        <Label Content="{x:Static properties:Resources.OutputOptionLabel_Text}" />
+                    </StackPanel>
+                </ListBoxItem>
+            </ListBox>
 
-			<!-- Separator -->
-			<Border Grid.Row="1" Height="3">
-				<Border.Background>
-					<LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
-						<GradientStop Color="Transparent" Offset="0" />
-						<GradientStop Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}" Offset="0.5" />
-						<GradientStop Color="Transparent" Offset="1" />
-					</LinearGradientBrush>
-				</Border.Background>
-			</Border>
+            <!-- Separator -->
+            <Border Grid.Row="1" Height="3">
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                        <GradientStop Color="Transparent" Offset="0" />
+                        <GradientStop Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}" Offset="0.5" />
+                        <GradientStop Color="Transparent" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
 
-			<!-- #region Options Panes -->
-			<StackPanel x:Name="SettingsPresenter" Grid.Row="2">
-				<Grid x:Name="RotateSettings" Visibility="Visible">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<Label Content="{x:Static properties:Resources.RotationSettings_Title}" HorizontalAlignment="Center"
+            <!-- #region Options Panes -->
+            <StackPanel x:Name="SettingsPresenter" Grid.Row="2">
+                <Grid x:Name="RotateSettings" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Content="{x:Static properties:Resources.RotationSettings_Title}" HorizontalAlignment="Center"
 					       Margin="0,0,0,10" />
-					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableRotation}">
-						<TextBlock Text="{x:Static properties:Resources.RotateAllImagesLabel_Text}" FontWeight="Bold" />
-						<RadioButton Margin="0,5,0,2"
-						             IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource EnumConv}, ConverterParameter=None}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/arrow-noturn.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource EnumConv}, ConverterParameter=Clockwise}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/arrow-circle-cwise.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource EnumConv}, ConverterParameter=UpsideDown}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/arrow-circle-180.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource EnumConv}, ConverterParameter=CounterClockwise}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/arrow-circle-ccwise.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource EnumConv}, ConverterParameter=Portrait}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/image-vertical.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultRotation, Converter={StaticResource EnumConv}, ConverterParameter=Landscape}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/image.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
+                    <StackPanel Grid.Row="1" IsEnabled="{Binding EnableRotation}">
+                        <TextBlock Text="{x:Static properties:Resources.RotateAllImagesLabel_Text}" FontWeight="Bold" />
+                        <RadioButton Margin="0,5,0,2"
+						             IsChecked="{Binding DefaultRotation, ConverterParameter=None, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/arrow-noturn.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultRotation, ConverterParameter=Clockwise, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/arrow-circle-cwise.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultRotation, ConverterParameter=UpsideDown, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/arrow-circle-180.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultRotation, ConverterParameter=CounterClockwise, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/arrow-circle-ccwise.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultRotation, ConverterParameter=Portrait, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/image-vertical.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultRotation, ConverterParameter=Landscape, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/image.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
 
-					</StackPanel>
-				</Grid>
-				<Grid x:Name="ResizeSettings" Visibility="Collapsed">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<Label Content="{x:Static properties:Resources.ResizeSettings_Title}" HorizontalAlignment="Center"
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="ResizeSettings" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Content="{x:Static properties:Resources.ResizeSettings_Title}" HorizontalAlignment="Center"
 					       Margin="0,0,0,10" />
-					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableResize}">
-						<TextBlock Text="{x:Static properties:Resources.ResizeModeLabel_Text}" FontWeight="Bold" />
-						<RadioButton Margin="0,5,0,2"
-						             IsChecked="{Binding Path=DefaultResizeMode, Converter={StaticResource EnumConv}, ConverterParameter=Smaller}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/image-resize-actual.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.ResizeMode_SmallerRadioBtn_Text}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultResizeMode, Converter={StaticResource EnumConv}, ConverterParameter=Larger}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/image-resize.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.ResizeMode_LargerRadioBtn_Text}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultResizeMode, Converter={StaticResource EnumConv}, ConverterParameter=Exact}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/image-resize-exact.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.ResizeMode_ExactRadioBtn_Text}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<TextBlock Text="{x:Static properties:Resources.SmartSizingLabel_Text}" FontWeight="Bold" Margin="0,10,0,0" />
-						<CheckBox IsChecked="{Binding UseAspectRatio}"
+                    <StackPanel Grid.Row="1" IsEnabled="{Binding EnableResize}">
+                        <TextBlock Text="{x:Static properties:Resources.ResizeModeLabel_Text}" FontWeight="Bold" />
+                        <RadioButton Margin="0,5,0,2"
+						             IsChecked="{Binding DefaultResizeMode, ConverterParameter=Smaller, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/image-resize-actual.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.ResizeMode_SmallerRadioBtn_Text}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultResizeMode, ConverterParameter=Larger, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/image-resize.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.ResizeMode_LargerRadioBtn_Text}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultResizeMode, ConverterParameter=Exact, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/image-resize-exact.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.ResizeMode_ExactRadioBtn_Text}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <TextBlock Text="{x:Static properties:Resources.SmartSizingLabel_Text}" FontWeight="Bold" Margin="0,10,0,0" />
+                        <CheckBox IsChecked="{Binding UseAspectRatio}"
 						          ToolTip="{x:Static properties:Resources.SmartSizing_EnabledChk_ToolTip}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/image-rotate--asterisk.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.SmartSizing_EnabledChk_Text}" Margin="5,0" />
-							</StackPanel>
-						</CheckBox>
-						<TextBlock Text="{x:Static properties:Resources.ResizeDimsLabel_Text}" FontWeight="Bold" Margin="0,10,0,0" />
-						<Grid Margin="15,0,0,0">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<TextBlock Text="{x:Static properties:Resources.ResizeDims_WidthUpDwn_Label}" Margin="5,3"
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/image-rotate--asterisk.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.SmartSizing_EnabledChk_Text}" Margin="5,0" />
+                            </StackPanel>
+                        </CheckBox>
+                        <TextBlock Text="{x:Static properties:Resources.ResizeDimsLabel_Text}" FontWeight="Bold" Margin="0,10,0,0" />
+                        <Grid Margin="15,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{x:Static properties:Resources.ResizeDims_WidthUpDwn_Label}" Margin="5,3"
 							           VerticalAlignment="Center" />
-							<xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding ResizeWidth}" Minimum="0" Margin="5,3"
+                            <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding ResizeWidth}" Minimum="0" Margin="5,3"
 							                    HorizontalAlignment="Left" MinWidth="100" />
 
-							<TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static properties:Resources.ResizeDims_HeightUpDwn_Label}"
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static properties:Resources.ResizeDims_HeightUpDwn_Label}"
 							           Margin="5,3" VerticalAlignment="Center" />
-							<xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Value="{Binding ResizeHeight}" Minimum="0" Margin="5,3"
+                            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Value="{Binding ResizeHeight}" Minimum="0" Margin="5,3"
 							                    HorizontalAlignment="Left" MinWidth="100" />
-						</Grid>
-					</StackPanel>
-				</Grid>
-				<Grid x:Name="CropSettings" Visibility="Collapsed">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<Label Content="{x:Static properties:Resources.CropSettings_Title}" HorizontalAlignment="Center" Margin="0,0,0,10" />
-					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableCrop}">
-						<TextBlock Text="{x:Static properties:Resources.CropOptsLabel_Text}" FontWeight="Bold" />
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<TextBlock Text="{x:Static properties:Resources.CropOpts_WidthUpDwn_Text}" Margin="0,0,10,0"
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="CropSettings" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Content="{x:Static properties:Resources.CropSettings_Title}" HorizontalAlignment="Center" Margin="0,0,0,10" />
+                    <StackPanel Grid.Row="1" IsEnabled="{Binding EnableCrop}">
+                        <TextBlock Text="{x:Static properties:Resources.CropOptsLabel_Text}" FontWeight="Bold" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{x:Static properties:Resources.CropOpts_WidthUpDwn_Text}" Margin="0,0,10,0"
 							           VerticalAlignment="Center" />
-							<xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1"
+                            <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1"
 							                    Value="{Binding CropWidth}" />
-							<TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static properties:Resources.CropOpts_HeightUpDwn_Text}"
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static properties:Resources.CropOpts_HeightUpDwn_Text}"
 							           Margin="0,0,10,0" VerticalAlignment="Center" />
-							<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1"
+                            <xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1"
 							                    Value="{Binding CropHeight}" />
-						</Grid>
-						<TextBlock Text="Crop alignment:" FontWeight="Bold" Margin="0,10,0,0" />
-						<Grid HorizontalAlignment="Center">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Button x:Name="CropTopLeftBtn" Click="CropBtn_Click" Cursor="Hand" ToolTip="Top Left">
-								<Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
-							</Button>
+                        </Grid>
+                        <TextBlock Text="Crop alignment:" FontWeight="Bold" Margin="0,10,0,0" />
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Button x:Name="CropTopLeftBtn" Click="CropBtn_Click" Cursor="Hand" ToolTip="Top Left">
+                                <Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
+                            </Button>
                             <Button x:Name="CropTopCenterBtn" Grid.Row="0" Grid.Column="1" Cursor="Hand" Click="CropBtn_Click" ToolTip="Top Center">
-								<Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
-							</Button>
+                                <Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
+                            </Button>
                             <Button x:Name="CropTopRightBtn" Grid.Row="0" Grid.Column="2" Cursor="Hand" Click="CropBtn_Click" ToolTip="Top Right">
-								<Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
-							</Button>
+                                <Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
+                            </Button>
 
                             <Button x:Name="CropMiddleLeftBtn" Grid.Row="1" Grid.Column="0" Cursor="Hand" Click="CropBtn_Click" ToolTip="Middle Left">
-								<Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
-							</Button>
+                                <Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
+                            </Button>
                             <Button x:Name="CropMiddleCenterButton" Grid.Column="1" Grid.Row="1" Cursor="Hand" Click="CropBtn_Click" ToolTip="Middle Center">
-								<Image StretchDirection="DownOnly" Source="Images/circle.png" />
-							</Button>
+                                <Image StretchDirection="DownOnly" Source="Images/circle.png" />
+                            </Button>
                             <Button x:Name="CropMiddleRightBtn" Grid.Column="2" Grid.Row="1" Cursor="Hand" Click="CropBtn_Click" ToolTip="Middle Right">
-								<Image StretchDirection="DownOnly" Source="Images/arrow.png" />
-							</Button>
+                                <Image StretchDirection="DownOnly" Source="Images/arrow.png" />
+                            </Button>
 
                             <Button x:Name="CropBottomLeftBtn" Grid.Row="2" Grid.Column="0" Cursor="Hand" Click="CropBtn_Click" ToolTip="Bottom Left">
-								<Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
-							</Button>
+                                <Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
+                            </Button>
                             <Button x:Name="CropBottomCenterBtn" Grid.Column="1" Grid.Row="2" Cursor="Hand" Click="CropBtn_Click" ToolTip="Bottom Center">
-								<Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
-							</Button>
+                                <Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
+                            </Button>
                             <Button x:Name="CropBottomRightBtn" Grid.Column="2" Grid.Row="2" Cursor="Hand" Click="CropBtn_Click" ToolTip="Bottom Right">
-								<Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
-							</Button>
-						</Grid>
-						<TextBlock
-							Text="{Binding DefaultCropAlignment, Converter={StaticResource EnumStrConv}, FallbackValue={}No Binding}"
+                                <Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
+                            </Button>
+                        </Grid>
+                        <TextBlock
+							Text="{Binding DefaultCropAlignment, Converter={StaticResource EnumStrConv}, FallbackValue=No Binding}"
 							HorizontalAlignment="Center" />
-					</StackPanel>
-				</Grid>
-				<Grid x:Name="WatermarkSettings" Visibility="Collapsed">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<Label Content="{x:Static properties:Resources.WatermarkSettings_Title}" HorizontalAlignment="Center"
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="WatermarkSettings" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Content="{x:Static properties:Resources.WatermarkSettings_Title}" HorizontalAlignment="Center"
 					       Margin="0,0,0,10" />
-					<StackPanel Grid.Row="1" IsEnabled="{Binding EnableWatermark}">
-						<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TypeLabel_Text}" FontWeight="Bold" />
-						<RadioButton Margin="0,5,0,2"
-						             IsChecked="{Binding Path=DefaultWatermarkType, Converter={StaticResource EnumConv}, ConverterParameter=Text}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/edit.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextOpt_Text}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
-						<RadioButton Margin="0,2"
-						             IsChecked="{Binding Path=DefaultWatermarkType, Converter={StaticResource EnumConv}, ConverterParameter=Image}">
-							<StackPanel Orientation="Horizontal">
-								<Image Source="Images/image.png" StretchDirection="DownOnly" />
-								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageOpt_Text}" Margin="5,0" />
-							</StackPanel>
-						</RadioButton>
+                    <StackPanel Grid.Row="1" IsEnabled="{Binding EnableWatermark}">
+                        <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TypeLabel_Text}" FontWeight="Bold" />
+                        <RadioButton Margin="0,5,0,2"
+						             IsChecked="{Binding DefaultWatermarkType, ConverterParameter=Text, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/edit.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextOpt_Text}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Margin="0,2"
+						             IsChecked="{Binding DefaultWatermarkType, ConverterParameter=Image, Converter={StaticResource EnumConv}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Images/image.png" StretchDirection="DownOnly" />
+                                <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageOpt_Text}" Margin="5,0" />
+                            </StackPanel>
+                        </RadioButton>
 
-						<StackPanel Margin="0,10,0,0"
-						            Visibility="{Binding Path=DefaultWatermarkType, Converter={StaticResource EnumVisConv}, ConverterParameter=Text}">
-							<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextOpts_Title}" FontWeight="Bold" />
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="*" />
-								</Grid.ColumnDefinitions>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
-								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextBox_Text}" Margin="0,0,10,0"
+                        <StackPanel Margin="0,10,0,0"
+						            Visibility="{Binding DefaultWatermarkType, ConverterParameter=Text, Converter={StaticResource EnumVisConv}}">
+                            <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextOpts_Title}" FontWeight="Bold" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextBox_Text}" Margin="0,0,10,0"
 								           VerticalAlignment="Center" />
-								<TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding WatermarkText}" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding WatermarkText}" />
 
-								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_FontBtn_Text}" Grid.Row="1" Grid.Column="0"
+                                <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_FontBtn_Text}" Grid.Row="1" Grid.Column="0"
 								           Margin="0,0,10,0" VerticalAlignment="Center" />
-								<Button x:Name="WatermarkFontBtn" Grid.Column="1" Grid.Row="1" Content="{Binding WatermarkFontString}"
+                                <Button x:Name="WatermarkFontBtn" Grid.Column="1" Grid.Row="1" Content="{Binding WatermarkFontString}"
 								        Click="watermarkFontBtn_Click" Cursor="Hand" FlowDirection="RightToLeft" Margin="10,3"
 								        HorizontalAlignment="Center">
-									<Button.Style>
-										<Style TargetType="Button">
-											<Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
-										</Style>
-									</Button.Style>
-								</Button>
-							</Grid>
-						</StackPanel>
-						<StackPanel Margin="0,10,0,0"
-						            Visibility="{Binding Path=DefaultWatermarkType, Converter={StaticResource EnumVisConv}, ConverterParameter=Image}">
-							<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageOpts_Title}" FontWeight="Bold" />
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="*" />
-								</Grid.ColumnDefinitions>
-								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageBtn_Text}" Margin="0,0,10,0"
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Margin="0,10,0,0"
+						            Visibility="{Binding DefaultWatermarkType, ConverterParameter=Image, Converter={StaticResource EnumVisConv}}">
+                            <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageOpts_Title}" FontWeight="Bold" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageBtn_Text}" Margin="0,0,10,0"
 								           VerticalAlignment="Center" />
-								<Button x:Name="WatermarkImageBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand"
+                                <Button x:Name="WatermarkImageBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand"
 								        Margin="10,3" Click="watermarkImageBtn_Click" VerticalAlignment="Center"
 								        HorizontalContentAlignment="Center">
-									<Button.Style>
-										<Style TargetType="Button">
-											<Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
-										</Style>
-									</Button.Style>
-									<TextBlock TextTrimming="CharacterEllipsis" Text="{Binding WatermarkImagePath}" VerticalAlignment="Center"
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
+                                        </Style>
+                                    </Button.Style>
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding WatermarkImagePath}" VerticalAlignment="Center"
 									           Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" TextDecorations="Underline"
 									           HorizontalAlignment="Center" />
-								</Button>
-							</Grid>
-							<CheckBox IsChecked="{Binding WatermarkGreyscale}">
-								<StackPanel Orientation="Horizontal">
-									<Image StretchDirection="DownOnly" Source="Images/image-greyscale.png" />
-									<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageGreyChk_Text}" Margin="5,0" />
-								</StackPanel>
-							</CheckBox>
-						</StackPanel>
-						<StackPanel Margin="0,10,0,0">
-							<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_OtherOpts_Title}" FontWeight="Bold" />
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="*" />
-								</Grid.ColumnDefinitions>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
+                                </Button>
+                            </Grid>
+                            <CheckBox IsChecked="{Binding WatermarkGreyscale}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image StretchDirection="DownOnly" Source="Images/image-greyscale.png" />
+                                    <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageGreyChk_Text}" Margin="5,0" />
+                                </StackPanel>
+                            </CheckBox>
+                        </StackPanel>
+                        <StackPanel Margin="0,10,0,0">
+                            <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_OtherOpts_Title}" FontWeight="Bold" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
 
-								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_OpacUpDwn_Text}" VerticalAlignment="Center"
+                                <TextBlock Text="{x:Static properties:Resources.WatermarkSettings_OpacUpDwn_Text}" VerticalAlignment="Center"
 								           Margin="0,0,10,0" />
-								<xctk:DoubleUpDown Grid.Row="0" Grid.Column="1" FormatString="P" Value="{Binding WatermarkOpacity}"
+                                <xctk:DoubleUpDown Grid.Row="0" Grid.Column="1" FormatString="P" Value="{Binding WatermarkOpacity}"
 								                   MinWidth="100"
 								                   HorizontalAlignment="Left" Increment="0.1" Maximum="1" Minimum="0.01" Margin="3" />
 
-								<Grid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-									</Grid.ColumnDefinitions>
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
+                                <Grid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
                                     <Button x:Name="WatermarkTopLeftBtn" Click="WatermarkBtn_Click" Cursor="Hand" ToolTip="Top Left">
-										<Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
+                                    </Button>
                                     <Button x:Name="WatermarkTopCenterBtn" Grid.Row="0" Grid.Column="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Top Center">
-										<Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
+                                    </Button>
                                     <Button x:Name="WatermarkTopRightBtn" Grid.Row="0" Grid.Column="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Top Right">
-										<Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
+                                    </Button>
 
                                     <Button x:Name="WatermarkMiddleLeftBtn" Grid.Row="1" Grid.Column="0" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Left">
-										<Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
+                                    </Button>
                                     <Button x:Name="WatermarkMiddleCenterButton" Grid.Column="1" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Center">
-										<Image StretchDirection="DownOnly" Source="Images/circle.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/circle.png" />
+                                    </Button>
                                     <Button x:Name="WatermarkMiddleRightBtn" Grid.Column="2" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Right">
-										<Image StretchDirection="DownOnly" Source="Images/arrow.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow.png" />
+                                    </Button>
 
                                     <Button x:Name="WatermarkBottopLeftBtn" Grid.Row="2" Grid.Column="0" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Left">
-										<Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
+                                    </Button>
                                     <Button x:Name="WatermarkBottomCenterBtn" Grid.Column="1" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Center">
-										<Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
-									</Button>
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
+                                    </Button>
                                     <Button x:Name="WatermarkBottomRightBtn" Grid.Column="2" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Right">
-										<Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
-									</Button>
-								</Grid>
-								<TextBlock Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
-								           Text="{Binding WatermarkAlignment, Converter={StaticResource EnumStrConv}, FallbackValue={}No Binding}"
+                                        <Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
+                                    </Button>
+                                </Grid>
+                                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
+								           Text="{Binding WatermarkAlignment, Converter={StaticResource EnumStrConv}, FallbackValue=No Binding}"
 								           HorizontalAlignment="Center" />
-							</Grid>
-						</StackPanel>
-					</StackPanel>
-				</Grid>
-				<Grid x:Name="OutputSettings" Visibility="Collapsed">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<Label Content="{x:Static properties:Resources.OutSettings_Title}" HorizontalAlignment="Center" Margin="0,0,0,10" />
-					<StackPanel Grid.Row="1">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<TextBlock Text="{x:Static properties:Resources.OutSettings_LocationBtn_Text}" Margin="0,0,10,0"
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="OutputSettings" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Content="{x:Static properties:Resources.OutSettings_Title}" HorizontalAlignment="Center" Margin="0,0,0,10" />
+                    <StackPanel Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{x:Static properties:Resources.OutSettings_LocationBtn_Text}" Margin="0,0,10,0"
 							           VerticalAlignment="Center" />
-							<Button x:Name="OutputBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand" Margin="10,3"
+                            <Button x:Name="OutputBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand" Margin="10,3"
 							        VerticalAlignment="Center" HorizontalContentAlignment="Center" Click="outputBtn_Click">
-								<Button.Style>
-									<Style TargetType="Button">
-										<Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
-									</Style>
-								</Button.Style>
-								<TextBlock TextTrimming="CharacterEllipsis" Text="{Binding OutputPath}" VerticalAlignment="Center"
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding OutputPath}" VerticalAlignment="Center"
 								           Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" TextDecorations="Underline"
 								           HorizontalAlignment="Center" />
-							</Button>
-						</Grid>
-						<TextBlock Text="{x:Static properties:Resources.OutSettings_NameOpt_Title}" FontWeight="Bold" Margin="0,10,0,0" />
-						<RadioButton Margin="0,5,0,2" Content="{x:Static properties:Resources.OutSettings_NameOpt_OrigOpt_Text}"
-						             IsChecked="{Binding Path=NameOption, Converter={StaticResource EnumConv}, ConverterParameter=Original}" />
-						<RadioButton Margin="0,5,0,2" Content="{x:Static properties:Resources.OutSettings_NameOpt_NumOpt_Text}"
-						             IsChecked="{Binding Path=NameOption, Converter={StaticResource EnumConv}, ConverterParameter=Numbered}" />
-						<RadioButton Margin="0,5,0,2" Content="{x:Static properties:Resources.OutSettings_NameOpt_CustOpt_Text}"
-						             IsChecked="{Binding Path=NameOption, Converter={StaticResource EnumConv}, ConverterParameter=Custom}" />
-						<Grid Visibility="{Binding Path=NameOption, Converter={StaticResource EnumVisConv}, ConverterParameter=Custom}">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<TextBlock Text="{x:Static properties:Resources.OutSettings_CustomNameSettings_Title}" Grid.ColumnSpan="2"
+                            </Button>
+                        </Grid>
+                        <TextBlock Text="{x:Static properties:Resources.OutSettings_NameOpt_Title}" FontWeight="Bold" Margin="0,10,0,0" />
+                        <RadioButton Margin="0,5,0,2" Content="{x:Static properties:Resources.OutSettings_NameOpt_OrigOpt_Text}"
+						             IsChecked="{Binding NameOption, ConverterParameter=Original, Converter={StaticResource EnumConv}}" />
+                        <RadioButton Margin="0,5,0,2" Content="{x:Static properties:Resources.OutSettings_NameOpt_NumOpt_Text}"
+						             IsChecked="{Binding NameOption, ConverterParameter=Numbered, Converter={StaticResource EnumConv}}" />
+                        <RadioButton Margin="0,5,0,2" Content="{x:Static properties:Resources.OutSettings_NameOpt_CustOpt_Text}"
+						             IsChecked="{Binding NameOption, ConverterParameter=Custom, Converter={StaticResource EnumConv}}" />
+                        <Grid Visibility="{Binding NameOption, ConverterParameter=Custom, Converter={StaticResource EnumVisConv}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{x:Static properties:Resources.OutSettings_CustomNameSettings_Title}" Grid.ColumnSpan="2"
 							           FontWeight="Bold" Margin="0,10,0,0" />
-							<TextBlock Grid.Row="1" Grid.Column="0"
+                            <TextBlock Grid.Row="1" Grid.Column="0"
 							           Text="{x:Static properties:Resources.OutSettings_CustomNameSettings_TemplateTxtBx_Text}"
 							           Margin="0,0,10,0" VerticalAlignment="Center" />
-							<TextBox Grid.Row="1" Grid.Column="1" Margin="3"
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3"
 							         Text="{Binding OutputTemplate, UpdateSourceTrigger=PropertyChanged}" />
-							<TextBlock Grid.Row="2" Grid.Column="0"
+                            <TextBlock Grid.Row="2" Grid.Column="0"
 							           Text="{x:Static properties:Resources.OutSettings_CustomNameSettings_ExampleLbl_Text}"
 							           Margin="0,0,10,0" VerticalAlignment="Center" />
-							<TextBlock Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding OutputTemplateExample}"
+                            <TextBlock Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding OutputTemplateExample}"
 							           VerticalAlignment="Center" />
-							<TextBlock Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center"
+                            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center"
 							           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextAlignment="Center"
 							           Text="{x:Static properties:Resources.OutSettings_CustomNameSettings_Tutorial_Text}" />
-						</Grid>
-					</StackPanel>
-				</Grid>
-			</StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
 
-			<!-- #endregion -->
+            <!-- #endregion -->
 
             <!-- Separator -->
             <Border Grid.Row="3" Height="3">
@@ -1019,29 +1016,29 @@
             <ProgressBar Grid.Row="4" Height="15" Margin="5" Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverter}}" Maximum="{Binding TotalImages}" Value="{Binding DoneImages, Mode=OneWay}"/>
 
             <StackPanel Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Text="{Binding DoneImages, StringFormat=N0, FallbackValue=0}"/>
+                <TextBlock Text="{Binding DoneImages, FallbackValue=0, StringFormat=N0}"/>
                 <TextBlock Text=" completed of "/>
-                <TextBlock Text="{Binding TotalImages, StringFormat=N0, FallbackValue=0}"/>
+                <TextBlock Text="{Binding TotalImages, FallbackValue=0, StringFormat=N0}"/>
             </StackPanel>
-            
+
             <!-- Start Button -->
             <Button Grid.Row="5" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" IsEnabled="{Binding Ready}" Click="StartBtn_Click" Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
-				<StackPanel Orientation="Horizontal">
-					<Label Content="{x:Static properties:Resources.StartBtn_Text}" FontSize="20" Margin="0,0,10,0"
-					       FontFamily="Segoe UI Light" Effect="{Binding Ready, Converter={StaticResource BoolEffConv}}"/>
-					<Image Source="Images/32/image-transition.png" VerticalAlignment="Center" />
-				</StackPanel>
-			</Button>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="{x:Static properties:Resources.StartBtn_Text}" FontSize="20" Margin="0,0,10,0"
+					       FontFamily="Segoe UI Semilight" Effect="{Binding Ready, Converter={StaticResource BoolEffConv}}"/>
+                    <Image Source="Images/32/image-transition.png" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
 
             <Button Grid.Row="6" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" Click="StopBtn_Click" Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Stop" FontSize="20" Margin="0,0,10,0"
-					       FontFamily="Segoe UI Light" Effect="{Binding Ready, Converter={StaticResource BoolEffConv}}"/>
+					       FontFamily="Segoe WP SemiLight" Effect="{Binding Ready, Converter={StaticResource BoolEffConv}}"/>
                     <Image Source="Images/32/cross.png" VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
         </Grid>
 
-		<!-- #endregion -->
-	</Grid>
+        <!-- #endregion -->
+    </Grid>
 </Window>

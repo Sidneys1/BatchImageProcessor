@@ -2,8 +2,5 @@
 {
     public sealed class BooleanToOpacityConverter : BooleanConverter<float>
     {
-        public BooleanToOpacityConverter()
-        {
-        }
     }
 }

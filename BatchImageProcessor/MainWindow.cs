@@ -9,16 +9,17 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.View;
 using BatchImageProcessor.ViewModel;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
+using Env = System.Environment;
 using File = BatchImageProcessor.Model.File;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
-using Env = System.Environment;
 
 namespace BatchImageProcessor
 {
@@ -45,21 +46,148 @@ namespace BatchImageProcessor
 #endif
 		}
 
+	    private IntPtr _hwnd;
+	    private HwndSource _hsource;
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			var args = Env.GetCommandLineArgs();
 
 			if (args.Length > 1 && args.Contains("-noshaders"))
 			{
-				Resources["tdse"] = null;
+				Resources["DropShadowFx"] = null;
 			}
+
+		    //if (!DwmApiInterop.IsCompositionEnabled()) return;
+		    //var m = new Margins {cyTopHeight = (int)TestRectangle.ActualHeight};
+		    //DwmApiInterop.ExtendFrameIntoClientArea(Handle, ref m);
+		    //hsource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+		    //if (hsource != null) hsource.CompositionTarget.BackgroundColor = Colors.Transparent;
+		    //this.Background = TestRectangle.Fill = Brushes.Transparent;
 		}
 
-		#region Properties/Variables
+        private void MainWindow_OnSourceInitialized(object sender, EventArgs e)
+        {
+            
+            try
+            {
+                //FolderLabel.FontSize = FileLabel.FontSize = SettingsLabel.FontSize = 12;
+                //FolderLabel.Padding = FileLabel.Padding = SettingsLabel.Padding = new Thickness(5,0,5,5);
+                FolderLabel.Visibility = FileLabel.Visibility = SettingsLabel.Visibility = Visibility.Collapsed;
 
-		#region Dialogs
+                if ((_hwnd = new WindowInteropHelper(this).Handle) == IntPtr.Zero)
+                {
+                    throw new InvalidOperationException("Could not get window handle for the main window.");
+                }
 
-		private readonly OpenFileDialog _fileBrowser = new OpenFileDialog
+                _hsource = HwndSource.FromHwnd(_hwnd);
+                _hsource?.AddHook(WndProc);
+
+                AdjustWindowFrame();
+            }
+            catch (InvalidOperationException)
+            {
+                FallbackPaint();
+            }
+
+
+        }
+
+        private void AdjustWindowFrame()
+        {
+            if (DwmApiInterop.IsCompositionEnabled())
+            {
+                ExtendFrameIntoClientArea(0, 0, (int)(RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
+            }
+            else
+            {
+                FallbackPaint();
+            }
+        }
+
+        private void ExtendFrameIntoClientArea(int left, int right, int top, int bottom)
+        {
+            var margins = new Margins { cxLeftWidth = left, cxRightWidth = right, cyTopHeight = top, cyBottomHeight = bottom };
+            var hresult = DwmApiInterop.ExtendFrameIntoClientArea(_hwnd, ref margins);
+
+            if (hresult == 0)
+            {
+                if (_hsource.CompositionTarget != null) _hsource.CompositionTarget.BackgroundColor = Colors.Transparent;
+                Background = Brushes.Transparent;
+            }
+            else
+            {
+                FolderLabel.Padding = FileLabel.Padding = SettingsLabel.Padding = new Thickness(5);
+                throw new InvalidOperationException("Could not extend window frames in the main window.");
+                
+            }
+        }
+
+        private void FallbackPaint()
+        {
+            Background = Brushes.White;
+        }
+
+        private bool IsOnExtendedFrame(int lParam)
+        {
+            int x = lParam << 16 >> 16, y = lParam >> 16;
+            var point = PointFromScreen(new Point(x, y));
+
+            //return !(point.Y >= (int) (RootGrid.ActualHeight - ContentRectangle.ActualHeight));
+
+            // In XAML: <Grid x:Name="windowGrid">...</Grid>
+            var result = VisualTreeHelper.HitTest(RootGrid, point);
+
+            if (result != null)
+            {
+                // A control was hit - it may be the grid if it has a background
+                // texture or gradient over the extended window frame
+                Trace.WriteLine(result.VisualHit);
+                return (Equals(result.VisualHit, RootGrid));
+            }
+
+            // Nothing was hit - assume that this area is covered by frame extensions anyway
+            return true;
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            switch (msg)
+            {
+                // Ignore clicks if desktop composition isn't enabled
+                case DwmApiInterop.WM_NCHITTEST:
+                    if (DwmApiInterop.IsCompositionEnabled()
+                        && DwmApiInterop.IsOnClientArea(hwnd, msg, wParam, lParam)
+                        && IsOnExtendedFrame(lParam.ToInt32()))
+                    {
+                        handled = true;
+                        return new IntPtr(DwmApiInterop.HTCAPTION);
+                    }
+
+                    return IntPtr.Zero;
+
+                // Also toggle window frame painting on this window when desktop composition is toggled
+                case DwmApiInterop.WM_DWMCOMPOSITIONCHANGED:
+                    try
+                    {
+                        AdjustWindowFrame();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        FallbackPaint();
+                    }
+                    return IntPtr.Zero;
+
+                default:
+                    return IntPtr.Zero;
+            }
+        }
+
+
+        #region Properties/Variables
+
+        #region Dialogs
+
+        private readonly OpenFileDialog _fileBrowser = new OpenFileDialog
 		{
 			Title = Properties.Resources.MainWindow__fileBrowser_Title,
 			CheckFileExists = true,
@@ -79,7 +207,8 @@ namespace BatchImageProcessor
 		private readonly FolderBrowserDialog _outputBrowser = new FolderBrowserDialog
 		{
 			Description = Properties.Resources.MainWindow_OutputBrowser_Description,
-			RootFolder = Env.SpecialFolder.MyPictures,
+			RootFolder = Env.SpecialFolder.MyComputer,
+            SelectedPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures),
 			ShowNewFolderButton = true
 		};
 
@@ -573,5 +702,7 @@ namespace BatchImageProcessor
 	    {
 	        Engine.Cancel = true;
 	    }
+
+	    
 	}
 }

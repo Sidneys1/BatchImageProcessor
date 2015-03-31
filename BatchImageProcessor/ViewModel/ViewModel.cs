@@ -2,10 +2,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
-using Env= System.Environment;
 using System.Linq;
 using BatchImageProcessor.Model;
-using BatchImageProcessor.Properties;
+using Env= System.Environment;
 
 namespace BatchImageProcessor.ViewModel
 {
@@ -355,9 +354,9 @@ namespace BatchImageProcessor.ViewModel
 
         #region Progress
 
-        private int _doneImages = 0;
-        private bool _showProgressBar = false;
-        private int _totalImages = 0;
+        private int _doneImages;
+        private bool _showProgressBar;
+        private int _totalImages;
 
         public int TotalImages
         {
