@@ -13,6 +13,7 @@ using System.Windows.Media;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.View;
 using BatchImageProcessor.ViewModel;
+using Brushes = System.Windows.Media.Brushes;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
 using Env = System.Environment;
@@ -20,6 +21,7 @@ using File = BatchImageProcessor.Model.File;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
+using Point = System.Windows.Point;
 
 namespace BatchImageProcessor
 {
@@ -31,7 +33,7 @@ namespace BatchImageProcessor
 		public MainWindow()
 		{
 			VModel = new ViewModel.ViewModel();
-			VModel.Folders.Add(new Folder(removable: false) {Name = "Output Folder"});
+			VModel.Folders.Add(new Folder(removable: false) { Name = "Output Folder" });
 
 			InitializeComponent();
 
@@ -46,8 +48,8 @@ namespace BatchImageProcessor
 #endif
 		}
 
-	    private IntPtr _hwnd;
-	    private HwndSource _hsource;
+		private IntPtr _hwnd;
+		private HwndSource _hsource;
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			var args = Env.GetCommandLineArgs();
@@ -55,139 +57,121 @@ namespace BatchImageProcessor
 			if (args.Length > 1 && args.Contains("-noshaders"))
 			{
 				Resources["DropShadowFx"] = null;
+				Resources["BlurEffect"] = null;
 			}
-
-		    //if (!DwmApiInterop.IsCompositionEnabled()) return;
-		    //var m = new Margins {cyTopHeight = (int)TestRectangle.ActualHeight};
-		    //DwmApiInterop.ExtendFrameIntoClientArea(Handle, ref m);
-		    //hsource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-		    //if (hsource != null) hsource.CompositionTarget.BackgroundColor = Colors.Transparent;
-		    //this.Background = TestRectangle.Fill = Brushes.Transparent;
 		}
 
-        private void MainWindow_OnSourceInitialized(object sender, EventArgs e)
-        {
-            
-            try
-            {
-                //FolderLabel.FontSize = FileLabel.FontSize = SettingsLabel.FontSize = 12;
-                //FolderLabel.Padding = FileLabel.Padding = SettingsLabel.Padding = new Thickness(5,0,5,5);
-                FolderLabel.Visibility = FileLabel.Visibility = SettingsLabel.Visibility = Visibility.Collapsed;
 
-                if ((_hwnd = new WindowInteropHelper(this).Handle) == IntPtr.Zero)
-                {
-                    throw new InvalidOperationException("Could not get window handle for the main window.");
-                }
+		#region Aero
 
-                _hsource = HwndSource.FromHwnd(_hwnd);
-                _hsource?.AddHook(WndProc);
+		private void MainWindow_OnSourceInitialized(object sender, EventArgs e)
+		{
+			var args = Env.GetCommandLineArgs();
+			if (args.Length > 1 && args.Contains("-noaero"))
+				return;
 
-                AdjustWindowFrame();
-            }
-            catch (InvalidOperationException)
-            {
-                FallbackPaint();
-            }
+			try
+			{
+				if ((_hwnd = new WindowInteropHelper(this).Handle) == IntPtr.Zero)
+				{
+					throw new InvalidOperationException("Could not get window handle for the main window.");
+				}
 
+				_hsource = HwndSource.FromHwnd(_hwnd);
+				_hsource?.AddHook(WndProc);
 
-        }
+				AdjustWindowFrame();
+			}
+			catch (InvalidOperationException)
+			{
+				FallbackPaint();
+			}
+		}
 
-        private void AdjustWindowFrame()
-        {
-            if (DwmApiInterop.IsCompositionEnabled())
-            {
-                ExtendFrameIntoClientArea(0, 0, (int)(RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
-            }
-            else
-            {
-                FallbackPaint();
-            }
-        }
+		private void AdjustWindowFrame()
+		{
+			if (DwmApiInterop.IsCompositionEnabled())
+				ExtendFrameIntoClientArea(0, 0, (int)(RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
+			else
+				FallbackPaint();
+		}
 
-        private void ExtendFrameIntoClientArea(int left, int right, int top, int bottom)
-        {
-            var margins = new Margins { cxLeftWidth = left, cxRightWidth = right, cyTopHeight = top, cyBottomHeight = bottom };
-            var hresult = DwmApiInterop.ExtendFrameIntoClientArea(_hwnd, ref margins);
+		private void ExtendFrameIntoClientArea(int left, int right, int top, int bottom)
+		{
+			var margins = new Margins
+			{
+				cxLeftWidth = left,
+				cxRightWidth = right,
+				cyTopHeight = top,
+				cyBottomHeight = bottom
+			};
+			var hresult = DwmApiInterop.ExtendFrameIntoClientArea(_hwnd, ref margins);
 
-            if (hresult == 0)
-            {
-                if (_hsource.CompositionTarget != null) _hsource.CompositionTarget.BackgroundColor = Colors.Transparent;
-                Background = Brushes.Transparent;
-            }
-            else
-            {
-                FolderLabel.Padding = FileLabel.Padding = SettingsLabel.Padding = new Thickness(5);
-                throw new InvalidOperationException("Could not extend window frames in the main window.");
-                
-            }
-        }
+			if (hresult == 0)
+			{
+				if (_hsource.CompositionTarget != null) _hsource.CompositionTarget.BackgroundColor = Colors.Transparent;
+				Background = Brushes.Transparent;
+			}
+			else
+			{
+				Trace.WriteLine("Could not extend window frames in the main window.");
+			}
+		}
 
-        private void FallbackPaint()
-        {
-            Background = Brushes.White;
-        }
+		private void FallbackPaint()
+		{
+			Background = ContentRectangle.Fill;// Brushes.White;
+		}
 
-        private bool IsOnExtendedFrame(int lParam)
-        {
-            int x = lParam << 16 >> 16, y = lParam >> 16;
-            var point = PointFromScreen(new Point(x, y));
+		private bool IsOnExtendedFrame(int lParam)
+		{
+			int x = lParam << 16 >> 16, y = lParam >> 16;
+			var point = PointFromScreen(new Point(x, y));
+			var result = VisualTreeHelper.HitTest(RootGrid, point);
 
-            //return !(point.Y >= (int) (RootGrid.ActualHeight - ContentRectangle.ActualHeight));
+			return result == null || (Equals(result.VisualHit, RootGrid));
+		}
 
-            // In XAML: <Grid x:Name="windowGrid">...</Grid>
-            var result = VisualTreeHelper.HitTest(RootGrid, point);
+		private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+		{
+			switch (msg)
+			{
+				// Ignore clicks if desktop composition isn't enabled
+				case DwmApiInterop.WM_NCHITTEST:
+					if (DwmApiInterop.IsCompositionEnabled()
+						&& DwmApiInterop.IsOnClientArea(hwnd, msg, wParam, lParam)
+						&& IsOnExtendedFrame(lParam.ToInt32()))
+					{
+						handled = true;
+						return new IntPtr(DwmApiInterop.HTCAPTION);
+					}
 
-            if (result != null)
-            {
-                // A control was hit - it may be the grid if it has a background
-                // texture or gradient over the extended window frame
-                Trace.WriteLine(result.VisualHit);
-                return (Equals(result.VisualHit, RootGrid));
-            }
+					return IntPtr.Zero;
 
-            // Nothing was hit - assume that this area is covered by frame extensions anyway
-            return true;
-        }
+				// Also toggle window frame painting on this window when desktop composition is toggled
+				case DwmApiInterop.WM_DWMCOMPOSITIONCHANGED:
+					try
+					{
+						AdjustWindowFrame();
+					}
+					catch (InvalidOperationException)
+					{
+						FallbackPaint();
+					}
+					return IntPtr.Zero;
 
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            switch (msg)
-            {
-                // Ignore clicks if desktop composition isn't enabled
-                case DwmApiInterop.WM_NCHITTEST:
-                    if (DwmApiInterop.IsCompositionEnabled()
-                        && DwmApiInterop.IsOnClientArea(hwnd, msg, wParam, lParam)
-                        && IsOnExtendedFrame(lParam.ToInt32()))
-                    {
-                        handled = true;
-                        return new IntPtr(DwmApiInterop.HTCAPTION);
-                    }
+				default:
+					return IntPtr.Zero;
+			}
+		}
 
-                    return IntPtr.Zero;
+		#endregion
 
-                // Also toggle window frame painting on this window when desktop composition is toggled
-                case DwmApiInterop.WM_DWMCOMPOSITIONCHANGED:
-                    try
-                    {
-                        AdjustWindowFrame();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        FallbackPaint();
-                    }
-                    return IntPtr.Zero;
+		#region Properties/Variables
 
-                default:
-                    return IntPtr.Zero;
-            }
-        }
+		#region Dialogs
 
-
-        #region Properties/Variables
-
-        #region Dialogs
-
-        private readonly OpenFileDialog _fileBrowser = new OpenFileDialog
+		private readonly OpenFileDialog _fileBrowser = new OpenFileDialog
 		{
 			Title = Properties.Resources.MainWindow__fileBrowser_Title,
 			CheckFileExists = true,
@@ -208,7 +192,7 @@ namespace BatchImageProcessor
 		{
 			Description = Properties.Resources.MainWindow_OutputBrowser_Description,
 			RootFolder = Env.SpecialFolder.MyComputer,
-            SelectedPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures),
+			SelectedPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures),
 			ShowNewFolderButton = true
 		};
 
@@ -268,13 +252,13 @@ namespace BatchImageProcessor
 		private void SelectInvBtn_Click(object sender, RoutedEventArgs e)
 		{
 			var obj = new object[ThumbnailView.SelectedItems.Count];
-			ThumbnailView.SelectedItems.CopyTo(obj,0);
+			ThumbnailView.SelectedItems.CopyTo(obj, 0);
 			ThumbnailView.SelectedIndex = -1;
 			foreach (var item in ThumbnailView.Items.Cast<object>().Where(item => !obj.Contains(item)))
 			{
-			    ThumbnailView.SelectedItems.Add(item);
+				ThumbnailView.SelectedItems.Add(item);
 			}
-			
+
 		}
 
 		private void CheckInvBtn_Click(object sender, RoutedEventArgs e)
@@ -387,51 +371,51 @@ namespace BatchImageProcessor
 
 		private void importFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
-		    if (_folderBrowser.ShowDialog(this) != System.Windows.Forms.DialogResult.OK) return;
-		    var inf = new DirectoryInfo(_folderBrowser.SelectedPath);
-		    var recurs = false;
-		    if (inf.GetDirectories().Length > 0)
-		    {
-		        var res = MessageBox.Show(this,
-		            "This folder has folders within it. Would you like to add those as well?",
-		            "Import Folder", MessageBoxButton.YesNoCancel);
-		        switch (res)
-		        {
-		            case MessageBoxResult.Cancel:
-		                return;
-		            case MessageBoxResult.Yes:
-		                recurs = true;
-		                break;
-		        }
-		    }
+			if (_folderBrowser.ShowDialog(this) != System.Windows.Forms.DialogResult.OK) return;
+			var inf = new DirectoryInfo(_folderBrowser.SelectedPath);
+			var recurs = false;
+			if (inf.GetDirectories().Length > 0)
+			{
+				var res = MessageBox.Show(this,
+					"This folder has folders within it. Would you like to add those as well?",
+					"Import Folder", MessageBoxButton.YesNoCancel);
+				switch (res)
+				{
+					case MessageBoxResult.Cancel:
+						return;
+					case MessageBoxResult.Yes:
+						recurs = true;
+						break;
+				}
+			}
 
-		    var f = new Folder(_folderBrowser.SelectedPath, recurs);
+			var f = new Folder(_folderBrowser.SelectedPath, recurs);
 
-		    Folder parent;
+			Folder parent;
 
-		    var item = e.Source as MenuItem;
-		    if (item != null)
-		    {
-		        parent = item.DataContext as Folder;
-		    }
-		    else
-		    {
-		        var folder = TreeView.SelectedItem as Folder;
-		        parent = folder ?? VModel.Folders[0];
-		    }
+			var item = e.Source as MenuItem;
+			if (item != null)
+			{
+				parent = item.DataContext as Folder;
+			}
+			else
+			{
+				var folder = TreeView.SelectedItem as Folder;
+				parent = folder ?? VModel.Folders[0];
+			}
 
-		    if (parent != null && parent.ContainsFile(f.Name))
-		    {
-		        var s = f.Name + " ({0})";
-		        var i = 0;
-		        while (parent.ContainsFile(string.Format(s, ++i)))
-		        {
-		        }
+			if (parent != null && parent.ContainsFile(f.Name))
+			{
+				var s = f.Name + " ({0})";
+				var i = 0;
+				while (parent.ContainsFile(string.Format(s, ++i)))
+				{
+				}
 
-		        f.Name = string.Format(s, i);
-		    }
+				f.Name = string.Format(s, i);
+			}
 
-		    parent?.Files.Add(f);
+			parent?.Files.Add(f);
 		}
 
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
@@ -519,7 +503,7 @@ namespace BatchImageProcessor
 
 			if (target == null) return;
 			var oldName = target.Name;
-			var fdlg = new RenameFileDialog {DataContext = target, Owner = this, Title = "Rename Folder"};
+			var fdlg = new RenameFileDialog { DataContext = target, Owner = this, Title = "Rename Folder" };
 
 			if (fdlg.ShowDialog().GetValueOrDefault(false))
 			{
@@ -554,7 +538,7 @@ namespace BatchImageProcessor
 
 		private void aboutBtn_Click(object sender, RoutedEventArgs e)
 		{
-			var b = new AboutBox {Owner = this};
+			var b = new AboutBox { Owner = this };
 			b.ShowDialog();
 		}
 
@@ -568,7 +552,9 @@ namespace BatchImageProcessor
 			RotateSettings.Visibility =
 				ResizeSettings.Visibility =
 					CropSettings.Visibility =
-						WatermarkSettings.Visibility = OutputSettings.Visibility = Visibility.Collapsed;
+						WatermarkSettings.Visibility = 
+							ColorSettings.Visibility =
+								OutputSettings.Visibility = Visibility.Collapsed;
 			if (SettingsPresenter == null) return;
 			if (Equals(OptionsBox.SelectedItem, RotateBox))
 				RotateSettings.Visibility = Visibility.Visible;
@@ -578,8 +564,11 @@ namespace BatchImageProcessor
 				CropSettings.Visibility = Visibility.Visible;
 			else if (Equals(OptionsBox.SelectedItem, WatermarkBox))
 				WatermarkSettings.Visibility = Visibility.Visible;
+			else if (Equals(OptionsBox.SelectedItem, ColorBox))
+				ColorSettings.Visibility = Visibility.Visible;
 			else if (Equals(OptionsBox.SelectedItem, OutputBox))
 				OutputSettings.Visibility = Visibility.Visible;
+
 		}
 
 		private void CropBtn_Click(object sender, RoutedEventArgs e)
@@ -689,20 +678,20 @@ namespace BatchImageProcessor
 		}
 
 
-        #endregion
+		#endregion
 
-        private void StartBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (!VModel.Ready) return;
+		private void StartBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (!VModel.Ready) return;
 
-            VModel.Begin();
-        }
+			VModel.Begin();
+		}
 
-	    private void StopBtn_Click(object sender, RoutedEventArgs e)
-	    {
-	        Engine.Cancel = true;
-	    }
+		private void StopBtn_Click(object sender, RoutedEventArgs e)
+		{
+			Engine.Cancel = true;
+		}
 
-	    
+
 	}
 }

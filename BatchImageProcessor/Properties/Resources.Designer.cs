@@ -106,6 +106,33 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable/Disable Adjustments.
+        /// </summary>
+        public static string ColChck_ToolTip {
+            get {
+                return ResourceManager.GetString("ColChck_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adjustments.
+        /// </summary>
+        public static string ColorOptionLabel_Text {
+            get {
+                return ResourceManager.GetString("ColorOptionLabel_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adjustment Settings.
+        /// </summary>
+        public static string ColorSettings_Title {
+            get {
+                return ResourceManager.GetString("ColorSettings_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable/Disable Cropping.
         /// </summary>
         public static string CropChck_ToolTip {

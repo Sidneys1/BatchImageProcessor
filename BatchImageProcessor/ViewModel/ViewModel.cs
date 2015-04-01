@@ -236,11 +236,17 @@ namespace BatchImageProcessor.ViewModel
             }
         }
 
-        #endregion
+		#endregion
 
-        #region OutputSettings
+		#region Color Settings
 
-        private NameType _nameOption = NameType.Original;
+		
+
+		#endregion
+
+		#region OutputSettings
+
+		private NameType _nameOption = NameType.Original;
         // TODO: switch back
         private string _outputPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures); //Resources.ViewModel__outputPath__No_Path_Set;
 
@@ -309,8 +315,9 @@ namespace BatchImageProcessor.ViewModel
         private bool _enableResize;
         private bool _enableRotation;
         private bool _enableWatermark;
+		private bool _enableColor;
 
-        public bool EnableRotation
+		public bool EnableRotation
         {
             get { return _enableRotation; }
             set
@@ -350,11 +357,21 @@ namespace BatchImageProcessor.ViewModel
             }
         }
 
-        #endregion
+		public bool EnableColor
+		{
+			get { return _enableColor; }
+			set
+			{
+				_enableColor = value;
+				PropChanged("EnableColor");
+			}
+		}
 
-        #region Progress
+		#endregion
 
-        private int _doneImages;
+		#region Progress
+
+		private int _doneImages;
         private bool _showProgressBar;
         private int _totalImages;
 

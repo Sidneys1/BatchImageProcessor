@@ -391,4 +391,13 @@
   <data name="SelectInvBtn_ToolTip" xml:space="preserve">
     <value>Invert Selection</value>
   </data>
+  <data name="ColChck_ToolTip" xml:space="preserve">
+    <value>Enable/Disable Adjustments</value>
+  </data>
+  <data name="ColorOptionLabel_Text" xml:space="preserve">
+    <value>Adjustments</value>
+  </data>
+  <data name="ColorSettings_Title" xml:space="preserve">
+    <value>Adjustment Settings</value>
+  </data>
 </root>
