@@ -1,5 +1,5 @@
 # Batch Image Processor #
-[![Batch Image Processor](http://imgur.com/HFMUCPV.png)](http://imgur.com/HFMUCPV.png)
+[![Batch Image Processor](http://imgur.com/7j6L5ok.png)](http://imgur.com/7j6L5ok.png)
 ### What does it Do? ###
 
 Import hundreds of photos and perform various manipulations on them!
