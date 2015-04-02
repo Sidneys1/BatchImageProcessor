@@ -345,6 +345,12 @@
   <ItemGroup>
     <Resource Include="Images\color-adjustment.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\image--pencil.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\image-sepia.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

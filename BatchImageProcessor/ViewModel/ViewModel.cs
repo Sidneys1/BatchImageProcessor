@@ -240,7 +240,57 @@ namespace BatchImageProcessor.ViewModel
 
 		#region Color Settings
 
-		
+		private ColorType _colorType = ColorType.Saturation;
+	    private double _colorBrightness = 1.0, _colorContrast = 1.0, _colorSaturation = 1.0, _colorGamma = 1.0;
+
+
+		public ColorType ColorType
+	    {
+		    get { return _colorType; }
+		    set { _colorType = value;
+			    PropChanged("ColorType");
+		    }
+	    }
+
+		public double ColorBrightness
+		{
+			get { return _colorBrightness; }
+			set
+			{
+				_colorBrightness = value;
+				PropChanged("ColorBrightness");
+			}
+		}
+
+		public double ColorContrast
+		{
+			get { return _colorContrast; }
+			set
+			{
+				_colorContrast = value;
+				PropChanged("ColorContrast");
+			}
+		}
+
+		public double ColorSaturation
+		{
+			get { return _colorSaturation; }
+			set
+			{
+				_colorSaturation = value;
+				PropChanged("ColorSaturation");
+			}
+		}
+
+		public double ColorGamma
+		{
+			get { return _colorGamma; }
+			set
+			{
+				_colorGamma = value;
+				PropChanged("ColorGamma");
+			}
+		}
 
 		#endregion
 
@@ -374,8 +424,9 @@ namespace BatchImageProcessor.ViewModel
 		private int _doneImages;
         private bool _showProgressBar;
         private int _totalImages;
+	    
 
-        public int TotalImages
+	    public int TotalImages
         {
             get { return _totalImages; }
             private set
@@ -442,14 +493,10 @@ namespace BatchImageProcessor.ViewModel
 
         private bool RemoveFolder(Folder parent, Folder folder)
         {
-            if (parent.Files.Contains(folder))
-            {
-                parent.Files.Remove(folder);
+	        if (!parent.Files.Contains(folder)) return parent.Files.Cast<Folder>().Any(p => RemoveFolder(p, folder));
+	        parent.Files.Remove(folder);
 
-                return true;
-            }
-
-            return parent.Files.Cast<Folder>().Any(p => RemoveFolder(p, folder));
+	        return true;
         }
 
         internal void RemoveFile(FileWrapper file)
@@ -470,4 +517,12 @@ namespace BatchImageProcessor.ViewModel
 
         #endregion
     }
+
+	public enum ColorType
+	{
+		Saturation,
+		Greyscale,
+		Sepia
+	}
+
 }
