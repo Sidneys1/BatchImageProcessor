@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using BatchImageProcessor.Model;
+using BatchImageProcessor.Properties;
 using Env= System.Environment;
 
 namespace BatchImageProcessor.ViewModel
@@ -298,7 +299,7 @@ namespace BatchImageProcessor.ViewModel
 
 		private NameType _nameOption = NameType.Original;
         // TODO: switch back
-        private string _outputPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures); //Resources.ViewModel__outputPath__No_Path_Set;
+        private string _outputPath = Resources.ViewModel__outputPath__No_Path_Set;
 
         private bool _outputSet;
         private string _outputTemplate = "{o} - Processed";

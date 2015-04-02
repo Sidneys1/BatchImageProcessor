@@ -351,6 +351,9 @@
   <ItemGroup>
     <Resource Include="Images\image-sepia.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\color-adjustment--cross.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

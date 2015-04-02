@@ -7,6 +7,7 @@ namespace BatchImageProcessor.ViewModel
         private bool _overrideCrop;
         private bool _overrideResize;
         private bool _overrideWatermark;
+	    private bool _overrideColor;
         private Rotation _rotOverride = Rotation.Default;
         private bool _selected = true;
 
@@ -66,6 +67,17 @@ namespace BatchImageProcessor.ViewModel
                 PropChanged("OverrideWatermark");
             }
         }
+
+	    public bool OverrideColor
+	    {
+			get { return _overrideColor; }
+		    set
+		    {
+			    _overrideColor = value;
+			    PropChanged("OverrideColor");
+		    }
+	    }
+
 
         public string OutputPath { get; set; }
         public int ImageNumber { get; set; }

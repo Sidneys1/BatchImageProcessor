@@ -11,13 +11,9 @@
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
         DataContext="{Binding VModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" SourceInitialized="MainWindow_OnSourceInitialized">
 	<Window.Resources>
-		<!-- ReSharper disable Xaml.RedundantResource -->
-		<!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
 		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 		<viewmodel:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverterInverted" True="Collapsed" False="Visible"/>
-		<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-		<viewmodel:FileCollectionView x:Key="FileFilterCollection"
-		                              Source="{Binding SelectedItem.Files, ElementName=TreeView}" />
+		<viewmodel:FileCollectionView x:Key="FileFilterCollection" Source="{Binding SelectedItem.Files, ElementName=TreeView}" />
 
 		<!-- #region Effects -->
 
@@ -188,6 +184,11 @@
 			<MenuItem Header="Override Watermark" IsCheckable="True" IsChecked="{Binding OverrideWatermark}">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="Images/image-saturation.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="Override Adjustments" IsCheckable="True" IsChecked="{Binding OverrideColor}">
+				<MenuItem.Icon>
+					<Image Stretch="None" StretchDirection="DownOnly" Source="Images/color-adjustment.png" />
 				</MenuItem.Icon>
 			</MenuItem>
 		</ContextMenu>
@@ -457,7 +458,7 @@
                                Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}" />
 						<CheckBox Grid.Row="0" IsChecked="{Binding Selected}" VerticalAlignment="Top" Focusable="False" />
 						<StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft"
-						            Effect="{StaticResource DropShadowFx}">
+						            Effect="{StaticResource DropShadowFx}"  Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}">
 							<Image Width="16" Height="16"
 							       Visibility="{Binding RotationOverride, ConverterParameter=None, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/arrow-noturn.png"
@@ -492,6 +493,9 @@
 							<Image Width="16" Height="16"
 							       Visibility="{Binding OverrideWatermark, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="Images/image-saturation--cross.png" ToolTip="Watermark Overridden" />
+							<Image Width="16" Height="16"
+							       Visibility="{Binding OverrideColor, Converter={StaticResource InvBoolVisConv}}"
+							       StretchDirection="DownOnly" Source="Images/color-adjustment--cross.png" ToolTip="Adjustments Overridden" />
 						</StackPanel>
 						<TextBlock Grid.Row="2" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" MaxWidth="128"
 						           MaxHeight="40" TextAlignment="Center" Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}" />
@@ -530,7 +534,7 @@
 			</Grid.RowDefinitions>
 
 			<!-- Option tabs -->
-			<ListBox x:Name="OptionsBox" VerticalAlignment="Top" Height="Auto" BorderThickness="0" SelectedIndex="0"
+			<ListBox x:Name="OptionsBox" VerticalAlignment="Top" Height="Auto" BorderThickness="0" SelectedIndex="5"
 			         SelectionChanged="ListBox_SelectionChanged" Margin="0">
 				<ListBox.Resources>
 					<Style TargetType="{x:Type CheckBox}">
@@ -568,7 +572,7 @@
 				</ListBoxItem>
 				<ListBoxItem x:Name="ResizeBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="ResChck" VerticalContentAlignment="Center"
+						<CheckBox x:Name="ResChck" VerticalContentAlignment="Center" VerticalAlignment="Center"
 						          ToolTip="{x:Static properties:Resources.ResizeChck_ToolTip}"
 						          IsChecked="{Binding EnableResize}">
 							<Border Opacity="0.5" Focusable="False" />
@@ -582,7 +586,7 @@
 				</ListBoxItem>
 				<ListBoxItem x:Name="CropBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="CrpChck" VerticalContentAlignment="Center"
+						<CheckBox x:Name="CrpChck" VerticalContentAlignment="Center" VerticalAlignment="Center"
 						          ToolTip="{x:Static properties:Resources.CropChck_ToolTip}"
 						          IsChecked="{Binding EnableCrop}">
 							<Border Opacity="0.5" Focusable="False" />
@@ -596,7 +600,7 @@
 				</ListBoxItem>
 				<ListBoxItem x:Name="WatermarkBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox x:Name="WtrChck" VerticalContentAlignment="Center"
+						<CheckBox x:Name="WtrChck" VerticalContentAlignment="Center" VerticalAlignment="Center"
 						          ToolTip="{x:Static properties:Resources.WatermarkChck_ToolTip}"
 						          IsChecked="{Binding EnableWatermark}">
 							<Border Opacity="0.5" Focusable="False" />
@@ -611,7 +615,7 @@
 
 				<ListBoxItem x:Name="ColorBox">
 					<StackPanel Orientation="Horizontal">
-						<CheckBox VerticalContentAlignment="Center" x:Name="ColChck"
+						<CheckBox VerticalContentAlignment="Center" x:Name="ColChck" VerticalAlignment="Center"
 						          ToolTip="{x:Static properties:Resources.ColChck_ToolTip}"
 						          IsChecked="{Binding EnableColor}">
 							<Border Opacity="0.5" Focusable="False" />
@@ -748,13 +752,11 @@
 								</Grid.RowDefinitions>
 								<TextBlock Text="{x:Static properties:Resources.ResizeDims_WidthUpDwn_Label}" Margin="5,3"
 									VerticalAlignment="Center" />
-								<xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding ResizeWidth}" Minimum="0" Margin="5,3"
-									HorizontalAlignment="Left" MinWidth="100" />
+								<xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding ResizeWidth}" Minimum="0" Margin="5,3" />
 
 								<TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static properties:Resources.ResizeDims_HeightUpDwn_Label}"
 									Margin="5,3" VerticalAlignment="Center" />
-								<xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Value="{Binding ResizeHeight}" Minimum="0" Margin="5,3"
-									HorizontalAlignment="Left" MinWidth="100" />
+								<xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Value="{Binding ResizeHeight}" Minimum="0" Margin="5,3" />
 							</Grid>
 						</StackPanel>
 					</Grid>
@@ -777,11 +779,11 @@
 								</Grid.RowDefinitions>
 								<TextBlock Text="{x:Static properties:Resources.CropOpts_WidthUpDwn_Text}" Margin="0,0,10,0"
 									VerticalAlignment="Center" />
-								<xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1"
+								<xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Margin="3" Minimum="1"
 									Value="{Binding CropWidth}" />
 								<TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static properties:Resources.CropOpts_HeightUpDwn_Text}"
 									Margin="0,0,10,0" VerticalAlignment="Center" />
-								<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Width="100" HorizontalAlignment="Left" Margin="3" Minimum="1"
+								<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Margin="3" Minimum="1"
 									Value="{Binding CropHeight}" />
 							</Grid>
 							<TextBlock Text="Crop alignment:" FontWeight="Bold" Margin="0,10,0,0" />
@@ -916,74 +918,71 @@
 								</CheckBox>
 							</StackPanel>
 							<StackPanel Margin="0,10,0,0">
-								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_OtherOpts_Title}" FontWeight="Bold" />
+								<TextBlock Text="Opacity" FontWeight="Bold" />
 								<Grid>
 									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+									<TextBlock Text="0%" VerticalAlignment="Center"/>
+									<Slider Grid.Column="1" Margin="3" Minimum="0" Maximum="1" Value="{Binding WatermarkOpacity}"/>
+									<TextBlock Grid.Column="2" Text="100%" VerticalAlignment="Center"/>
+
+									<!--<xctk:DoubleUpDown FormatString="P" Value="{Binding WatermarkOpacity}"
+										MinWidth="100"
+										HorizontalAlignment="Left" Increment="0.1" Maximum="1" Minimum="0.01" />-->
+								</Grid>
+								<TextBlock Text="{Binding WatermarkOpacity, StringFormat=P}" HorizontalAlignment="Center"/>
+								<TextBlock Text="Watermark Alignment" FontWeight="Bold" />
+								<Grid HorizontalAlignment="Center">
+									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="Auto" />
 									</Grid.RowDefinitions>
+									<Button x:Name="WatermarkTopLeftBtn" Click="WatermarkBtn_Click" Cursor="Hand" ToolTip="Top Left">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
+									</Button>
+									<Button x:Name="WatermarkTopCenterBtn" Grid.Row="0" Grid.Column="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Top Center">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
+									</Button>
+									<Button x:Name="WatermarkTopRightBtn" Grid.Row="0" Grid.Column="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Top Right">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
+									</Button>
 
+									<Button x:Name="WatermarkMiddleLeftBtn" Grid.Row="1" Grid.Column="0" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Left">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
+									</Button>
+									<Button x:Name="WatermarkMiddleCenterButton" Grid.Column="1" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Center">
+										<Image StretchDirection="DownOnly" Source="Images/circle.png" />
+									</Button>
+									<Button x:Name="WatermarkMiddleRightBtn" Grid.Column="2" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Right">
+										<Image StretchDirection="DownOnly" Source="Images/arrow.png" />
+									</Button>
 
-									<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_OpacUpDwn_Text}" VerticalAlignment="Center"
-										Margin="0,0,10,0" />
-									<xctk:DoubleUpDown Grid.Row="0" Grid.Column="1" FormatString="P" Value="{Binding WatermarkOpacity}"
-										MinWidth="100"
-										HorizontalAlignment="Left" Increment="0.1" Maximum="1" Minimum="0.01" Margin="3" />
-
-									<Grid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center">
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="Auto" />
-											<ColumnDefinition Width="Auto" />
-											<ColumnDefinition Width="Auto" />
-										</Grid.ColumnDefinitions>
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Button x:Name="WatermarkTopLeftBtn" Click="WatermarkBtn_Click" Cursor="Hand" ToolTip="Top Left">
-											<Image StretchDirection="DownOnly" Source="Images/arrow-135.png" />
-										</Button>
-										<Button x:Name="WatermarkTopCenterBtn" Grid.Row="0" Grid.Column="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Top Center">
-											<Image StretchDirection="DownOnly" Source="Images/arrow-090.png" />
-										</Button>
-										<Button x:Name="WatermarkTopRightBtn" Grid.Row="0" Grid.Column="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Top Right">
-											<Image StretchDirection="DownOnly" Source="Images/arrow-045.png" />
-										</Button>
-
-										<Button x:Name="WatermarkMiddleLeftBtn" Grid.Row="1" Grid.Column="0" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Left">
-											<Image StretchDirection="DownOnly" Source="Images/arrow-180.png" />
-										</Button>
-										<Button x:Name="WatermarkMiddleCenterButton" Grid.Column="1" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Center">
-											<Image StretchDirection="DownOnly" Source="Images/circle.png" />
-										</Button>
-										<Button x:Name="WatermarkMiddleRightBtn" Grid.Column="2" Grid.Row="1" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Middle Right">
-											<Image StretchDirection="DownOnly" Source="Images/arrow.png" />
-										</Button>
-
-										<Button x:Name="WatermarkBottopLeftBtn" Grid.Row="2" Grid.Column="0" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Left">
-											<Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
-										</Button>
-										<Button x:Name="WatermarkBottomCenterBtn" Grid.Column="1" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Center">
-											<Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
-										</Button>
-										<Button x:Name="WatermarkBottomRightBtn" Grid.Column="2" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Right">
-											<Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
-										</Button>
-									</Grid>
-									<TextBlock Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
-										Text="{Binding WatermarkAlignment, Converter={StaticResource EnumStrConv}, FallbackValue=No Binding}"
-										HorizontalAlignment="Center" />
+									<Button x:Name="WatermarkBottopLeftBtn" Grid.Row="2" Grid.Column="0" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Left">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-225.png" />
+									</Button>
+									<Button x:Name="WatermarkBottomCenterBtn" Grid.Column="1" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Center">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-270.png" />
+									</Button>
+									<Button x:Name="WatermarkBottomRightBtn" Grid.Column="2" Grid.Row="2" Cursor="Hand" Click="WatermarkBtn_Click" ToolTip="Bottom Right">
+										<Image StretchDirection="DownOnly" Source="Images/arrow-315.png" />
+									</Button>
 								</Grid>
+								<TextBlock
+									Text="{Binding WatermarkAlignment, Converter={StaticResource EnumStrConv}, FallbackValue=No Binding}"
+										HorizontalAlignment="Center" />
 							</StackPanel>
 						</StackPanel>
 					</Grid>
-					<Grid x:Name="ColorSettings" Visibility="Visible">
+					<Grid x:Name="ColorSettings" Visibility="Collapsed">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
@@ -1010,8 +1009,8 @@
 									<ColumnDefinition Width="Auto"/>
 								</Grid.ColumnDefinitions>
 								<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="0%"/>
-								<Slider Grid.Column="1" Margin="3" Minimum="0" Maximum="2" Value="{Binding ColorContrast}"/>
-								<TextBlock Grid.Column="2" VerticalAlignment="Center" Text="200%"/>
+								<Slider Grid.Column="1" Margin="3" Minimum="0" Maximum="5" Value="{Binding ColorContrast}"/>
+								<TextBlock Grid.Column="2" VerticalAlignment="Center" Text="500%"/>
 							</Grid>
 							<TextBlock HorizontalAlignment="Center" Text="{Binding ColorContrast, StringFormat=P0}"/>
 
@@ -1022,9 +1021,9 @@
 									<ColumnDefinition Width="*"/>
 									<ColumnDefinition Width="Auto"/>
 								</Grid.ColumnDefinitions>
-								<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="0%"/>
-								<Slider Grid.Column="1" Margin="3" Minimum="0" Maximum="2" Value="{Binding ColorGamma}"/>
-								<TextBlock Grid.Column="2" VerticalAlignment="Center" Text="200%"/>
+								<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="10%"/>
+								<Slider Grid.Column="1" Margin="3" Minimum="0.1" Maximum="5" Value="{Binding ColorGamma}"/>
+								<TextBlock Grid.Column="2" VerticalAlignment="Center" Text="500%"/>
 							</Grid>
 							<TextBlock HorizontalAlignment="Center" Text="{Binding ColorGamma, StringFormat=P0}"/>
 
@@ -1063,7 +1062,7 @@
 
 						</StackPanel>
 					</Grid>
-					<Grid x:Name="OutputSettings" Visibility="Collapsed">
+					<Grid x:Name="OutputSettings" Visibility="Visible">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
@@ -1077,7 +1076,7 @@
 								</Grid.ColumnDefinitions>
 								<TextBlock Text="{x:Static properties:Resources.OutSettings_LocationBtn_Text}" Margin="0,0,10,0"
 									VerticalAlignment="Center" />
-								<Button x:Name="OutputBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand" Margin="10,3"
+								<Button x:Name="OutputBtn" ToolTip="{Binding WatermarkImagePath}" Grid.Column="1" Cursor="Hand" Margin="5,3"
 									VerticalAlignment="Center" HorizontalContentAlignment="Center" Click="outputBtn_Click">
 									<Button.Style>
 										<Style TargetType="{x:Type Button}">
@@ -1112,12 +1111,12 @@
 								<TextBlock Grid.Row="1" Grid.Column="0"
 									Text="{x:Static properties:Resources.OutSettings_CustomNameSettings_TemplateTxtBx_Text}"
 									Margin="0,0,10,0" VerticalAlignment="Center" />
-								<TextBox Grid.Row="1" Grid.Column="1" Margin="3"
+								<TextBox Grid.Row="1" Grid.Column="1" Margin="5,3"
 									Text="{Binding OutputTemplate, UpdateSourceTrigger=PropertyChanged}" />
 								<TextBlock Grid.Row="2" Grid.Column="0"
 									Text="{x:Static properties:Resources.OutSettings_CustomNameSettings_ExampleLbl_Text}"
 									Margin="0,0,10,0" VerticalAlignment="Center" />
-								<TextBlock Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding OutputTemplateExample}"
+								<TextBlock Grid.Row="2" Grid.Column="1" Margin="5,3" Text="{Binding OutputTemplateExample}"
 									VerticalAlignment="Center" />
 								<TextBlock Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center"
 									Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextAlignment="Center"
@@ -1126,12 +1125,7 @@
 						</StackPanel>
 					</Grid>
 				</StackPanel>
-
 			</ScrollViewer>
-
-			<!-- #region Options Panes -->
-
-			<!-- #endregion -->
 
 			<!-- Separator -->
 			<Border Grid.Row="3" Height="3">
