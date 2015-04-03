@@ -286,7 +286,7 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png.
+        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png*.dng;*.nef.
         /// </summary>
         public static string MainWindow__watermarkFileBrowser_Filter {
             get {

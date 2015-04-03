@@ -113,10 +113,10 @@
 			</Style.Triggers>
 		</Style>
 
-		<Style TargetType="{x:Type ListViewItem}">
+		<!--<Style TargetType="{x:Type ListViewItem}">
 			<Setter Property="HorizontalContentAlignment" Value="Left" />
 			<Setter Property="VerticalContentAlignment" Value="Center" />
-		</Style>
+		</Style>-->
 
 		<!-- Thumbnail Fall-back Image -->
 		<BitmapImage x:Key="LoadingImage" CacheOption="OnLoad" UriSource="Images/refresh.png" />

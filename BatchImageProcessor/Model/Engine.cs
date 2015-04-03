@@ -8,12 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Media;
 using BatchImageProcessor.ViewModel;
-using Microsoft.WindowsAPICodePack.Shell;
-using Xceed.Wpf.Toolkit.Primitives;
-using Color = System.Drawing.Color;
 
 namespace BatchImageProcessor.Model
 {
@@ -67,7 +62,8 @@ namespace BatchImageProcessor.Model
 
 			if (w != null)
 			{
-				var b = Image.FromFile(w.Path);
+				var b = Image.FromFile(w.Path, true);
+				
 				// Process
 				if (w.RotationOverride != Rotation.Default || _model.EnableRotation)
 					RotateImage(w, b);
@@ -77,8 +73,7 @@ namespace BatchImageProcessor.Model
 
 				if (_model.EnableCrop && !w.OverrideCrop)
 					b = CropImage(b);
-
-				// TODO: Watermark
+				
 				if (_model.EnableWatermark && !w.OverrideWatermark)
 					WatermarkImage(w, b);
 
@@ -131,8 +126,6 @@ namespace BatchImageProcessor.Model
 
 		private static Image ColorImage(Image image)
 		{
-			var m = new ColorMatrix();
-
 			var sat = (float)_model.ColorSaturation;
 
 			float tl = 1f, tc = 0f, tr = 0f, ml = 0f, mc = 1f, mr = 0f, bl = 0f, bc = 0f, br = 1f;
@@ -198,11 +191,10 @@ namespace BatchImageProcessor.Model
 
 			return image;
 		}
-
-		// TODO: Watermark
-
+		
 		private static void WatermarkImage(FileWrapper w, Image b)
 		{
+			if (w == null) throw new ArgumentNullException("w");
 			using (var g = Graphics.FromImage(b))
 			{
 				var align = _model.WatermarkAlignment;
