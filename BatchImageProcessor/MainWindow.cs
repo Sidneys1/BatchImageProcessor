@@ -50,6 +50,7 @@ namespace BatchImageProcessor
 
 		private IntPtr _hwnd;
 		private HwndSource _hsource;
+
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			var args = Env.GetCommandLineArgs();
@@ -118,7 +119,7 @@ namespace BatchImageProcessor
 
 		private void FallbackPaint()
 		{
-			Background = ContentRectangle.Fill;// Brushes.White;
+			Background = ContentRectangle.Fill;	// Brushes.White;
 		}
 
 		private bool IsOnExtendedFrame(int lParam)
@@ -177,7 +178,7 @@ namespace BatchImageProcessor
 			Filter = Properties.Resources.MainWindow__fileBrowser_Filter,
 			Multiselect = true,
 			InitialDirectory = Env.GetFolderPath(Env.SpecialFolder.MyPictures)
-			
+
 		};
 
 		private readonly FolderBrowserDialog _folderBrowser = new FolderBrowserDialog
@@ -273,7 +274,7 @@ namespace BatchImageProcessor
 		private void Grid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			var files = new List<FileInfo>();
-			FileWrapper wrapper;
+			FileWrapper wrapper = null;
 			if (sender is Grid)
 			{
 				files.AddRange(from File file in ThumbnailView.SelectedItems select new FileInfo(file.Path));
@@ -282,9 +283,14 @@ namespace BatchImageProcessor
 			else
 			{
 				var frameworkElement = e.Source as FrameworkElement;
-				var f = frameworkElement?.DataContext as File;
-				if (f != null) files.Add(new FileInfo(f.Path));
-				wrapper = TreeView.SelectedItem as FileWrapper;
+				var f = frameworkElement?.DataContext as FileWrapper;
+				if (f != null)
+				{
+					files.Add(new FileInfo(f.Path));
+					wrapper = f;
+				}
+				else if (TreeView.SelectedValue is FileWrapper)
+					wrapper = TreeView.SelectedValue as FileWrapper;
 			}
 
 			if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
@@ -414,7 +420,7 @@ namespace BatchImageProcessor
 				f.Name = string.Format(s, i);
 			}
 
-			parent?.Files.Add(f);
+			parent?.Files.Insert(0,f);
 		}
 
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
@@ -470,7 +476,7 @@ namespace BatchImageProcessor
 				f.Name = string.Format(s, i);
 			}
 
-			parent?.Files.Add(f);
+			parent?.Files.Insert(0,f);
 		}
 
 		private void importImageBtn_Click(object sender, RoutedEventArgs e)
@@ -551,7 +557,7 @@ namespace BatchImageProcessor
 			RotateSettings.Visibility =
 				ResizeSettings.Visibility =
 					CropSettings.Visibility =
-						WatermarkSettings.Visibility = 
+						WatermarkSettings.Visibility =
 							ColorSettings.Visibility =
 								OutputSettings.Visibility = Visibility.Collapsed;
 			if (SettingsPresenter == null) return;
@@ -691,6 +697,19 @@ namespace BatchImageProcessor
 			Engine.Cancel = true;
 		}
 
+		private void RemoveItemBtn_Click(object sender, RoutedEventArgs e)
+		{
+			// ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
+			if (TreeView.SelectedValue is FileWrapper)
+				VModel.RemoveFile((FileWrapper)TreeView.SelectedValue);
+			else
+				VModel.RemoveFolder((Folder)TreeView.SelectedValue);
+		}
 
+		private void MenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			var m = (ContextMenu) Resources["ImageCtxMenu"];
+			VModel.RemoveFile((FileWrapper)m.DataContext);
+		}
 	}
 }

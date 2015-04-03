@@ -125,6 +125,15 @@
 		<!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 		<!-- ReSharper disable once Xaml.RedundantResource -->
 		<ContextMenu x:Key="ImageCtxMenu">
+			<MenuItem Header="Override Output Format">
+				<MenuItem Header="Default Output Format" IsChecked="{Binding FormatOverride, ConverterParameter=Default, Converter={StaticResource EnumConv}}"/>
+				<Separator/>
+				<MenuItem Header="JPEG (*.jpg)" IsChecked="{Binding FormatOverride, ConverterParameter=Jpg, Converter={StaticResource EnumConv}}" IsCheckable="True"/>
+				<MenuItem Header="Portable Network Graphics (*.png)" IsChecked="{Binding FormatOverride, ConverterParameter=Png, Converter={StaticResource EnumConv}}" IsCheckable="True"/>
+				<MenuItem Header="Bitmap (*.bmp)" IsChecked="{Binding FormatOverride, ConverterParameter=Bmp, Converter={StaticResource EnumConv}}" IsCheckable="True"/>
+				<MenuItem Header="Graphics Interchange Format (*.gif)" IsChecked="{Binding FormatOverride, ConverterParameter=Gif, Converter={StaticResource EnumConv}}" IsCheckable="True"/>
+				<MenuItem Header="Tagged Image File Format (*.tiff)" IsChecked="{Binding FormatOverride, ConverterParameter=Tiff, Converter={StaticResource EnumConv}}" IsCheckable="True"/>
+			</MenuItem>
 			<MenuItem Header="{x:Static properties:Resources.RotationMenu_Header}">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="Images/image-rotate.png" />
@@ -193,6 +202,12 @@
 					<Image Stretch="None" StretchDirection="DownOnly" Source="Images/color-adjustment.png" />
 				</MenuItem.Icon>
 			</MenuItem>
+			<Separator/>
+			<MenuItem Header="Remove Image" Click="MenuItem_Click">
+				<MenuItem.Icon>
+					<Image Stretch="None" StretchDirection="DownOnly" Source="Images/cross.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
 		</ContextMenu>
 	</Window.Resources>
 
@@ -254,7 +269,7 @@
 				</Line>-->
 				<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 				<Button x:Name="RemoveItemBtn" ToolTip="{x:Static properties:Resources.RemoveItemBtn_ToolTip}" Cursor="Hand"
-        			IsEnabled="{Binding SelectedItem.Removable, ElementName=TreeView}">
+        			IsEnabled="{Binding SelectedItem.Removable, ElementName=TreeView}" Click="RemoveItemBtn_Click">
 					<Image Width="18" Height="18" Source="Images/cross.png" Stretch="None" />
 				</Button>
 			</StackPanel>
@@ -264,8 +279,7 @@
 		<!--<Label x:Name="FolderLabel" Grid.Row="0" Grid.Column="0" Content="{x:Static properties:Resources.FoldersLabel_Text}" HorizontalAlignment="Center" Visibility="Collapsed"/>-->
 
 		<!-- Treeview File Explorer -->
-		<TreeView x:Name="TreeView" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Folders}" BorderThickness="0"
-		          VirtualizingPanel.IsVirtualizing="True">
+		<TreeView x:Name="TreeView" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Folders}" BorderThickness="0">
 			<TreeView.Resources>
 				<HierarchicalDataTemplate DataType="{x:Type viewmodel:Folder}" ItemsSource="{Binding Files}">
 					<StackPanel Orientation="Horizontal" Cursor="Hand">
@@ -436,10 +450,10 @@
 		<!-- Grid Splitter -->
 
 		<!-- Item View -->
-		<ListView Grid.Row="1" Grid.Column="1" x:Name="ThumbnailView"
-		          ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-		          ItemsSource="{Binding Source={StaticResource FileFilterCollection}}" Margin="3,0,0,0">
-			<ListView.ItemTemplate>
+		<ListView Grid.Row="1" Grid.Column="1" x:Name="ThumbnailView" Margin="3,0,0,0"
+		          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+			ItemsSource="{Binding Source={StaticResource FileFilterCollection}}">
+			<ListView.Resources>
 				<DataTemplate DataType="{x:Type viewmodel:FileWrapper}">
 					<Grid VerticalAlignment="Center" Margin="0,3,3,0" MouseRightButtonUp="Grid_MouseRightButtonUp">
 						<Grid.ToolTip>
@@ -503,7 +517,7 @@
 						           MaxHeight="40" TextAlignment="Center" Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}" />
 					</Grid>
 				</DataTemplate>
-			</ListView.ItemTemplate>
+			</ListView.Resources>
 		</ListView>
 
 		<Border Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" Margin="0,5" Opacity="0.7" BorderThickness="1,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">

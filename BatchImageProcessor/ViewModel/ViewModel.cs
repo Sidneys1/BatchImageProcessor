@@ -517,7 +517,8 @@ namespace BatchImageProcessor.ViewModel
 
         private static bool RemoveFile(IFolderable file, Folder folder)
         {
-	        if (!folder.Files.Contains(file)) return folder.Files.Cast<Folder>().Any(p => RemoveFile(file, p));
+	        if (!folder.Files.Contains(file))
+				return folder.Files.Cast<Folder>().Any(p => RemoveFile(file, p));
 	        folder.Files.Remove(file);
 	        return true;
         }

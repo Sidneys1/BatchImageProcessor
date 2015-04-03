@@ -2,6 +2,8 @@
 using System.IO;
 using System.Runtime.Caching;
 using System.Threading;
+using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Shell;
 
@@ -48,9 +50,20 @@ namespace BatchImageProcessor.Model
 					throw new NotSupportedException("Platform does not support ShellObjects.");
 
 				var sFile = ShellObject.FromParsingName(path);
-				return sFile.Thumbnail.BitmapSource;
+				var bitmapSource = sFile.Thumbnail.BitmapSource;
+
+				if (bitmapSource == null)
+				{
+					var b = sFile.Thumbnail.ExtraLargeIcon.ToBitmap();
+					var hbmp = b.GetHbitmap();
+					bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(hbmp, IntPtr.Zero, Int32Rect.Empty,
+						BitmapSizeOptions.FromEmptyOptions());
+				}
+
+				sFile.Dispose();
+				return bitmapSource;
 			}
-			catch
+			catch(Exception)
 			{
 				return null;
 			}

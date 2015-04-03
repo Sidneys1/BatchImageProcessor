@@ -1,28 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel
 {
     public class Folder : INotifyPropertyChanged, IFolderable
     {
-        private static Regex _nameCheck;
         private string _name = Resources.New_Folder_Name;
+	    private static readonly ISet<char> InvalidCharacters = new HashSet<char>(Path.GetInvalidPathChars());
+		//public WeakThumbnail Thumbnail { get; protected set; }
 
-        public Folder(string fromPath = null, bool recursion = true, bool removable = true)
+		public Folder(string fromPath = null, bool recursion = true, bool removable = true)
         {
             IsValidName = true;
             Files = new ObservableCollection<IFolderable>();
             if (fromPath != null)
                 Populate(fromPath, recursion);
             Removable = removable;
+			//Thumbnail = new WeakThumbnail(Directory.GetCurrentDirectory());
+			//Thumbnail.SourceUpdated += Thumbnail_SourceUpdated;
         }
 
-        public ObservableCollection<IFolderable> Files { get; }
+		//private void Thumbnail_SourceUpdated()
+		//{
+		//	PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Thumbnail"));
+		//}
+
+		public ObservableCollection<IFolderable> Files { get; }
         public bool Removable { get; private set; }
 
         public string Name
@@ -32,18 +41,15 @@ namespace BatchImageProcessor.ViewModel
             {
                 if (_name.Equals(value, StringComparison.Ordinal)) return;
 
-                var containsABadCharacter = _nameCheck ??
-                                            (_nameCheck =
-                                                new Regex("[" + Regex.Escape(new string(Path.GetInvalidPathChars())) +
-                                                          "]"));
-                if (string.IsNullOrWhiteSpace(value) || containsABadCharacter.IsMatch(value))
+	            var n = value.Trim();
+				if (n.Any(InvalidCharacters.Contains) || string.IsNullOrWhiteSpace(n) )
                 {
                     IsValidName = false;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
                     throw new Exception("Data Validation Error");
                 }
 
-                _name = value;
+                _name = n;
                 IsValidName = true;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
