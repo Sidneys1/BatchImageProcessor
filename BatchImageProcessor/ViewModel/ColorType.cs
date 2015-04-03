@@ -1,4 +1,4 @@
-namespace BatchImageProcessor.ViewModel
+namespace BatchImageProcessor.Model
 {
 	public enum ColorType
 	{
