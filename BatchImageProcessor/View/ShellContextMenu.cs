@@ -56,34 +56,31 @@ namespace BatchImageProcessor.View
                 IntPtr.Zero,
                 out pUnknownContextMenu);
 
-            if (S_OK == nResult)
-            {
-                _oContextMenu =
-                    (IContextMenu) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu, typeof (IContextMenu));
+	        if (S_OK != nResult) return false;
+	        _oContextMenu =
+		        (IContextMenu) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu, typeof (IContextMenu));
 
-                IntPtr pUnknownContextMenu2;
-                if (S_OK == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu2, out pUnknownContextMenu2))
-                {
-                    _oContextMenu2 =
-                        (IContextMenu2) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu2, typeof (IContextMenu2));
-                }
-                IntPtr pUnknownContextMenu3;
-                if (S_OK == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu3, out pUnknownContextMenu3))
-                {
-                    _oContextMenu3 =
-                        (IContextMenu3) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu3, typeof (IContextMenu3));
-                }
+	        IntPtr pUnknownContextMenu2;
+	        if (S_OK == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu2, out pUnknownContextMenu2))
+	        {
+		        _oContextMenu2 =
+			        (IContextMenu2) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu2, typeof (IContextMenu2));
+	        }
+	        IntPtr pUnknownContextMenu3;
+	        if (S_OK == Marshal.QueryInterface(pUnknownContextMenu, ref _iidIContextMenu3, out pUnknownContextMenu3))
+	        {
+		        _oContextMenu3 =
+			        (IContextMenu3) Marshal.GetTypedObjectForIUnknown(pUnknownContextMenu3, typeof (IContextMenu3));
+	        }
 
-                return true;
-            }
-            return false;
+	        return true;
         }
 
         #endregion
 
         #region InvokeCommand
 
-        private void InvokeCommand(IContextMenu oContextMenu, uint nCmd, string strFolder,
+        private static void InvokeCommand(IContextMenu oContextMenu, uint nCmd, string strFolder,
             System.Drawing.Point pointInvoke)
         {
             var invoke = new CmInvokeCommandInfoEx
@@ -137,11 +134,9 @@ namespace BatchImageProcessor.View
                 Marshal.ReleaseComObject(_oParentFolder);
                 _oParentFolder = null;
             }
-            if (null != _arrPidLs)
-            {
-                FreePidLs(_arrPidLs);
-                _arrPidLs = null;
-            }
+	        if (null == _arrPidLs) return;
+	        FreePidLs(_arrPidLs);
+	        _arrPidLs = null;
         }
 
         #endregion
@@ -154,20 +149,18 @@ namespace BatchImageProcessor.View
         /// <returns>IShellFolder for desktop folder</returns>
         private IShellFolder GetDesktopFolder()
         {
-            if (null == _oDesktopFolder)
-            {
-                // Get desktop IShellFolder
-                IntPtr pUnkownDesktopFolder;
-                var nResult = SHGetDesktopFolder(out pUnkownDesktopFolder);
-                if (S_OK != nResult)
-                {
-                    throw new ShellContextMenuException("Failed to get the desktop shell folder");
-                }
-                _oDesktopFolder =
-                    (IShellFolder) Marshal.GetTypedObjectForIUnknown(pUnkownDesktopFolder, typeof (IShellFolder));
-            }
+	        if (null != _oDesktopFolder) return _oDesktopFolder;
+	        // Get desktop IShellFolder
+	        IntPtr pUnkownDesktopFolder;
+	        var nResult = SHGetDesktopFolder(out pUnkownDesktopFolder);
+	        if (S_OK != nResult)
+	        {
+		        throw new ShellContextMenuException("Failed to get the desktop shell folder");
+	        }
+	        _oDesktopFolder =
+		        (IShellFolder) Marshal.GetTypedObjectForIUnknown(pUnkownDesktopFolder, typeof (IShellFolder));
 
-            return _oDesktopFolder;
+	        return _oDesktopFolder;
         }
 
         #endregion
@@ -181,48 +174,46 @@ namespace BatchImageProcessor.View
         /// <returns>IShellFolder for the folder (relative from the desktop)</returns>
         private IShellFolder GetParentFolder(string folderName)
         {
-            if (null == _oParentFolder)
-            {
-                var oDesktopFolder = GetDesktopFolder();
-                if (null == oDesktopFolder)
-                {
-                    return null;
-                }
+	        if (null != _oParentFolder) return _oParentFolder;
+	        var oDesktopFolder = GetDesktopFolder();
+	        if (null == oDesktopFolder)
+	        {
+		        return null;
+	        }
 
-                // Get the PIDL for the folder file is in
-                IntPtr pPidl;
-                uint pchEaten = 0;
-                Sfgao pdwAttributes = 0;
-                var nResult = oDesktopFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, folderName, ref pchEaten,
-                    out pPidl,
-                    ref pdwAttributes);
-                if (S_OK != nResult)
-                {
-                    return null;
-                }
+	        // Get the PIDL for the folder file is in
+	        IntPtr pPidl;
+	        uint pchEaten = 0;
+	        Sfgao pdwAttributes = 0;
+	        var nResult = oDesktopFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, folderName, ref pchEaten,
+		        out pPidl,
+		        ref pdwAttributes);
+	        if (S_OK != nResult)
+	        {
+		        return null;
+	        }
 
-                var pStrRet = Marshal.AllocCoTaskMem(MAX_PATH*2 + 4);
-                Marshal.WriteInt32(pStrRet, 0, 0);
-                _oDesktopFolder.GetDisplayNameOf(pPidl, Shgno.ForParsing, pStrRet);
-                var strFolder = new StringBuilder(MAX_PATH);
-                StrRetToBuf(pStrRet, pPidl, strFolder, MAX_PATH);
-                Marshal.FreeCoTaskMem(pStrRet);
-                _strParentFolder = strFolder.ToString();
+	        var pStrRet = Marshal.AllocCoTaskMem(MAX_PATH*2 + 4);
+	        Marshal.WriteInt32(pStrRet, 0, 0);
+	        _oDesktopFolder.GetDisplayNameOf(pPidl, Shgno.ForParsing, pStrRet);
+	        var strFolder = new StringBuilder(MAX_PATH);
+	        StrRetToBuf(pStrRet, pPidl, strFolder, MAX_PATH);
+	        Marshal.FreeCoTaskMem(pStrRet);
+	        _strParentFolder = strFolder.ToString();
 
-                // Get the IShellFolder for folder
-                IntPtr pUnknownParentFolder;
-                nResult = oDesktopFolder.BindToObject(pPidl, IntPtr.Zero, ref _iidIShellFolder, out pUnknownParentFolder);
-                // Free the PIDL first
-                Marshal.FreeCoTaskMem(pPidl);
-                if (S_OK != nResult)
-                {
-                    return null;
-                }
-                _oParentFolder =
-                    (IShellFolder) Marshal.GetTypedObjectForIUnknown(pUnknownParentFolder, typeof (IShellFolder));
-            }
+	        // Get the IShellFolder for folder
+	        IntPtr pUnknownParentFolder;
+	        nResult = oDesktopFolder.BindToObject(pPidl, IntPtr.Zero, ref _iidIShellFolder, out pUnknownParentFolder);
+	        // Free the PIDL first
+	        Marshal.FreeCoTaskMem(pPidl);
+	        if (S_OK != nResult)
+	        {
+		        return null;
+	        }
+	        _oParentFolder =
+		        (IShellFolder) Marshal.GetTypedObjectForIUnknown(pUnknownParentFolder, typeof (IShellFolder));
 
-            return _oParentFolder;
+	        return _oParentFolder;
         }
 
         #endregion

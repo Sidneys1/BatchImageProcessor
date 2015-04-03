@@ -298,8 +298,9 @@ namespace BatchImageProcessor.ViewModel
 		#region OutputSettings
 
 		private NameType _nameOption = NameType.Original;
-        // TODO: switch back
         private string _outputPath = Resources.ViewModel__outputPath__No_Path_Set;
+	    private Format _outputFormat = Format.Jpg;
+	    private double _jpegQuality = 0.95;
 
         private bool _outputSet;
         private string _outputTemplate = "{o} - Processed";
@@ -358,11 +359,20 @@ namespace BatchImageProcessor.ViewModel
             }
         }
 
-        #endregion
+	    public Format OutputFormat
+	    {
+			get { return _outputFormat;}
+			set { _outputFormat = value;PropChanged("OutputFormat"); }
+	    }
 
-        #region Checkboxes
+		public double JpegQuality
+		{ get { return _jpegQuality; } set { _jpegQuality = value; PropChanged("JpegQuality"); } }
 
-        private bool _enableCrop;
+		#endregion
+
+		#region Checkboxes
+
+		private bool _enableCrop;
         private bool _enableResize;
         private bool _enableRotation;
         private bool _enableWatermark;
@@ -492,7 +502,7 @@ namespace BatchImageProcessor.ViewModel
             }
         }
 
-        private bool RemoveFolder(Folder parent, Folder folder)
+        private static bool RemoveFolder(Folder parent, IFolderable folder)
         {
 	        if (!parent.Files.Contains(folder)) return parent.Files.Cast<Folder>().Any(p => RemoveFolder(p, folder));
 	        parent.Files.Remove(folder);
@@ -505,25 +515,13 @@ namespace BatchImageProcessor.ViewModel
             RemoveFile(file, Folders[0]);
         }
 
-        private bool RemoveFile(FileWrapper file, Folder folder)
+        private static bool RemoveFile(IFolderable file, Folder folder)
         {
-            if (folder.Files.Contains(file))
-            {
-                folder.Files.Remove(file);
-                return true;
-            }
-
-            return folder.Files.Cast<Folder>().Any(p => RemoveFile(file, p));
+	        if (!folder.Files.Contains(file)) return folder.Files.Cast<Folder>().Any(p => RemoveFile(file, p));
+	        folder.Files.Remove(file);
+	        return true;
         }
 
         #endregion
     }
-
-	public enum ColorType
-	{
-		Saturation,
-		Greyscale,
-		Sepia
-	}
-
 }

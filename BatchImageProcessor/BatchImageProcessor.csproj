@@ -126,6 +126,7 @@
     <Compile Include="ViewModel\BooleanToEffectConverter.cs" />
     <Compile Include="ViewModel\BooleanToOpacityConverter.cs" />
     <Compile Include="ViewModel\BooleanToVisibilityConverter.cs" />
+    <Compile Include="ViewModel\ColorType.cs" />
     <Compile Include="ViewModel\EnumBooleanConverter.cs" />
     <Compile Include="ViewModel\EnumStringConverter.cs" />
     <Compile Include="ViewModel\EnumVisibilityConverter.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="ViewModel\Folder.cs" />
     <Compile Include="ViewModel\FolderCollectionView.cs" />
     <Compile Include="ViewModel\FileCollectionView.cs" />
+    <Compile Include="ViewModel\Format.cs" />
     <Compile Include="ViewModel\TypeConverter.cs" />
     <Compile Include="ViewModel\IFolderable.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
@@ -188,7 +190,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
-      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="BatchImageProcessor_TemporaryKey.pfx" />
     <None Include="packages.config" />
@@ -350,6 +352,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\color-adjustment--cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Exec\dcraw.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

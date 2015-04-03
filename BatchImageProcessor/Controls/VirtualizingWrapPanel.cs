@@ -83,14 +83,12 @@ namespace BatchImageProcessor.Controls
 
         public void Resizing(object sender, EventArgs e)
         {
-            if (Math.Abs(_viewport.Width) > 0)
-            {
-                var firstIndexCache = _firstIndex;
-                _abstractPanel = null;
-                MeasureOverride(_viewport);
-                SetFirstRowViewItemIndex(_firstIndex);
-                _firstIndex = firstIndexCache;
-            }
+	        if (!(Math.Abs(_viewport.Width) > 0)) return;
+	        var firstIndexCache = _firstIndex;
+	        _abstractPanel = null;
+	        MeasureOverride(_viewport);
+	        SetFirstRowViewItemIndex(_firstIndex);
+	        _firstIndex = firstIndexCache;
         }
 
         public int GetFirstVisibleSection()
@@ -128,19 +126,17 @@ namespace BatchImageProcessor.Controls
             {
                 var childGeneratorPos = new GeneratorPosition(i, 0);
                 var itemIndex = _generator.IndexFromGeneratorPosition(childGeneratorPos);
-                if (itemIndex < minDesiredGenerated || itemIndex > maxDesiredGenerated)
-                {
-                    try
-                    {
-                        _generator.Remove(childGeneratorPos, 1);
-                    }
-                    catch
-                    {
-                        Debug.WriteLine("Some shit went down...");
-                    }
+	            if (itemIndex >= minDesiredGenerated && itemIndex <= maxDesiredGenerated) continue;
+	            try
+	            {
+		            _generator.Remove(childGeneratorPos, 1);
+	            }
+	            catch
+	            {
+		            Debug.WriteLine("Some shit went down...");
+	            }
 
-                    RemoveInternalChildRange(i, 1);
-                }
+	            RemoveInternalChildRange(i, 1);
             }
         }
 
@@ -548,15 +544,13 @@ namespace BatchImageProcessor.Controls
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (_children != null)
-            {
-                foreach (UIElement child in _children)
-                {
-                    var layoutInfo = _realizedChildLayout[child];
-                    child.Arrange(layoutInfo);
-                }
-            }
-            return finalSize;
+	        if (_children == null) return finalSize;
+	        foreach (UIElement child in _children)
+	        {
+		        var layoutInfo = _realizedChildLayout[child];
+		        child.Arrange(layoutInfo);
+	        }
+	        return finalSize;
         }
 
         #endregion
@@ -614,35 +608,30 @@ namespace BatchImageProcessor.Controls
             var itemIndex = gen.IndexFromContainer(element);
             while (itemIndex == -1)
             {
-                if (element != null)
-                {
-                    element = (UIElement) VisualTreeHelper.GetParent(element);
-                    itemIndex = gen.IndexFromContainer(element);
-                }
+	            if (element == null) continue;
+	            element = (UIElement) VisualTreeHelper.GetParent(element);
+	            itemIndex = gen.IndexFromContainer(element);
             }
-            if (element != null)
-            {
-                var elementRect = _realizedChildLayout[element];
-                if (Orientation == Orientation.Horizontal)
-                {
-                    var viewportHeight = _pixelMeasuredViewport.Height;
-                    if (elementRect.Bottom > viewportHeight)
-                        _offset.Y += 1;
-                    else if (elementRect.Top < 0)
-                        _offset.Y -= 1;
-                }
-                else
-                {
-                    var viewportWidth = _pixelMeasuredViewport.Width;
-                    if (elementRect.Right > viewportWidth)
-                        _offset.X += 1;
-                    else if (elementRect.Left < 0)
-                        _offset.X -= 1;
-                }
-                InvalidateMeasure();
-                return elementRect;
-            }
-            return Rect.Empty;
+	        if (element == null) return Rect.Empty;
+	        var elementRect = _realizedChildLayout[element];
+	        if (Orientation == Orientation.Horizontal)
+	        {
+		        var viewportHeight = _pixelMeasuredViewport.Height;
+		        if (elementRect.Bottom > viewportHeight)
+			        _offset.Y += 1;
+		        else if (elementRect.Top < 0)
+			        _offset.Y -= 1;
+	        }
+	        else
+	        {
+		        var viewportWidth = _pixelMeasuredViewport.Width;
+		        if (elementRect.Right > viewportWidth)
+			        _offset.X += 1;
+		        else if (elementRect.Left < 0)
+			        _offset.X -= 1;
+	        }
+	        InvalidateMeasure();
+	        return elementRect;
         }
 
         public void MouseWheelDown()
@@ -817,12 +806,10 @@ namespace BatchImageProcessor.Controls
                 get
                 {
                     var ret = _currentSetSection + 1;
-                    if (_currentSetItemIndex + 1 < Items.Count)
-                    {
-                        var itemsLeft = Items.Count - _currentSetItemIndex;
-                        ret += itemsLeft/AverageItemsPerSection + 1;
-                    }
-                    return ret;
+	                if (_currentSetItemIndex + 1 >= Items.Count) return ret;
+	                var itemsLeft = Items.Count - _currentSetItemIndex;
+	                ret += itemsLeft/AverageItemsPerSection + 1;
+	                return ret;
                 }
             }
 
@@ -851,23 +838,21 @@ namespace BatchImageProcessor.Controls
             {
                 lock (_syncRoot)
                 {
-                    if (section <= _currentSetSection + 1 && index == _currentSetItemIndex + 1)
-                    {
-                        _currentSetItemIndex++;
-                        Items[index].Section = section;
-                        if (section == _currentSetSection + 1)
-                        {
-                            _currentSetSection = section;
-                            if (section > 0)
-                            {
-                                AverageItemsPerSection = (index)/(section);
-                            }
-                            _itemsInCurrentSecction = 1;
-                        }
-                        else
-                            _itemsInCurrentSecction++;
-                        Items[index].SectionIndex = _itemsInCurrentSecction - 1;
-                    }
+	                if (section > _currentSetSection + 1 || index != _currentSetItemIndex + 1) return;
+	                _currentSetItemIndex++;
+	                Items[index].Section = section;
+	                if (section == _currentSetSection + 1)
+	                {
+		                _currentSetSection = section;
+		                if (section > 0)
+		                {
+			                AverageItemsPerSection = (index)/(section);
+		                }
+		                _itemsInCurrentSecction = 1;
+	                }
+	                else
+		                _itemsInCurrentSecction++;
+	                Items[index].SectionIndex = _itemsInCurrentSecction - 1;
                 }
             }
         }

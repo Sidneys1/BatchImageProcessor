@@ -62,9 +62,28 @@ namespace BatchImageProcessor.Model
 
 			if (w != null)
 			{
-				var b = Image.FromFile(w.Path, true);
-				
-				// Process
+				var f = new FileInfo(w.Path);
+				Image b;
+
+				if (f.Extension.ToUpper() != ".DNG" && f.Extension.ToUpper() != ".NEF")
+				{
+					b = Image.FromFile(w.Path, true);
+				}
+				else
+				{
+					var s = GetRawImageData(w.Path, ".\\Exec\\dcraw.exe");
+					if (s == null)
+					{
+						Interlocked.Decrement(ref TotalImages);
+						UpdateDone?.Invoke(null, EventArgs.Empty);
+						return;
+					}
+					b = Image.FromStream(s);
+				}
+
+
+				#region Process Steps
+
 				if (w.RotationOverride != Rotation.Default || _model.EnableRotation)
 					RotateImage(w, b);
 
@@ -73,14 +92,17 @@ namespace BatchImageProcessor.Model
 
 				if (_model.EnableCrop && !w.OverrideCrop)
 					b = CropImage(b);
-				
+
 				if (_model.EnableWatermark && !w.OverrideWatermark)
 					WatermarkImage(w, b);
 
 				if (_model.EnableColor && !w.OverrideColor)
 					b = ColorImage(b);
 
-				// Filename
+				#endregion
+
+				#region Filename
+
 				string name = null;
 				switch (_model.NameOption)
 				{
@@ -98,12 +120,32 @@ namespace BatchImageProcessor.Model
 						break;
 				}
 
-				// output path
-				var outpath = Path.Combine(w.OutputPath, name + ".jpg");
+				#endregion
+
+				#region Output Path
+
+				var ext = ".jpg";
+				switch (_model.OutputFormat)
+				{
+					case Format.Png:
+						ext = ".png";
+						break;
+					case Format.Gif:
+						ext = ".gif";
+						break;
+					case Format.Tiff:
+						ext = ".tiff";
+						break;
+					case Format.Bmp:
+						ext = ".bmp";
+						break;
+				}
+
+				var outpath = Path.Combine(w.OutputPath, name + ext);
 				if (!Directory.Exists(w.OutputPath))
 					Directory.CreateDirectory(w.OutputPath);
 
-				var outpathFormat = outpath.Replace(".jpg", " ({0}).jpg");
+				var outpathFormat = outpath.Replace(ext, " ({0})" + ext);
 
 				if (System.IO.File.Exists(outpath))
 				{
@@ -114,14 +156,85 @@ namespace BatchImageProcessor.Model
 					outpath = string.Format(outpathFormat, i);
 				}
 
+
+
+				#endregion
+
+				var encoder = ImageFormat.Jpeg;
 				// Save
-				b.Save(outpath);
+				switch (_model.OutputFormat)
+				{
+					case Format.Png:
+						encoder = ImageFormat.Png;
+						break;
+					case Format.Gif:
+						encoder = ImageFormat.Gif;
+						break;
+					case Format.Tiff:
+						encoder = ImageFormat.Tiff;
+						break;
+					case Format.Bmp:
+						encoder = ImageFormat.Bmp;
+						break;
+				}
+
+				var myEncoderParameters = new EncoderParameters(1);
+
+				if (_model.OutputFormat == Format.Jpg)
+				{
+					var myencoder = Encoder.Quality;
+					var myEncoderParameter = new EncoderParameter(myencoder, (long)(_model.JpegQuality * 100));
+					myEncoderParameters.Param[0] = myEncoderParameter;
+				}
+
+				if (_model.OutputFormat == Format.Jpg)
+					b.Save(outpath, GetEncoder(encoder), myEncoderParameters);
+				else
+					b.Save(outpath, encoder);
 				b.Dispose();
 			}
 
 			Interlocked.Increment(ref DoneImages);
 			//if (UpdateDone != null)
 			UpdateDone?.Invoke(null, EventArgs.Empty);
+		}
+
+		private static ImageCodecInfo GetEncoder(ImageFormat format)
+		{
+			var imageCodecInfo = ImageCodecInfo.GetImageDecoders();
+			return imageCodecInfo.FirstOrDefault(codec => codec.FormatID == format.Guid);
+		}
+
+		private static Stream GetRawImageData(string path, string execDcrawExe)
+		{
+			var f = new FileInfo(execDcrawExe);
+			var startInfo = new ProcessStartInfo(f.FullName)
+			{
+				Arguments = "-c -T -W \"" + path + "\"",
+				RedirectStandardOutput = true,
+				UseShellExecute = false,
+				CreateNoWindow = true
+			};
+
+			var process = System.Diagnostics.Process.Start(startInfo);
+
+			if (process == null) return null;
+
+			try
+			{
+				var image = Image.FromStream(process.StandardOutput.BaseStream, true, true);
+
+				var memoryStream = new MemoryStream();
+				image.Save(memoryStream, ImageFormat.Png);
+
+				return memoryStream;
+			}
+			catch
+			{
+				// ignored
+			}
+
+			return null;
 		}
 
 		private static Image ColorImage(Image image)
@@ -174,7 +287,7 @@ namespace BatchImageProcessor.Model
 				new[] { ml, mc, mr, 0f, 0f }, // GREEN
 				new[] { bl, bc, br, 0f, 0f }, // BLUE
 				new[] { 0f, 0f, 0f, 1f,0f }, // Alpha
-				new[] { (float)_model.ColorBrightness-1f, (float)_model.ColorBrightness-1f, (float)_model.ColorBrightness-1f, 0f, 1f },
+				new[] { (float)_model.ColorBrightness-1f, (float)_model.ColorBrightness-1f, (float)_model.ColorBrightness-1f, 0f, 1f }
 			};
 
 			var imageAttributes = new ImageAttributes();
@@ -191,7 +304,7 @@ namespace BatchImageProcessor.Model
 
 			return image;
 		}
-		
+
 		private static void WatermarkImage(FileWrapper w, Image b)
 		{
 			if (w == null) throw new ArgumentNullException("w");
@@ -284,7 +397,7 @@ namespace BatchImageProcessor.Model
 						new[] { ml, mc, mr, 0f, 0f }, // GREEN
 						new[] { bl, bc, br, 0f, 0f }, // BLUE
 						new[] { 0f, 0f, 0f, 1f,0f }, // Alpha
-						new[] { 0, 0, 0, 0f, 1f },
+						new[] { 0, 0, 0, 0f, 1f }
 					};
 
 					var imageAttributes = new ImageAttributes();

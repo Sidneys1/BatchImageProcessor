@@ -14,8 +14,10 @@
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
+		<!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
 		<TextBox x:Name="TextBox" Grid.ColumnSpan="3" Margin="10" MinWidth="250" MaxWidth="600"
 		         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" />
+		<!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
 		<Button x:Name="OkBtn" Grid.Row="1" Grid.Column="1" Content="{x:Static properties:Resources.OkText}" Padding="15,3"
 		        Margin="5,5" IsEnabled="{Binding IsValidName}" Click="okBtn_Click" />
 		<Button x:Name="CancelBtn" Grid.Row="1" Grid.Column="2" Content="{x:Static properties:Resources.CancelText}"

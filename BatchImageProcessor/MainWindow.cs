@@ -54,11 +54,9 @@ namespace BatchImageProcessor
 		{
 			var args = Env.GetCommandLineArgs();
 
-			if (args.Length > 1 && args.Contains("-noshaders"))
-			{
-				Resources["DropShadowFx"] = null;
-				Resources["BlurEffect"] = null;
-			}
+			if (args.Length <= 1 || !args.Contains("-noshaders")) return;
+			Resources["DropShadowFx"] = null;
+			Resources["BlurEffect"] = null;
 		}
 
 
@@ -179,6 +177,7 @@ namespace BatchImageProcessor
 			Filter = Properties.Resources.MainWindow__fileBrowser_Filter,
 			Multiselect = true,
 			InitialDirectory = Env.GetFolderPath(Env.SpecialFolder.MyPictures)
+			
 		};
 
 		private readonly FolderBrowserDialog _folderBrowser = new FolderBrowserDialog

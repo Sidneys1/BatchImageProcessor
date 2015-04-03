@@ -44,15 +44,8 @@ namespace BatchImageProcessor
         /// <returns>true if the cursor is on the client area; otherwise, false.</returns>
         public static bool IsOnClientArea(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam)
         {
-            if (uMsg == WM_NCHITTEST)
-            {
-                if (DefWindowProc(hWnd, uMsg, wParam, lParam).ToInt32() == HTCLIENT)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+	        if (uMsg != WM_NCHITTEST) return false;
+	        return DefWindowProc(hWnd, uMsg, wParam, lParam).ToInt32() == HTCLIENT;
         }
 
         #endregion
@@ -65,7 +58,7 @@ namespace BatchImageProcessor
         /// <returns>true if desktop composition is enabled; otherwise, false.</returns>
         public static bool IsCompositionEnabled()
         {
-            bool isEnabled = false;
+            var isEnabled = false;
             NativeMethods.DwmIsCompositionEnabled(ref isEnabled);
             return isEnabled;
         }

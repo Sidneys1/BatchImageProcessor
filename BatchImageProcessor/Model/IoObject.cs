@@ -58,17 +58,15 @@ namespace BatchImageProcessor.Model
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void Watcher_Deleted(object sender, FileSystemEventArgs e)
+        private static void Watcher_Deleted(object sender, FileSystemEventArgs e)
         {
         }
 
         private void watcher_Renamed(object sender, RenamedEventArgs e)
         {
-            if (IsFile)
-            {
-                Path = e.FullPath;
-                _watcher.Filter = e.Name;
-            }
+	        if (!IsFile) return;
+	        Path = e.FullPath;
+	        _watcher.Filter = e.Name;
         }
 
         public static string GetName(string path)

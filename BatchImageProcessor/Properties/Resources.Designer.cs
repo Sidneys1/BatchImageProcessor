@@ -268,7 +268,7 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png.
+        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png;|Raw Image Files|*.3fr;*.ari;*.arw;*.bay;*.crw;*.cr2;*.cap;*.dcs;*.dcr;*.dng;*.drf;*.eip;*.erf;*.fff;*.iiq;*.k25;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.obm;*.orf;*.pef;*.ptx;*.pxn;*.r3d;*.raf;*.raw;*.rwl;*.rw2;*.rwz;*.sr2;*.srf;*.srw;*.x3f.
         /// </summary>
         public static string MainWindow__fileBrowser_Filter {
             get {
@@ -286,7 +286,7 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png*.dng;*.nef.
+        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png.
         /// </summary>
         public static string MainWindow__watermarkFileBrowser_Filter {
             get {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace BatchImageProcessor
+﻿namespace BatchImageProcessor
 {
     /// <summary>
     ///     Interaction logic for App.xaml
