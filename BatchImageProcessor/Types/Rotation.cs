@@ -1,13 +1,13 @@
 ﻿namespace BatchImageProcessor.Types
 {
-    public enum Rotation
-    {
-        Default = 0,
-        None,
-        Clockwise,
-        CounterClockwise,
-        UpsideDown,
-        Portrait,
-        Landscape
-    }
+	public enum Rotation
+	{
+		None,
+		Clockwise,
+		UpsideDown,
+		CounterClockwise,
+		Portrait,
+		Landscape,
+		Default
+	}
 }

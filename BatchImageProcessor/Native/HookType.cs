@@ -1,4 +1,4 @@
-namespace BatchImageProcessor.View
+namespace BatchImageProcessor.Native
 {
     public enum HookType
     {

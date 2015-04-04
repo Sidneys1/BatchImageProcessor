@@ -1,6 +1,6 @@
 using System;
 
-namespace BatchImageProcessor.View
+namespace BatchImageProcessor.Native
 {
     public class HookEventArgs : EventArgs
     {

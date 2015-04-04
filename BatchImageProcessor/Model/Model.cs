@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -9,8 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BatchImageProcessor.Interface;
 using BatchImageProcessor.Types;
-//using BatchImageProcessor.ViewModel;
 
 namespace BatchImageProcessor.Model
 {
@@ -27,11 +26,10 @@ namespace BatchImageProcessor.Model
 		public double JpegQuality = 0.95;
 		public bool OutputSet = false;
 		public string OutputTemplate;
-		public bool EnableCrop = false;
+		public bool EnableCrop;
 		public bool EnableResize = false;
 		public bool EnableRotation = false;
-		public bool EnableWatermark = false;
-		public bool EnableColor = false;
+		public bool EnableWatermark;
 		public Rotation DefaultRotation = Rotation.None;
 		public int CropHeight = 600;
 		public int CropWidth = 800;
@@ -52,19 +50,61 @@ namespace BatchImageProcessor.Model
 		public double ColorContrast = 1.0;
 		public double ColorSaturation = 1.0;
 		public double ColorGamma = 1.0;
-		public ObservableCollection<IFolderable> Folders { get; } = new ObservableCollection<IFolderable>();
+		public ObservableCollection<IFolderableHost> Folders { get; } = new ObservableCollection<IFolderableHost>();
+		private bool console = false;
+
+		public Model() { }
+
+		public Model(OptionStruct x)
+		{
+			var rootFolder = new Folder();
+			Folders.Add(rootFolder);
+
+			EnableCrop = x.Crop;
+			EnableWatermark = x.Watermark;
+			UseAspectRatio = x.SizeSmart;
+			WatermarkGreyscale = x.WatermarkGrey;
+			OutputPath = x.Output;
+			Enum.TryParse(x.Format, out OutputFormat);
+			Enum.TryParse(x.WatermarkType, out DefaultWatermarkType);
+			WatermarkText = WatermarkImagePath = x.WatermarkText;
+			WatermarkFont = new Font(x.WatermarkFont, x.WatermarkFontsize, GraphicsUnit.Point);
+			DefaultResizeMode = (ResizeMode)x.Size;
+			EnableResize = DefaultResizeMode != ResizeMode.None;
+			DefaultRotation = (Rotation)x.Rotation;
+			EnableRotation = DefaultRotation != Rotation.None;
+			ResizeWidth = x.SizeWidth;
+			ResizeHeight = x.SizeHeight;
+			CropWidth = x.CropWidth;
+			CropHeight = x.CropHeight;
+			DefaultCropAlignment = (Alignment)x.CropAlign;
+			WatermarkAlignment = (Alignment)x.WatermarkAlign;
+			ColorType = (ColorType)x.ColorSatMode;
+			WatermarkOpacity = x.WatermarkOpac;
+			ColorBrightness = x.ColorBright;
+			ColorContrast = x.ColorContrast;
+			ColorGamma = x.ColorGamma;
+			ColorSaturation = x.ColorSat;
+			JpegQuality = x.OutJpeg;
+			console = true;
+			x.Files.ForEach(o => rootFolder.Files.Add(new File(o)));
+		}
 
 		public void Process()
 		{
 			TotalImages = 0;
 			DoneImages = 0;
-			Task.Factory.StartNew(() => QueueItems((Folder)Folders[0], OutputPath));
+			if (console)
+				QueueItems(Folders[0], OutputPath);
+			else
+				Task.Factory.StartNew(() => QueueItems(Folders[0], OutputPath));
+
 		}
 
-		private void QueueItems(Folder folderWrapper, string path)
+		private void QueueItems(IFolderableHost folderWrapper, string path)
 		{
-			var enumerable = folderWrapper.Files.OfType<File>().Where(wrapper => wrapper.Selected);
-			var fileWrappers = enumerable as List<File> ?? enumerable.ToList();
+			var enumerable = folderWrapper.Files.OfType<IFile>().Where(wrapper => wrapper.Selected);
+			var fileWrappers = enumerable as List<IFile> ?? enumerable.ToList();
 			fileWrappers.ForEach(o =>
 			{
 				o.OutputPath = path;
@@ -73,12 +113,12 @@ namespace BatchImageProcessor.Model
 
 			Parallel.ForEach(fileWrappers, ProcessImage);
 
-			var enumerable1 = folderWrapper.Files.OfType<Folder>();
-			var list = enumerable1 as List<Folder> ?? enumerable1.ToList();
+			var enumerable1 = folderWrapper.Files.OfType<IFolderableHost>();
+			var list = enumerable1 as List<IFolderableHost> ?? enumerable1.ToList();
 			list.ForEach(fold => QueueItems(fold, Path.Combine(path, fold.Name)));
 		}
 
-		public void ProcessImage(File w)
+		public void ProcessImage(IFile w)
 		{
 			if (Cancel)
 			{
@@ -123,7 +163,7 @@ namespace BatchImageProcessor.Model
 				if (EnableWatermark && !w.OverrideWatermark)
 					b.WatermarkImage(WatermarkAlignment, (float)WatermarkOpacity, DefaultWatermarkType, WatermarkText, WatermarkFont, WatermarkImagePath, WatermarkGreyscale);
 
-				if (EnableColor && !w.OverrideColor)
+				if (!w.OverrideColor)
 					b = b.ColorImage((float)ColorSaturation, ColorType, ColorContrast, ColorBrightness, (float)ColorGamma);
 
 				#endregion
@@ -161,7 +201,7 @@ namespace BatchImageProcessor.Model
 					var myEncoderParameters = new EncoderParameters(1);
 					var myencoder = Encoder.Quality;
 					var myEncoderParameter = new EncoderParameter(myencoder, (long)(JpegQuality * 100));
-					myEncoderParameters.Param[0] = myEncoderParameter;					
+					myEncoderParameters.Param[0] = myEncoderParameter;
 					b.Save(outpath, StaticImageUtils.GetEncoder(encoder), myEncoderParameters);
 				}
 				else
@@ -174,7 +214,7 @@ namespace BatchImageProcessor.Model
 			UpdateDone?.Invoke(null, EventArgs.Empty);
 		}
 
-		private FileStream GenerateOutputPath(File w, string name, Format outputFormat)
+		private FileStream GenerateOutputPath(IFile w, string name, Format outputFormat)
 		{
 			var ext = ".jpg";
 			switch (outputFormat)
@@ -212,7 +252,7 @@ namespace BatchImageProcessor.Model
 			return ret;
 		}
 
-		private string GenerateFilename(File w, Image b)
+		private string GenerateFilename(IFile w, Image b)
 		{
 			string name = null;
 			switch (NameOption)

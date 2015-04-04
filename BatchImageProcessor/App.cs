@@ -1,9 +1,12 @@
-﻿namespace BatchImageProcessor
+﻿using System;
+using BatchImageProcessor.View;
+
+namespace BatchImageProcessor
 {
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App
-    {
-    }
+	{
+	}
 }

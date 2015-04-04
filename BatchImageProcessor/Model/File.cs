@@ -1,30 +1,30 @@
-﻿using BatchImageProcessor.Types;
+﻿using System.Runtime.Serialization.Formatters;
+using BatchImageProcessor.Interface;
+using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.Model
 {
-    public class File : IoObject, IFolderable
-    {
+	public class File : IoObject, IFolderable, IFile
+	{
 	    #region Variables
-
-	    public string Name { get; set; }
-		public bool Selected = true;
-		public bool OverrideCrop = false;
-		public bool OverrideColor = false;
-		public bool OverrideResize = false;
-		public bool OverrideWatermark = false;
-		public Format OverrideFormat = Format.Default;
-		public Rotation OverrideRotation = Rotation.Default;
 		
+	    public bool Selected { get; set; } = true;
+	    public bool OverrideCrop { get; set; } = false;
+	    public bool OverrideColor { get; set; } = false;
+	    public bool OverrideResize { get; set; } = false;
+	    public bool OverrideWatermark { get; set; } = false;
+	    public Format OverrideFormat { get; set; } = Format.Default;
+	    public Rotation OverrideRotation { get; set; } = Rotation.Default;
+
 	    #endregion
 		
 	    public File(string path) : base(path)
         {
-            Thumbnail = new WeakThumbnail(path);
         }
 
         #region Properties
 
-	    public WeakThumbnail Thumbnail { get; }
+	    
 	    public int ImageNumber { get; set; }
 	    public string OutputPath { get; set; }
 

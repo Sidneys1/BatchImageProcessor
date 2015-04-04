@@ -67,7 +67,7 @@
     <ApplicationIcon>Images\ImageRotator.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>BatchImageProcessor.App</StartupObject>
+    <StartupObject>BatchImageProcessor.EntryPoint</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>B7884CF99F3EBB4809520DFEAED585E96CEDD123</ManifestCertificateThumbprint>
@@ -81,6 +81,9 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -90,6 +93,10 @@
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -113,12 +120,22 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
+    <Compile Include="EntryPoint.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Interface\IFile.cs" />
+    <Compile Include="Interface\IFolderable.cs" />
+    <Compile Include="Interface\IFolderableHost.cs" />
+    <Compile Include="Interface\IIoObject.cs" />
+    <Compile Include="Model\IoObject.cs" />
     <Compile Include="Model\Model.cs" />
     <Compile Include="Model\Folder.cs" />
-    <Compile Include="Model\IFolderable.cs" />
     <Compile Include="Model\StaticImageUtils.cs" />
     <Compile Include="Native\DwmApiInteropt.cs" />
+    <Compile Include="Native\HookEventArgs.cs" />
+    <Compile Include="Native\HookType.cs" />
+    <Compile Include="Native\LocalWindowsHook.cs" />
+    <Compile Include="Native\ShellContextMenu.cs" />
+    <Compile Include="Native\ShellContextMenuException.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -129,6 +146,7 @@
     <Compile Include="Types\ColorType.cs" />
     <Compile Include="Types\Format.cs" />
     <Compile Include="Types\NameType.cs" />
+    <Compile Include="Types\OptionStruct.cs" />
     <Compile Include="Types\ResizeMode.cs" />
     <Compile Include="Types\Rotation.cs" />
     <Compile Include="Types\WatermarkType.cs" />
@@ -149,17 +167,12 @@
     <Compile Include="View\AboutBox.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\HookEventArgs.cs" />
-    <Compile Include="View\HookType.cs" />
-    <Compile Include="View\LocalWindowsHook.cs" />
     <Compile Include="View\MainWindow.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\RenameFileDialog.cs">
       <DependentUpon>RenameFileDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ShellContextMenu.cs" />
-    <Compile Include="View\ShellContextMenuException.cs" />
     <Page Include="Controls\SplitButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -186,7 +199,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\File.cs" />
-    <Compile Include="Model\IoObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -363,7 +375,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Exec\dcraw.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup />

@@ -2,21 +2,23 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using BatchImageProcessor.Annotations;
+using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Types;
 using File = BatchImageProcessor.Model.File;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class FileWrapper : INotifyPropertyChanged, IFolderable
+    public class FileWrapper : INotifyPropertyChanged, IFolderable, IFile
     {
 	    private readonly File _file;
 
 	    public FileWrapper(string path)// : base(path)
         {
 			_file = new File(path);
-		    _file.Thumbnail.SourceUpdated += () => { PropChanged("Thumbnail"); };
-		    Name = GetName(path);
+			Thumbnail = new WeakThumbnail(path);
+		    Thumbnail.SourceUpdated += () => { PropChanged("Thumbnail"); };
+		    Name = IoObject.GetName(path);
         }
 
 	    #region Properties
@@ -40,6 +42,10 @@ namespace BatchImageProcessor.ViewModel
 			    PropChanged();
 		    }
 	    }
+
+	    public int ImageNumber { get; set; }
+
+	    public string OutputPath { get; set; }
 
 	    public Format OverrideFormat
 	    {
@@ -103,19 +109,12 @@ namespace BatchImageProcessor.ViewModel
 
 		public string Path => _file.Path;
 
-	    public WeakThumbnail Thumbnail => _file.Thumbnail;
+	    public bool IsFile => true;
+
+	    public WeakThumbnail Thumbnail { get; }
 
 	    #endregion
 		
-	    public static string GetName(string path)
-		{
-			if (Directory.Exists(path) &&
-				(System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
-				return System.IO.Path.GetFileName(path);
-			if (System.IO.File.Exists(path))
-				return System.IO.Path.GetFileNameWithoutExtension(path);
-			throw new FileNotFoundException(string.Format(@"File/folder at ""{0}"" does not exist.", path));
-		}
 
 	    public event PropertyChangedEventHandler PropertyChanged;
 

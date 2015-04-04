@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using BatchImageProcessor.Interface;
+using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.Model
 {
-    public abstract class IoObject : INotifyPropertyChanged, IDisposable
-    {
+	public abstract class IoObject : INotifyPropertyChanged, IDisposable, IIoObject
+	{
         private readonly FileSystemWatcher _watcher;
         private string _path;
 
@@ -17,6 +19,9 @@ namespace BatchImageProcessor.Model
 
             IsFile = file;
             Path = path;
+
+	        Name = GetName(path);
+
 
             var directoryInfo = new FileInfo(Path).Directory;
             if (directoryInfo != null)
@@ -33,7 +38,10 @@ namespace BatchImageProcessor.Model
         {
         }
 
-        public string Path
+		public string Name { get; set; }
+		
+
+		public string Path
         {
             get { return _path; }
             set
@@ -69,5 +77,15 @@ namespace BatchImageProcessor.Model
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
+
+		public static string GetName(string path)
+		{
+			if (Directory.Exists(path) &&
+				(System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
+				return System.IO.Path.GetFileName(path);
+			if (System.IO.File.Exists(path))
+				return System.IO.Path.GetFileNameWithoutExtension(path);
+			throw new FileNotFoundException(string.Format(@"File/folder at ""{0}"" does not exist.", path));
+		}
+	}
 }

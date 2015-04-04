@@ -612,22 +612,14 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-
-				<ListBoxItem x:Name="ColorBox">
-					<StackPanel Orientation="Horizontal">
-						<CheckBox VerticalContentAlignment="Center" x:Name="ColChck" VerticalAlignment="Center"
-						          ToolTip="{x:Static properties:Resources.ColChck_ToolTip}"
-						          IsChecked="{Binding EnableColor}">
-							<Border Opacity="0.5" Focusable="False" />
-						</CheckBox>
-						<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-						<StackPanel Orientation="Horizontal" Opacity="{Binding Content.Opacity, ElementName=ColChck}">
-							<Image Source="../Images/color-adjustment.png" />
-							<Label Content="{x:Static properties:Resources.ColorOptionLabel_Text}" />
-						</StackPanel>
+				
+				<ListBoxItem  x:Name="ColorBox">
+					<StackPanel Orientation="Horizontal" Margin="20,0">
+						<Image Source="../Images/color-adjustment.png" />
+						<Label Content="{x:Static properties:Resources.ColorOptionLabel_Text}" />
 					</StackPanel>
 				</ListBoxItem>
-
+				
 				<ListBoxItem x:Name="OutputBox">
 					<StackPanel Orientation="Horizontal" Margin="20,0">
 						<Image Source="../Images/image-export.png" />
@@ -1003,7 +995,7 @@
 						</Grid.RowDefinitions>
 						<Label Content="{x:Static properties:Resources.ColorSettings_Title}" HorizontalAlignment="Center"
 						       Margin="0,0,0,10" />
-						<StackPanel Grid.Row="1" IsEnabled="{Binding EnableColor}" HorizontalAlignment="Right" Width="297">
+						<StackPanel Grid.Row="1" HorizontalAlignment="Right" Width="297">
 							<TextBlock Text="{x:Static properties:Resources.ColorBrightnessHeader}" FontWeight="Bold" />
 							<Grid>
 								<Grid.ColumnDefinitions>

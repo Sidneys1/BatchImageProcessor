@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using BatchImageProcessor.Interface;
+using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.Model
 {
-	public class Folder : IFolderable
+	public class Folder : IFolderable, IFolderableHost
 	{
 		public static readonly ISet<char> InvalidCharacters = new HashSet<char>(Path.GetInvalidPathChars());
 		public string Name { get; set; }

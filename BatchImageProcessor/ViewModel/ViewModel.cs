@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using BatchImageProcessor.Annotations;
-using BatchImageProcessor.Model;
+using BatchImageProcessor.Interface;
 using BatchImageProcessor.Properties;
 using BatchImageProcessor.Types;
 
@@ -15,7 +15,7 @@ namespace BatchImageProcessor.ViewModel
     {
 	    public Model.Model Model;
 
-	    public ObservableCollection<IFolderable> Folders => Model.Folders;
+	    public ObservableCollection<IFolderableHost> Folders => Model.Folders;
 
 		public ViewModel()
         {
@@ -385,16 +385,6 @@ namespace BatchImageProcessor.ViewModel
                 PropChanged();
             }
         }
-
-		public bool EnableColor
-		{
-			get { return Model.EnableColor; }
-			set
-			{
-				Model.EnableColor = value;
-				PropChanged();
-			}
-		}
 
 		#endregion
 

@@ -3,12 +3,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
+using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class FolderWrapper : /*Folder,*/ INotifyPropertyChanged, IFolderable
+    public class FolderWrapper : /*Folder,*/ INotifyPropertyChanged, IFolderable, IFolderableHost
     {
 	    private readonly Folder _folder;
 
