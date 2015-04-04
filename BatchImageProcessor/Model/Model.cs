@@ -27,8 +27,8 @@ namespace BatchImageProcessor.Model
 		public bool OutputSet = false;
 		public string OutputTemplate;
 		public bool EnableCrop;
-		public bool EnableResize = false;
-		public bool EnableRotation = false;
+		public bool EnableResize;
+		public bool EnableRotation;
 		public bool EnableWatermark;
 		public Rotation DefaultRotation = Rotation.None;
 		public int CropHeight = 600;
@@ -51,7 +51,7 @@ namespace BatchImageProcessor.Model
 		public double ColorSaturation = 1.0;
 		public double ColorGamma = 1.0;
 		public ObservableCollection<IFolderableHost> Folders { get; } = new ObservableCollection<IFolderableHost>();
-		private bool console = false;
+		private readonly bool _console;
 
 		public Model() { }
 
@@ -86,7 +86,7 @@ namespace BatchImageProcessor.Model
 			ColorGamma = x.ColorGamma;
 			ColorSaturation = x.ColorSat;
 			JpegQuality = x.OutJpeg;
-			console = true;
+			_console = true;
 			x.Files.ForEach(o => rootFolder.Files.Add(new File(o)));
 		}
 
@@ -94,7 +94,7 @@ namespace BatchImageProcessor.Model
 		{
 			TotalImages = 0;
 			DoneImages = 0;
-			if (console)
+			if (_console)
 				QueueItems(Folders[0], OutputPath);
 			else
 				Task.Factory.StartNew(() => QueueItems(Folders[0], OutputPath));

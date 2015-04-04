@@ -26,12 +26,13 @@ namespace BatchImageProcessor.View
 	/// </summary>
 	public partial class MainWindow : IWin32Window, IDisposable
 	{
-		private bool no_shaders, no_aero;
+		private readonly bool _noShaders;
+		private readonly bool _noAero;
 
 		public MainWindow(bool noshaders = false, bool noaero = false)
 		{
-			no_shaders = noshaders;
-			no_aero = noaero;
+			_noShaders = noshaders;
+			_noAero = noaero;
 
 			VModel = new ViewModel.ViewModel();
 			VModel.Folders.Add(new FolderWrapper(removable: false) { Name = Properties.Resources.OutputFolder });
@@ -54,9 +55,7 @@ namespace BatchImageProcessor.View
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			var args = Environment.GetCommandLineArgs();
-
-			if (!no_shaders) return;
+			if (!_noShaders) return;
 			Resources["DropShadowFx"] = null;
 			Resources["BlurEffect"] = null;
 		}
@@ -66,8 +65,7 @@ namespace BatchImageProcessor.View
 
 		private void MainWindow_OnSourceInitialized(object sender, EventArgs e)
 		{
-			var args = Environment.GetCommandLineArgs();
-			if (no_aero)
+			if (_noAero)
 				return;
 
 			try

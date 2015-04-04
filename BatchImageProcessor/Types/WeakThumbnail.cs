@@ -42,7 +42,7 @@ namespace BatchImageProcessor.Types
 		{
 			try
 			{
-				if (!System.IO.File.Exists(path) && !Directory.Exists(path))
+				if (!File.Exists(path) && !Directory.Exists(path))
 					throw new FileNotFoundException(string.Format(@"File at ""{0}"" does not exist.", path));
 				if (!ShellObject.IsPlatformSupported)
 					throw new NotSupportedException("Platform does not support ShellObjects.");

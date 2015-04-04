@@ -446,9 +446,9 @@ namespace BatchImageProcessor.ViewModel
             }
         }
 
-        private static bool RemoveFolder(FolderWrapper parent, IFolderable folder)
+        private static bool RemoveFolder(IFolderableHost parent, IFolderable folder)
         {
-	        if (!parent.Files.Contains(folder)) return parent.Files.Cast<FolderWrapper>().Any(p => RemoveFolder(p, folder));
+	        if (!parent.Files.Contains(folder)) return parent.Files.Cast<IFolderableHost>().Any(p => RemoveFolder(p, folder));
 	        parent.Files.Remove(folder);
 
 	        return true;
@@ -459,10 +459,10 @@ namespace BatchImageProcessor.ViewModel
             RemoveFile(file, (FolderWrapper)Model.Folders[0]);
         }
 
-        private static bool RemoveFile(IFolderable file, FolderWrapper folderWrapper)
+        private static bool RemoveFile(IFolderable file, IFolderableHost folderWrapper)
         {
 	        if (!folderWrapper.Files.Contains(file))
-				return folderWrapper.Files.OfType<FolderWrapper>().Any(p => RemoveFile(file, p));
+				return folderWrapper.Files.OfType<IFolderableHost>().Any(p => RemoveFile(file, p));
 	        folderWrapper.Files.Remove(file);
 	        return true;
         }

@@ -19,6 +19,7 @@ namespace BatchImageProcessor
 		{
 			var noShaders = false;
 			var noAero = false;
+
 			if (args != null && args.Length > 0)
 			{
 				var showHelp = false;
@@ -31,10 +32,7 @@ namespace BatchImageProcessor
 				{
 					{"man=", "A {manifest} file", o => manifest = o},
 
-					{
-						"rotate=", "A {rotation} transform.\n0=None,\n1-3=Clockwise 90-180-270,\n4=Portrait,\n5=Landscape",
-						(int o) => x.Rotation = o
-					},
+					{ "rotate=", "A {rotation} transform.\n0=None,\n1-3=Clockwise 90-180-270,\n4=Portrait,\n5=Landscape", (int o) => x.Rotation = o},
 
 					{"resize=", "A {resize} transform.\n0=None,\n1=Smaller Than,\n2=Larger Than,\n3=Exact", (int o) => x.Size = o},
 					{"rwidth=", "Resize {width}, in pixels.", (int o) => x.SizeWidth = o},
@@ -64,32 +62,25 @@ namespace BatchImageProcessor
 					{"smode=", "Saturation {mode}.\n0=Saturation\n1=Greyscale\n2=Sepia", (int o) => x.ColorSatMode = o},
 					{"saturation=", "Saturation {value}.\nE.g. 0.8=80%", (double o) => x.ColorSat = o},
 
-					{
-						"output=", "Output directory {path}, in quotes.\nNot specifying this outputs\nto current working directory.",
-						o => x.Output = o
-					},
+
+					{"output=", "Output directory {path}, in quotes.\nNot specifying this outputs\nto current working directory.",o => x.Output = o},
 					{"format=", "Output format, defaults to Jpg.\nOptions: Jpg, Png, Bmp, Gif, Tiff", o => x.Format = o},
 					{"jquality=", "Jpeg quality {value}.\nDefaults to 0.95.\nE.g. 0.8=80%", (double o) => x.OutJpeg = o},
 
-					{"help", "Show this message and exit", o => showHelp = o != null}
+					{"?|help", "Show this message and exit", o => showHelp = o != null},
+
+					{"s|noshaders", "Disables shaders in the GUI", o => noShaders = o != null},
+					{"e|noaero", "Disables Windows Aero extensions", o => noAero = o != null}
 				};
 
-				var w = new OptionSet()
-				{
-					{"s|noshaders", "Disables shaders in the GUI", o => noShaders = o != null},
-					{"a|noaero", "Disables Windows Aero extensions", o => noAero = o != null},
-				};
+
 
 				#endregion
-				
-				List<string> extra = null;
+
+				List<string> extra;
 				try
 				{
-					//extra = w.Parse(args);
-
-					//if (extra.Count > 0)
-						extra = p.Parse(args);
-
+					extra = p.Parse(args);
 				}
 				catch (OptionException e)
 				{
@@ -101,7 +92,7 @@ namespace BatchImageProcessor
 
 				if (showHelp)
 				{
-					ShowHelp(p, w);
+					ShowHelp(p);
 					return;
 				}
 
@@ -142,22 +133,18 @@ namespace BatchImageProcessor
 					return;
 				}
 			}
-
 			var app = new App();
 			app.Run(new MainWindow(noShaders, noAero));
 
 		}
 
-		static void ShowHelp(OptionSet p, OptionSet w)
+		static void ShowHelp(OptionSet p)
 		{
 			var b = new StringBuilder();
 			var s = new StringWriter(b);
 
-			s.WriteLine("Desktop GUI usage: BatchImageProcessor [OPTIONS]");
+			s.WriteLine("Desktop GUI usage: BatchImageProcessor [-s -a]");
 			s.WriteLine("\tShows a GUI interface for Batch Image Processor.");
-			s.WriteLine();
-			s.WriteLine("Options:");
-			w.WriteOptionDescriptions(s);
 
 			s.WriteLine();
 			s.WriteLine();

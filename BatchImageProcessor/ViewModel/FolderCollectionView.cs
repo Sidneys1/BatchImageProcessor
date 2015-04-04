@@ -1,5 +1,4 @@
 ﻿using System.Windows.Data;
-using BatchImageProcessor.Model;
 
 namespace BatchImageProcessor.ViewModel
 {

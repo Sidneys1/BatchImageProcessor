@@ -7,6 +7,6 @@ namespace BatchImageProcessor.Types
 		Png,
 		Gif,
 		Tiff,
-		Bmp,
+		Bmp
 	}
 }

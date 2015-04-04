@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.IO;
 using BatchImageProcessor.Interface;
-using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.Model
 {

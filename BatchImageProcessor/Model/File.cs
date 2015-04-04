@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization.Formatters;
-using BatchImageProcessor.Interface;
+﻿using BatchImageProcessor.Interface;
 using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.Model

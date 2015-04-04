@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using BatchImageProcessor.View;
 
 namespace BatchImageProcessor.Native
 {

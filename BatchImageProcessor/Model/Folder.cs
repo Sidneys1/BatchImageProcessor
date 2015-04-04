@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using BatchImageProcessor.Interface;
-using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.Model
 {

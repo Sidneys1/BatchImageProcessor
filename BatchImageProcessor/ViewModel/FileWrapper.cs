@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Runtime.CompilerServices;
 using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Types;
-using File = BatchImageProcessor.Model.File;
 
 namespace BatchImageProcessor.ViewModel
 {
