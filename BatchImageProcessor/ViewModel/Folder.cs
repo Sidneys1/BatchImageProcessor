@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel
@@ -13,7 +12,6 @@ namespace BatchImageProcessor.ViewModel
     {
         private string _name = Resources.New_Folder_Name;
 	    private static readonly ISet<char> InvalidCharacters = new HashSet<char>(Path.GetInvalidPathChars());
-		//public WeakThumbnail Thumbnail { get; protected set; }
 
 		public Folder(string fromPath = null, bool recursion = true, bool removable = true)
         {
@@ -22,14 +20,7 @@ namespace BatchImageProcessor.ViewModel
             if (fromPath != null)
                 Populate(fromPath, recursion);
             Removable = removable;
-			//Thumbnail = new WeakThumbnail(Directory.GetCurrentDirectory());
-			//Thumbnail.SourceUpdated += Thumbnail_SourceUpdated;
         }
-
-		//private void Thumbnail_SourceUpdated()
-		//{
-		//	PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Thumbnail"));
-		//}
 
 		public ObservableCollection<IFolderable> Files { get; }
         public bool Removable { get; private set; }

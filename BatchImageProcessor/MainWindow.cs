@@ -13,15 +13,12 @@ using System.Windows.Media;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.View;
 using BatchImageProcessor.ViewModel;
-using Brushes = System.Windows.Media.Brushes;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
-using Env = System.Environment;
 using File = BatchImageProcessor.Model.File;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
-using Point = System.Windows.Point;
 
 namespace BatchImageProcessor
 {
@@ -53,7 +50,7 @@ namespace BatchImageProcessor
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			var args = Env.GetCommandLineArgs();
+			var args = Environment.GetCommandLineArgs();
 
 			if (args.Length <= 1 || !args.Contains("-noshaders")) return;
 			Resources["DropShadowFx"] = null;
@@ -65,7 +62,7 @@ namespace BatchImageProcessor
 
 		private void MainWindow_OnSourceInitialized(object sender, EventArgs e)
 		{
-			var args = Env.GetCommandLineArgs();
+			var args = Environment.GetCommandLineArgs();
 			if (args.Length > 1 && args.Contains("-noaero"))
 				return;
 
@@ -177,22 +174,22 @@ namespace BatchImageProcessor
 			CheckPathExists = true,
 			Filter = Properties.Resources.MainWindow__fileBrowser_Filter,
 			Multiselect = true,
-			InitialDirectory = Env.GetFolderPath(Env.SpecialFolder.MyPictures)
+			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
 
 		};
 
 		private readonly FolderBrowserDialog _folderBrowser = new FolderBrowserDialog
 		{
 			Description = Properties.Resources.MainWindow_FolderBrowser_Description,
-			RootFolder = Env.SpecialFolder.MyComputer,
+			RootFolder = Environment.SpecialFolder.MyComputer,
 			ShowNewFolderButton = false
 		};
 
 		private readonly FolderBrowserDialog _outputBrowser = new FolderBrowserDialog
 		{
 			Description = Properties.Resources.MainWindow_OutputBrowser_Description,
-			RootFolder = Env.SpecialFolder.MyComputer,
-			SelectedPath = Env.GetFolderPath(Env.SpecialFolder.MyPictures),
+			RootFolder = Environment.SpecialFolder.MyComputer,
+			SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
 			ShowNewFolderButton = true
 		};
 
@@ -203,7 +200,7 @@ namespace BatchImageProcessor
 			CheckPathExists = true,
 			Filter = Properties.Resources.MainWindow__watermarkFileBrowser_Filter,
 			Multiselect = false,
-			InitialDirectory = Env.GetFolderPath(Env.SpecialFolder.MyPictures)
+			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
 		};
 
 		private readonly FontDialog _watermarkFontDlg = new FontDialog
@@ -277,7 +274,7 @@ namespace BatchImageProcessor
 			FileWrapper wrapper = null;
 			if (sender is Grid)
 			{
-				files.AddRange(from File file in ThumbnailView.SelectedItems select new FileInfo(file.Path));
+				files.AddRange(from FileWrapper file in ThumbnailView.SelectedItems select new FileInfo(file.Path));
 				wrapper = ThumbnailView.SelectedItem as FileWrapper;
 			}
 			else
@@ -289,8 +286,12 @@ namespace BatchImageProcessor
 					files.Add(new FileInfo(f.Path));
 					wrapper = f;
 				}
-				else if (TreeView.SelectedValue is FileWrapper)
-					wrapper = TreeView.SelectedValue as FileWrapper;
+				else
+				{
+					var fileWrapper = TreeView.SelectedValue as FileWrapper;
+					if (fileWrapper != null)
+						wrapper = fileWrapper;
+				}
 			}
 
 			if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
@@ -318,7 +319,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
-				item.RotationOverride = Rotation.CounterClockwise;
+				item.OverrideRotation = Rotation.CounterClockwise;
 			}
 		}
 
@@ -326,7 +327,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
-				item.RotationOverride = Rotation.None;
+				item.OverrideRotation = Rotation.None;
 			}
 		}
 
@@ -334,7 +335,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
-				item.RotationOverride = Rotation.Default;
+				item.OverrideRotation = Rotation.Default;
 			}
 		}
 
@@ -342,7 +343,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
-				item.RotationOverride = Rotation.UpsideDown;
+				item.OverrideRotation = Rotation.UpsideDown;
 			}
 		}
 
@@ -350,7 +351,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
-				item.RotationOverride = Rotation.Clockwise;
+				item.OverrideRotation = Rotation.Clockwise;
 			}
 		}
 
@@ -358,7 +359,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
-				item.RotationOverride = Rotation.Portrait;
+				item.OverrideRotation = Rotation.Portrait;
 			}
 		}
 
@@ -366,7 +367,7 @@ namespace BatchImageProcessor
 		{
 			foreach (FileWrapper item in ThumbnailView.SelectedItems)
 			{
-				item.RotationOverride = Rotation.Landscape;
+				item.OverrideRotation = Rotation.Landscape;
 			}
 		}
 

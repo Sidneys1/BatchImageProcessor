@@ -46,12 +46,10 @@ namespace BatchImageProcessor.Model
 
         //public string Name => _name ?? (_name = GetName(Path));
         public bool IsFile { get; set; }
-        public abstract WeakThumbnail Thumbnail { get; protected set; }
 
         public void Dispose()
         {
             _watcher.Dispose();
-            //GC.SuppressFinalize(this);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -66,9 +64,7 @@ namespace BatchImageProcessor.Model
 	        Path = e.FullPath;
 	        _watcher.Filter = e.Name;
         }
-
-        
-
+		
         public void PropChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

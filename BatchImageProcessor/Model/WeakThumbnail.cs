@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Caching;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -35,7 +36,7 @@ namespace BatchImageProcessor.Model
 					return Cache.Get(Path) as BitmapSource;
 
 				_set = false;
-				ThreadPool.QueueUserWorkItem(GenSource);
+				Task.Factory.StartNew(() => GenSource());
 				return null;
 			}
 		}
@@ -49,17 +50,8 @@ namespace BatchImageProcessor.Model
 				if (!ShellObject.IsPlatformSupported)
 					throw new NotSupportedException("Platform does not support ShellObjects.");
 
-				var sFile = ShellObject.FromParsingName(path);
+				var sFile = ShellFile.FromFilePath(path);
 				var bitmapSource = sFile.Thumbnail.BitmapSource;
-
-				if (bitmapSource == null)
-				{
-					var b = sFile.Thumbnail.ExtraLargeIcon.ToBitmap();
-					var hbmp = b.GetHbitmap();
-					bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(hbmp, IntPtr.Zero, Int32Rect.Empty,
-						BitmapSizeOptions.FromEmptyOptions());
-				}
-
 				sFile.Dispose();
 				return bitmapSource;
 			}
@@ -72,6 +64,10 @@ namespace BatchImageProcessor.Model
 		public void GenSource(object o = null)
 		{
 			var ret = GetThumb(Path);
+
+			if (ret == null)
+				return;
+
 			ret.Freeze();
 			Source = ret;
 		}

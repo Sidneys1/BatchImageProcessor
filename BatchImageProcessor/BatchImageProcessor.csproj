@@ -118,22 +118,25 @@
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="DwmApiInteropt.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Model\Alignment.cs" />
+    <Compile Include="Model\ColorType.cs" />
     <Compile Include="Model\Engine.cs" />
+    <Compile Include="Model\Format.cs" />
     <Compile Include="Model\Rotation.cs" />
     <Compile Include="Model\NameType.cs" />
     <Compile Include="Model\ResizeMode.cs" />
+    <Compile Include="Model\StaticImageUtils.cs" />
     <Compile Include="Model\WatermarkType.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\Alignment.cs" />
     <Compile Include="ViewModel\BooleanConverter.cs" />
     <Compile Include="ViewModel\BooleanToEffectConverter.cs" />
     <Compile Include="ViewModel\BooleanToOpacityConverter.cs" />
     <Compile Include="ViewModel\BooleanToVisibilityConverter.cs" />
-    <Compile Include="ViewModel\ColorType.cs" />
     <Compile Include="ViewModel\EnumBooleanConverter.cs" />
     <Compile Include="ViewModel\EnumStringConverter.cs" />
     <Compile Include="ViewModel\EnumVisibilityConverter.cs" />
@@ -141,7 +144,6 @@
     <Compile Include="ViewModel\Folder.cs" />
     <Compile Include="ViewModel\FolderCollectionView.cs" />
     <Compile Include="ViewModel\FileCollectionView.cs" />
-    <Compile Include="ViewModel\Format.cs" />
     <Compile Include="ViewModel\TypeConverter.cs" />
     <Compile Include="ViewModel\IFolderable.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
@@ -172,7 +174,6 @@
     <Compile Include="Controls\SplitButton.cs">
       <DependentUpon>SplitButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\ExtensionMethods.cs" />
     <Compile Include="MainWindow.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

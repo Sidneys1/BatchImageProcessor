@@ -2,20 +2,30 @@
 {
     public class File : IoObject
     {
-        public File(string path)
-            : base(path)
+	    #region Variables
+
+	    public string Name;
+		public bool Selected = true;
+		public bool OverrideCrop = false;
+		public bool OverrideColor = false;
+		public bool OverrideResize = false;
+		public bool OverrideWatermark = false;
+		public Format OverrideFormat = Format.Default;
+		public Rotation OverrideRotation = Rotation.Default;
+		
+	    #endregion
+		
+	    public File(string path) : base(path)
         {
             Thumbnail = new WeakThumbnail(path);
         }
 
         #region Properties
 
-        //WeakThumbnail _thumb = null;
-        public override sealed WeakThumbnail Thumbnail { get; protected set; }
-        //{
-        //get { return _thumb != null ? _thumb.Source : (_thumb = new WeakThumbnail(Path)).Source; }
-        //}
+	    public WeakThumbnail Thumbnail { get; }
+	    public int ImageNumber { get; set; }
+	    public string OutputPath { get; set; }
 
-        #endregion
+	    #endregion
     }
 }

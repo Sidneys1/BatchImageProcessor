@@ -1,24 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using BatchImageProcessor.ViewModel;
 
 namespace BatchImageProcessor.Model
 {
-	public static class Engine //(ViewModel.ViewModel model)
+	public static class Engine
 	{
-		private static ViewModel.ViewModel _model; //= model;
+		private static ViewModel.ViewModel _model;
 		public static int TotalImages;
 		public static int DoneImages;
 		public static event EventHandler UpdateDone;
 		public static bool Cancel = false;
+		private static readonly Mutex NamingMutex = new Mutex();
 
 		public static void Process(ViewModel.ViewModel vm)
 		{
@@ -28,28 +29,27 @@ namespace BatchImageProcessor.Model
 			int m, n;
 			ThreadPool.GetMaxThreads(out m, out n);
 			Trace.WriteLine(string.Format("Max threads: {0}", m));
-			QueueItems(vm.Folders[0], vm.OutputPath);
+			Task.Factory.StartNew(() => QueueItems(vm.Folders[0], vm.OutputPath));
 		}
 
 		private static void QueueItems(Folder folder, string path)
 		{
-			foreach (var wrapper in folder.Files.OfType<FileWrapper>().Where(wrapper => wrapper.Selected))
+			var enumerable = folder.Files.OfType<FileWrapper>().Where(wrapper => wrapper.Selected).Cast<File>();
+			var fileWrappers = enumerable as List<File> ?? enumerable.ToList();
+			fileWrappers.ForEach(o =>
 			{
-				wrapper.OutputPath = path;
-				wrapper.ImageNumber = TotalImages;
-				if (!ThreadPool.QueueUserWorkItem(ProcessImage, wrapper))
-					Debug.WriteLine("Could not queue #{0}: {1}", TotalImages, wrapper.Name);
-				else
-					TotalImages++;
-			}
+				o.OutputPath = path;
+				o.ImageNumber = TotalImages++;
+			});
 
-			foreach (var fold in folder.Files.OfType<Folder>())
-			{
-				QueueItems(fold, Path.Combine(path, fold.Name));
-			}
+			Parallel.ForEach(fileWrappers, ProcessImage);
+
+			var enumerable1 = folder.Files.OfType<Folder>();
+			var list = enumerable1 as List<Folder> ?? enumerable1.ToList();
+			list.ForEach(fold => QueueItems(fold, Path.Combine(path, fold.Name)));
 		}
 
-		public static void ProcessImage(object o)
+		public static void ProcessImage(File w)
 		{
 			if (Cancel)
 			{
@@ -58,111 +58,58 @@ namespace BatchImageProcessor.Model
 				return;
 			}
 
-			var w = (o as FileWrapper);
-
 			if (w != null)
 			{
-				var f = new FileInfo(w.Path);
-				Image b;
+				var outFmt = w.OverrideFormat == Format.Default ? _model.OutputFormat : w.OverrideFormat;
 
-				if (f.Extension.ToUpper() != ".DNG" && f.Extension.ToUpper() != ".NEF")
+				// Load Image
+				Image b = null;
+				try
 				{
-					b = Image.FromFile(w.Path, true);
+					b = StaticImageUtils.LoadImage(w.Path);
 				}
-				else
+				catch (Exception e)
 				{
-					var s = GetRawImageData(w.Path, ".\\Exec\\dcraw.exe");
-					if (s == null)
-					{
-						Interlocked.Decrement(ref TotalImages);
-						UpdateDone?.Invoke(null, EventArgs.Empty);
-						return;
-					}
-					b = Image.FromStream(s);
+					Console.Error.WriteLine(e);
 				}
 
+				if (b == null)
+				{
+					Interlocked.Decrement(ref TotalImages);
+					UpdateDone?.Invoke(null, EventArgs.Empty);
+					return;
+				}
 
 				#region Process Steps
 
-				if (w.RotationOverride != Rotation.Default || _model.EnableRotation)
-					RotateImage(w, b);
+				if (w.OverrideRotation != Rotation.Default || _model.EnableRotation)
+					b.RotateImage(w.OverrideRotation == Rotation.Default ? _model.DefaultRotation : w.OverrideRotation);
 
 				if (_model.EnableResize && !w.OverrideResize)
-					b = ResizeImage(b);
+					b = b.ResizeImage(new Size(_model.ResizeWidth, _model.ResizeHeight), _model.DefaultResizeMode, _model.UseAspectRatio);
 
 				if (_model.EnableCrop && !w.OverrideCrop)
-					b = CropImage(b);
+					b = b.CropImage(new Size(_model.CropWidth, _model.CropHeight), _model.DefaultCropAlignment);
 
 				if (_model.EnableWatermark && !w.OverrideWatermark)
-					WatermarkImage(w, b);
+					b.WatermarkImage(_model.WatermarkAlignment, (float)_model.WatermarkOpacity, _model.DefaultWatermarkType, _model.WatermarkText, _model.WatermarkFont, _model.WatermarkImagePath, _model.WatermarkGreyscale);
 
 				if (_model.EnableColor && !w.OverrideColor)
-					b = ColorImage(b);
+					b = b.ColorImage((float)_model.ColorSaturation, _model.ColorType, _model.ColorContrast, _model.ColorBrightness, (float)_model.ColorGamma);
 
 				#endregion
 
-				#region Filename
+				// Filename
+				var name = GenerateFilename(w, b);
 
-				string name = null;
-				switch (_model.NameOption)
-				{
-					case NameType.Original:
-						name = w.Name;
-						break;
-					case NameType.Numbered:
-						name = w.ImageNumber.ToString(CultureInfo.InvariantCulture);
-						break;
-					case NameType.Custom:
-						name = _model.OutputTemplate;
-						name = name.Replace("{o}", w.Name);
-						name = name.Replace("{w}", b.Width.ToString(CultureInfo.InvariantCulture));
-						name = name.Replace("{h}", b.Height.ToString(CultureInfo.InvariantCulture));
-						break;
-				}
+				// Output Path
+				var outpath = GenerateOutputPath(w, name, outFmt);
 
-				#endregion
-
-				#region Output Path
-
-				var ext = ".jpg";
-				switch (_model.OutputFormat)
-				{
-					case Format.Png:
-						ext = ".png";
-						break;
-					case Format.Gif:
-						ext = ".gif";
-						break;
-					case Format.Tiff:
-						ext = ".tiff";
-						break;
-					case Format.Bmp:
-						ext = ".bmp";
-						break;
-				}
-
-				var outpath = Path.Combine(w.OutputPath, name + ext);
-				if (!Directory.Exists(w.OutputPath))
-					Directory.CreateDirectory(w.OutputPath);
-
-				var outpathFormat = outpath.Replace(ext, " ({0})" + ext);
-
-				if (System.IO.File.Exists(outpath))
-				{
-					var i = 0;
-					while (System.IO.File.Exists(string.Format(outpathFormat, ++i)))
-					{
-					}
-					outpath = string.Format(outpathFormat, i);
-				}
-
-
-
-				#endregion
+				#region Select Encoder
 
 				var encoder = ImageFormat.Jpeg;
 				// Save
-				switch (_model.OutputFormat)
+				switch (outFmt)
 				{
 					case Format.Png:
 						encoder = ImageFormat.Png;
@@ -178,422 +125,83 @@ namespace BatchImageProcessor.Model
 						break;
 				}
 
-				var myEncoderParameters = new EncoderParameters(1);
+				#endregion
 
-				if (_model.OutputFormat == Format.Jpg)
+				if (outFmt == Format.Jpg)
 				{
+					var myEncoderParameters = new EncoderParameters(1);
 					var myencoder = Encoder.Quality;
 					var myEncoderParameter = new EncoderParameter(myencoder, (long)(_model.JpegQuality * 100));
-					myEncoderParameters.Param[0] = myEncoderParameter;
+					myEncoderParameters.Param[0] = myEncoderParameter;					
+					b.Save(outpath, StaticImageUtils.GetEncoder(encoder), myEncoderParameters);
 				}
-
-				if (_model.OutputFormat == Format.Jpg)
-					b.Save(outpath, GetEncoder(encoder), myEncoderParameters);
 				else
 					b.Save(outpath, encoder);
 				b.Dispose();
+				outpath.Close();
 			}
 
 			Interlocked.Increment(ref DoneImages);
-			//if (UpdateDone != null)
 			UpdateDone?.Invoke(null, EventArgs.Empty);
 		}
 
-		private static ImageCodecInfo GetEncoder(ImageFormat format)
+		private static FileStream GenerateOutputPath(File w, string name, Format outputFormat)
 		{
-			var imageCodecInfo = ImageCodecInfo.GetImageDecoders();
-			return imageCodecInfo.FirstOrDefault(codec => codec.FormatID == format.Guid);
-		}
-
-		private static Stream GetRawImageData(string path, string execDcrawExe)
-		{
-			var f = new FileInfo(execDcrawExe);
-			var startInfo = new ProcessStartInfo(f.FullName)
+			var ext = ".jpg";
+			switch (outputFormat)
 			{
-				Arguments = "-c -T -W \"" + path + "\"",
-				RedirectStandardOutput = true,
-				UseShellExecute = false,
-				CreateNoWindow = true
-			};
-
-			var process = System.Diagnostics.Process.Start(startInfo);
-
-			if (process == null) return null;
-
-			try
-			{
-				var image = Image.FromStream(process.StandardOutput.BaseStream, true, true);
-
-				var memoryStream = new MemoryStream();
-				image.Save(memoryStream, ImageFormat.Png);
-
-				return memoryStream;
-			}
-			catch
-			{
-				// ignored
-			}
-
-			return null;
-		}
-
-		private static Image ColorImage(Image image)
-		{
-			var sat = (float)_model.ColorSaturation;
-
-			float tl = 1f, tc = 0f, tr = 0f, ml = 0f, mc = 1f, mr = 0f, bl = 0f, bc = 0f, br = 1f;
-
-			const float rwgt = .3086f;
-			const float gwgt = .6094f;
-			const float bwgt = .0820f;
-
-			switch (_model.ColorType)
-			{
-				case ColorType.Greyscale:
-					tl = tc = tr = rwgt;
-					ml = mc = mr = gwgt;
-					bl = bc = br = bwgt;
+				case Format.Png:
+					ext = ".png";
 					break;
-				case ColorType.Sepia:
-					tl = .393f;
-					tc = .349f;
-					tr = .272f;
-					ml = .769f;
-					mc = .686f;
-					mr = .534f;
-					bl = .189f;
-					bc = .168f;
-					br = .131f;
+				case Format.Gif:
+					ext = ".gif";
 					break;
-				case ColorType.Saturation:
-					tl = (1f - sat) * rwgt + sat;
-					tc = tr = (1f - sat) * rwgt;
-
-					mc = (1f - sat) * gwgt + sat;
-					ml = mr = (1f - sat) * gwgt;
-
-					br = (1f - sat) * bwgt + sat;
-					bl = bc = (1f - sat) * bwgt;
+				case Format.Tiff:
+					ext = ".tiff";
+					break;
+				case Format.Bmp:
+					ext = ".bmp";
 					break;
 			}
 
-			tl *= (float)_model.ColorContrast;
-			mc *= (float)_model.ColorContrast;
-			br *= (float)_model.ColorContrast;
+			var outpath = Path.Combine(w.OutputPath, name + ext);
+			if (!Directory.Exists(w.OutputPath))
+				Directory.CreateDirectory(w.OutputPath);
 
-			float[][] ptsArray =
+			var outpathFormat = outpath.Replace(ext, " ({0})" + ext);
+
+			NamingMutex.WaitOne();
+			if (System.IO.File.Exists(outpath))
 			{
-				new[] { tl, tc, tr, 0f, 0f}, // RED
-				new[] { ml, mc, mr, 0f, 0f }, // GREEN
-				new[] { bl, bc, br, 0f, 0f }, // BLUE
-				new[] { 0f, 0f, 0f, 1f,0f }, // Alpha
-				new[] { (float)_model.ColorBrightness-1f, (float)_model.ColorBrightness-1f, (float)_model.ColorBrightness-1f, 0f, 1f }
-			};
-
-			var imageAttributes = new ImageAttributes();
-			imageAttributes.ClearColorMatrix();
-			imageAttributes.SetColorMatrix(new ColorMatrix(ptsArray), ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-			imageAttributes.SetGamma((float)_model.ColorGamma, ColorAdjustType.Bitmap);
-
-			using (var g = Graphics.FromImage(image))
-			{
-				g.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, imageAttributes);
-				//g.DrawImage(originalImage, new Rectangle(0, 0, adjustedImage.Width, adjustedImage.Height), 0, 0, bitImage.Width, bitImage.Height, GraphicsUnit.Pixel, imageAttributes);
+				var i = 0;
+				while (System.IO.File.Exists(string.Format(outpathFormat, ++i))) ;
+				outpath = string.Format(outpathFormat, i);
 			}
 
-
-			return image;
-		}
-
-		private static void WatermarkImage(FileWrapper w, Image b)
-		{
-			if (w == null) throw new ArgumentNullException("w");
-			using (var g = Graphics.FromImage(b))
-			{
-				var align = _model.WatermarkAlignment;
-				var opac = (float)_model.WatermarkOpacity;
-				var margin = new SizeF(20, 20);
-				if (_model.DefaultWatermarkType == WatermarkType.Text)
-				{
-					var text = _model.WatermarkText;
-					var font = _model.WatermarkFont;
-
-					var tSize = g.MeasureString(text, font);
-
-					var tPos = new PointF();
-
-					switch (align)
-					{
-						case Alignment.Top_Left:
-						case Alignment.Top_Center:
-						case Alignment.Top_Right:
-							tPos.Y = margin.Height;
-							break;
-						case Alignment.Middle_Left:
-						case Alignment.Middle_Center:
-						case Alignment.Middle_Right:
-							tPos.Y = (b.Height / 2f) - (tSize.Height / 2f);
-							break;
-						case Alignment.Bottom_Left:
-						case Alignment.Bottom_Center:
-						case Alignment.Bottom_Right:
-							tPos.Y = b.Height - margin.Height - tSize.Height;
-							break;
-					}
-
-					switch (align)
-					{
-						case Alignment.Top_Left:
-						case Alignment.Middle_Left:
-						case Alignment.Bottom_Left:
-							tPos.X = margin.Width;
-							break;
-						case Alignment.Top_Center:
-						case Alignment.Middle_Center:
-						case Alignment.Bottom_Center:
-							tPos.X = (b.Width / 2f) - (tSize.Width / 2f);
-							break;
-						case Alignment.Top_Right:
-						case Alignment.Middle_Right:
-						case Alignment.Bottom_Right:
-							tPos.X = b.Width - margin.Width - tSize.Width;
-							break;
-					}
-
-					using (var brush = new SolidBrush(Color.FromArgb((int)(255 * opac), Color.White)))
-					{
-						g.SmoothingMode = SmoothingMode.HighQuality;
-						g.TextRenderingHint = TextRenderingHint.AntiAlias;
-						g.DrawString(text, font, brush, tPos.X, tPos.Y);
-						brush.Color = Color.FromArgb((int)(255 * opac), Color.Black);
-						g.DrawString(text, font, brush, tPos.X - (font.SizeInPoints / 24) - 1, tPos.Y - (font.SizeInPoints / 24) - 1);
-					}
-				}
-				else
-				{
-					var path = _model.WatermarkImagePath;
-
-					if (!System.IO.File.Exists(path))
-						return;
-
-					var grey = _model.WatermarkGreyscale;
-
-					float tl = 1f, tc = 0f, tr = 0f, ml = 0f, mc = 1f, mr = 0f, bl = 0f, bc = 0f, br = 1f;
-
-					const float rwgt = .3086f;
-					const float gwgt = .6094f;
-					const float bwgt = .0820f;
-
-					if (grey)
-					{
-						tl = tc = tr = rwgt;
-						ml = mc = mr = gwgt;
-						bl = bc = br = bwgt;
-					}
-
-					float[][] ptsArray =
-					{
-						new[] { tl, tc, tr, 0f, 0f}, // RED
-						new[] { ml, mc, mr, 0f, 0f }, // GREEN
-						new[] { bl, bc, br, 0f, 0f }, // BLUE
-						new[] { 0f, 0f, 0f, 1f,0f }, // Alpha
-						new[] { 0, 0, 0, 0f, 1f }
-					};
-
-					var imageAttributes = new ImageAttributes();
-					imageAttributes.ClearColorMatrix();
-					var colorMatrix = new ColorMatrix(ptsArray) { Matrix33 = opac };
-					imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-
-					var i = Image.FromFile(path);
-					var tPos = new PointF();
-					switch (align)
-					{
-						case Alignment.Top_Left:
-						case Alignment.Top_Center:
-						case Alignment.Top_Right:
-							tPos.Y = margin.Height;
-							break;
-						case Alignment.Middle_Left:
-						case Alignment.Middle_Center:
-						case Alignment.Middle_Right:
-							tPos.Y = (b.Height / 2f) - (i.Height / 2f);
-							break;
-						case Alignment.Bottom_Left:
-						case Alignment.Bottom_Center:
-						case Alignment.Bottom_Right:
-							tPos.Y = b.Height - margin.Height - i.Height;
-							break;
-					}
-
-					switch (align)
-					{
-						case Alignment.Top_Left:
-						case Alignment.Middle_Left:
-						case Alignment.Bottom_Left:
-							tPos.X = margin.Width;
-							break;
-						case Alignment.Top_Center:
-						case Alignment.Middle_Center:
-						case Alignment.Bottom_Center:
-							tPos.X = (b.Width / 2f) - (i.Width / 2f);
-							break;
-						case Alignment.Top_Right:
-						case Alignment.Middle_Right:
-						case Alignment.Bottom_Right:
-							tPos.X = b.Width - margin.Width - i.Width;
-							break;
-					}
-
-					g.DrawImage(i, new Rectangle((int)tPos.X, (int)tPos.Y, i.Width, i.Height), 0, 0, i.Width, i.Height, GraphicsUnit.Pixel, imageAttributes);
-				}
-			}
-		}
-
-		private static Image CropImage(Image b)
-		{
-			var cropSize = new Size(_model.CropWidth, _model.CropHeight);
-
-			if (cropSize.Width > b.Width || cropSize.Height > b.Height)
-				cropSize = new Size(
-					cropSize.Width > b.Width ? b.Width : cropSize.Width,
-					cropSize.Height > b.Height ? b.Height : cropSize.Height);
-
-			int x = 0, y = 0;
-
-			switch (_model.DefaultCropAlignment)
-			{
-				case Alignment.Middle_Left:
-				case Alignment.Middle_Center:
-				case Alignment.Middle_Right:
-					y = ((b.Height / 2) - (cropSize.Height / 2));
-					break;
-
-				case Alignment.Bottom_Left:
-				case Alignment.Bottom_Center:
-				case Alignment.Bottom_Right:
-					y = (b.Height - cropSize.Height);
-					break;
-			}
-
-			switch (_model.DefaultCropAlignment)
-			{
-				case Alignment.Top_Center:
-				case Alignment.Middle_Center:
-				case Alignment.Bottom_Center:
-					x = ((b.Width / 2) - (cropSize.Width / 2));
-					break;
-
-				case Alignment.Top_Right:
-				case Alignment.Middle_Right:
-				case Alignment.Bottom_Right:
-					x = b.Width - cropSize.Width;
-					break;
-			}
-
-			var r = new Rectangle(new Point(x, y), cropSize);
-
-			Image ret = new Bitmap(cropSize.Width, cropSize.Height);
-
-			using (var g = Graphics.FromImage(ret))
-				g.DrawImage(b, new Rectangle(Point.Empty, cropSize), r, GraphicsUnit.Pixel);
-
-			b.Dispose();
+			var ret = System.IO.File.Create(outpath);
+			NamingMutex.ReleaseMutex();
 			return ret;
 		}
 
-		private static Image ResizeImage(Image b)
+		private static string GenerateFilename(File w, Image b)
 		{
-			var newSize = b.Size;
-			var targetSize = new Size(_model.ResizeWidth, _model.ResizeHeight);
-
-			if (_model.UseAspectRatio)
+			string name = null;
+			switch (_model.NameOption)
 			{
-				if (b.Width > b.Height)	// landscape
-				{
-					targetSize = new Size(
-						targetSize.Width > targetSize.Height ? targetSize.Width : targetSize.Height,
-						targetSize.Width > targetSize.Height ? targetSize.Height : targetSize.Width);
-				}
-				else if (b.Height > b.Width) // Portrait
-				{
-					targetSize = new Size(
-						targetSize.Height > targetSize.Width ? targetSize.Width : targetSize.Height,
-						targetSize.Height > targetSize.Width ? targetSize.Height : targetSize.Width);
-				}
-			}
-
-			switch (_model.DefaultResizeMode)
-			{
-				case ResizeMode.Smaller:
-					if (b.Width > targetSize.Width || b.Height > targetSize.Height)
-					{
-						var ratioX = targetSize.Width / (double)b.Width;
-						var ratioY = targetSize.Height / (double)b.Height;
-						// use whichever multiplier is smaller
-						var ratio = ratioX < ratioY ? ratioX : ratioY;
-
-						// now we can get the new height and width
-						var newHeight = Convert.ToInt32(b.Height * ratio);
-						var newWidth = Convert.ToInt32(b.Width * ratio);
-
-						newSize = new Size(newWidth, newHeight);
-					}
+				case NameType.Original:
+					name = w.Name;
 					break;
-				case ResizeMode.Larger:
-					if (b.Width < targetSize.Width || b.Height < targetSize.Height)
-					{
-						var ratioX = targetSize.Width / (double)b.Width;
-						var ratioY = targetSize.Height / (double)b.Height;
-						// use whichever multiplier is larger
-						var ratio = ratioX > ratioY ? ratioX : ratioY;
-
-						// now we can get the new height and width
-						var newHeight = Convert.ToInt32(b.Height * ratio);
-						var newWidth = Convert.ToInt32(b.Width * ratio);
-
-						newSize = new Size(newWidth, newHeight);
-					}
+				case NameType.Numbered:
+					name = w.ImageNumber.ToString(CultureInfo.InvariantCulture);
 					break;
-				case ResizeMode.Exact:
-					if (b.Size != targetSize)
-					{
-						newSize = new Size(targetSize.Width, targetSize.Height);
-					}
+				case NameType.Custom:
+					name = _model.OutputTemplate;
+					name = name.Replace("{o}", w.Name);
+					name = name.Replace("{w}", b.Width.ToString(CultureInfo.InvariantCulture));
+					name = name.Replace("{h}", b.Height.ToString(CultureInfo.InvariantCulture));
 					break;
 			}
-
-			if (b.Size == newSize) return b;
-			var one = b;
-			Image two = new Bitmap(b, newSize);
-			one.Dispose();
-			return two;
-		}
-
-		private static void RotateImage(FileWrapper w, Image b)
-		{
-			var r = w.RotationOverride == Rotation.Default ? _model.DefaultRotation : w.RotationOverride;
-
-			switch (r)
-			{
-				case Rotation.Clockwise:
-					b.RotateFlip(RotateFlipType.Rotate90FlipNone);
-					break;
-				case Rotation.CounterClockwise:
-					b.RotateFlip(RotateFlipType.Rotate270FlipNone);
-					break;
-				case Rotation.UpsideDown:
-					b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-					break;
-				case Rotation.Portrait:
-					if (b.Width > b.Height)
-						b.RotateFlip(RotateFlipType.Rotate270FlipNone);
-					break;
-				case Rotation.Landscape:
-					if (b.Width < b.Height)
-						b.RotateFlip(RotateFlipType.Rotate90FlipNone);
-					break;
-			}
+			return name;
 		}
 	}
 }
