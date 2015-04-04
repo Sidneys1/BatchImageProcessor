@@ -30,6 +30,8 @@ Now includes a complete CLI interface! Usage:
 
 `BatchImageProcessor.exe [flags] [file0 file1 ... fileX]`
 
+Including files in the command will process each file listed. For large numbers of files, it may be easier to use a manifest file (see `--man`). Specifying any flags (except `-s` and `-e`) or files will disable the GUI.
+
 #### Flags: ####
 Batch Image Processor CLI uses flags to specify options. Short flags, like `-s` and `-e`, can be combined as `-se`.
 
