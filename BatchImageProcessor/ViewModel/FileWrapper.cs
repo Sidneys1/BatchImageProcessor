@@ -3,11 +3,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Model;
+using BatchImageProcessor.Types;
 using File = BatchImageProcessor.Model.File;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class FileWrapper : IFolderable, INotifyPropertyChanged
+    public class FileWrapper : INotifyPropertyChanged, IFolderable
     {
 	    private readonly File _file;
 

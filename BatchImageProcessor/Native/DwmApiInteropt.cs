@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace BatchImageProcessor
+namespace BatchImageProcessor.Native
 {
     #region Structures
 

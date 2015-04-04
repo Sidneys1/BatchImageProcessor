@@ -400,4 +400,166 @@
   <data name="ColorSettings_Title" xml:space="preserve">
     <value>Adjustment Settings</value>
   </data>
+  <data name="OutputTemplate" xml:space="preserve">
+    <value>{o} - Processed</value>
+  </data>
+  <data name="NoFileSet" xml:space="preserve">
+    <value>&lt;No File Set&gt;</value>
+  </data>
+  <data name="WatermarkText" xml:space="preserve">
+    <value>Watermark Text</value>
+  </data>
+  <data name="OutputFolder" xml:space="preserve">
+    <value>Output Folder</value>
+  </data>
+  <data name="ImportSubfoldersMessage" xml:space="preserve">
+    <value>This folder has folders within it. Would you like to add those as well?</value>
+  </data>
+  <data name="ImportFolderDialogTitle" xml:space="preserve">
+    <value>Import Folder</value>
+  </data>
+  <data name="NewFolderDialogTitle" xml:space="preserve">
+    <value>Name New Folder</value>
+  </data>
+  <data name="RenameFolderDialogTitle" xml:space="preserve">
+    <value>Rename Folder</value>
+  </data>
+  <data name="OutputOverrideHeader" xml:space="preserve">
+    <value>Override Output Format</value>
+  </data>
+  <data name="DefaultOutput" xml:space="preserve">
+    <value>Default Output Format</value>
+  </data>
+  <data name="JpegOutput" xml:space="preserve">
+    <value>JPEG (*.jpg)</value>
+  </data>
+  <data name="PngOutput" xml:space="preserve">
+    <value>Portable Network Graphics (*.png)</value>
+  </data>
+  <data name="BmpOutput" xml:space="preserve">
+    <value>Bitmap (*.bmp)</value>
+  </data>
+  <data name="GifOutput" xml:space="preserve">
+    <value>Graphics Interchange Format (*.gif)</value>
+  </data>
+  <data name="TifOutput" xml:space="preserve">
+    <value>Tagged Image File Format (*.tiff)</value>
+  </data>
+  <data name="OverrideResizeHeader" xml:space="preserve">
+    <value>Override Resize</value>
+  </data>
+  <data name="OverrideCropHeader" xml:space="preserve">
+    <value>Override Crop</value>
+  </data>
+  <data name="OverrideWatermarkHeader" xml:space="preserve">
+    <value>Override Watermark</value>
+  </data>
+  <data name="OverrideAdjustmentsHeader" xml:space="preserve">
+    <value>Override Adjustments</value>
+  </data>
+  <data name="RemoveImageHeader" xml:space="preserve">
+    <value>Remove Image</value>
+  </data>
+  <data name="ImageEnableTooltip" xml:space="preserve">
+    <value>Enable/Disable This Image</value>
+  </data>
+  <data name="OverriddenResize" xml:space="preserve">
+    <value>Resize Overridden</value>
+  </data>
+  <data name="OverriddenCrop" xml:space="preserve">
+    <value>Crop Overridden</value>
+  </data>
+  <data name="OverriddenWatermark" xml:space="preserve">
+    <value>Watermark Overridden</value>
+  </data>
+  <data name="OverriddenAdjustments" xml:space="preserve">
+    <value>Adjustments Overridden</value>
+  </data>
+  <data name="CropAlignHeader" xml:space="preserve">
+    <value>Crop alignment:</value>
+  </data>
+  <data name="AlignTopLeftTooltip" xml:space="preserve">
+    <value>Top Left</value>
+  </data>
+  <data name="AlignTopCenterTooltip" xml:space="preserve">
+    <value>Top Center</value>
+  </data>
+	<data name="AlignTopRightTooltip" xml:space="preserve">
+    <value>Top Right</value>
+  </data>
+	<data name="AlignMiddleLeftTooltip" xml:space="preserve">
+    <value>Middle Left</value>
+  </data>
+	<data name="AlignMiddleCenterTooltip" xml:space="preserve">
+    <value>Middle Center</value>
+  </data>
+	<data name="AlignMiddleRightTooltip" xml:space="preserve">
+    <value>Middle Right</value>
+  </data>
+	<data name="AlignBottomLeftTooltip" xml:space="preserve">
+    <value>Bottom Left</value>
+  </data>
+	<data name="AlignBottomCenterTooltip" xml:space="preserve">
+    <value>Bottom Center</value>
+  </data>
+	<data name="AlignBottomRightTooltip" xml:space="preserve">
+    <value>Bottom Right</value>
+  </data>
+	<data name="WatermarkOpacityHeader" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
+	<data name="ZeroPercentLabel" xml:space="preserve">
+    <value>0%</value>
+  </data>
+	<data name="OneHundredPercentLabel" xml:space="preserve">
+    <value>100%</value>
+  </data>
+	<data name="WatermarkAlignmentHeader" xml:space="preserve">
+    <value>Watermark Alignment</value>
+  </data>
+	<data name="ColorBrightnessHeader" xml:space="preserve">
+    <value>Brightness</value>
+  </data>
+	<data name="TwoHundredPercentLabel" xml:space="preserve">
+    <value>200%</value>
+  </data>
+	<data name="ColorContrastHeader" xml:space="preserve">
+    <value>Contrast</value>
+  </data>
+	<data name="FiveHundredPercentLabel" xml:space="preserve">
+    <value>500%</value>
+  </data>
+	<data name="ColorGammaHeader" xml:space="preserve">
+    <value>Gamma</value>
+  </data>
+	<data name="TenPercentLabel" xml:space="preserve">
+    <value>10%</value>
+  </data>
+	<data name="ColorSaturationOption" xml:space="preserve">
+    <value>Adjust Saturation</value>
+  </data>
+	<data name="ColorGreyscaleOption" xml:space="preserve">
+    <value>Convert to Greyscale</value>
+  </data>
+	<data name="ColorSepiaOption" xml:space="preserve">
+    <value>Convert to Sepia</value>
+  </data>
+	<data name="ColorSaturationHeader" xml:space="preserve">
+    <value>Saturation</value>
+  </data>
+	<data name="ZeroPercentHeader" xml:space="preserve">
+    <value>0%</value>
+  </data>
+	<data name="OutputFormatHeader" xml:space="preserve">
+    <value>File Format</value>
+  </data>
+	<data name="OutputJpegQualityHeader" xml:space="preserve">
+    <value>JPEG Quality</value>
+  </data>
+	<data name="CompleteOfLabel" xml:space="preserve">
+    <value> completed of </value>
+  </data>
+	<data name="StopBtn_Text" xml:space="preserve">
+    <value>Stop</value>
+  </data>
 </root>

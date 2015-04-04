@@ -112,27 +112,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AboutBox.cs">
-      <DependentUpon>AboutBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
-    <Compile Include="DwmApiInteropt.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Model\Alignment.cs" />
-    <Compile Include="Model\ColorType.cs" />
-    <Compile Include="Model\Engine.cs" />
-    <Compile Include="Model\Format.cs" />
-    <Compile Include="Model\Rotation.cs" />
-    <Compile Include="Model\NameType.cs" />
-    <Compile Include="Model\ResizeMode.cs" />
+    <Compile Include="Model\Model.cs" />
+    <Compile Include="Model\Folder.cs" />
+    <Compile Include="Model\IFolderable.cs" />
     <Compile Include="Model\StaticImageUtils.cs" />
-    <Compile Include="Model\WatermarkType.cs" />
+    <Compile Include="Native\DwmApiInteropt.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Types\Alignment.cs" />
+    <Compile Include="Types\ColorType.cs" />
+    <Compile Include="Types\Format.cs" />
+    <Compile Include="Types\NameType.cs" />
+    <Compile Include="Types\ResizeMode.cs" />
+    <Compile Include="Types\Rotation.cs" />
+    <Compile Include="Types\WatermarkType.cs" />
+    <Compile Include="Types\WeakThumbnail.cs" />
     <Compile Include="ViewModel\BooleanConverter.cs" />
     <Compile Include="ViewModel\BooleanToEffectConverter.cs" />
     <Compile Include="ViewModel\BooleanToOpacityConverter.cs" />
@@ -141,31 +141,28 @@
     <Compile Include="ViewModel\EnumStringConverter.cs" />
     <Compile Include="ViewModel\EnumVisibilityConverter.cs" />
     <Compile Include="ViewModel\FileWrapper.cs" />
-    <Compile Include="ViewModel\Folder.cs" />
+    <Compile Include="ViewModel\FolderWrapper.cs" />
     <Compile Include="ViewModel\FolderCollectionView.cs" />
     <Compile Include="ViewModel\FileCollectionView.cs" />
     <Compile Include="ViewModel\TypeConverter.cs" />
-    <Compile Include="ViewModel\IFolderable.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
+    <Compile Include="View\AboutBox.cs">
+      <DependentUpon>AboutBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\HookEventArgs.cs" />
     <Compile Include="View\HookType.cs" />
     <Compile Include="View\LocalWindowsHook.cs" />
+    <Compile Include="View\MainWindow.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\RenameFileDialog.cs">
       <DependentUpon>RenameFileDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ShellContextMenu.cs" />
     <Compile Include="View\ShellContextMenuException.cs" />
-    <Page Include="AboutBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\SplitButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Compile Include="App.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -174,10 +171,14 @@
     <Compile Include="Controls\SplitButton.cs">
       <DependentUpon>SplitButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Page Include="View\AboutBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\RenameFileDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -186,7 +187,6 @@
   <ItemGroup>
     <Compile Include="Model\File.cs" />
     <Compile Include="Model\IoObject.cs" />
-    <Compile Include="Model\WeakThumbnail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

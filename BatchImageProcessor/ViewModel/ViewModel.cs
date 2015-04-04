@@ -3,23 +3,35 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
-using Env= System.Environment;
+using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class ViewModel : INotifyPropertyChanged, IDisposable
+    public class ViewModel :IDisposable, INotifyPropertyChanged
     {
-        public ViewModel()
+	    public Model.Model Model;
+
+	    public ObservableCollection<IFolderable> Folders => Model.Folders;
+
+		public ViewModel()
         {
-            Folders = new ObservableCollection<Folder>();
-            Engine.UpdateDone += Engine_UpdateDone;
+	        Model = new Model.Model
+	        {
+		        OutputTemplate = Resources.OutputTemplate,
+				WatermarkImagePath = Resources.NoFileSet,
+				WatermarkText = Resources.WatermarkText
+			};
+			OutputPath= Resources.ViewModel__outputPath__No_Path_Set;
+			Model.UpdateDone += Engine_UpdateDone;
         }
 
         public void Dispose()
         {
-            _watermarkFont.Dispose();
+            Model.WatermarkFont.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -29,36 +41,29 @@ namespace BatchImageProcessor.ViewModel
             TotalImages = 1;
             DoneImages = 0;
             PropChanged("Ready");
-            Engine.Process(this);
+			Model.Process();
         }
 
         private void Engine_UpdateDone(object sender, EventArgs e)
         {
-            TotalImages = Engine.TotalImages;
-            DoneImages = Engine.DoneImages;
-
             if (DoneImages != TotalImages) return;
             ShowProgressBar = false;
-            Engine.Cancel = false;
+			Model.Cancel = false;
         }
 
         #region Properties
 
-        public ObservableCollection<Folder> Folders { get; }
-
-        public bool Ready => OutputSet && (DoneImages == TotalImages);
+	    public bool Ready => OutputSet && (DoneImages == TotalImages);
 
         #region Rotate Settings
 
-        private Rotation _defaultRotation = Rotation.None;
-
-        public Rotation DefaultRotation
+	    public Rotation DefaultRotation
         {
-            get { return _defaultRotation; }
+            get { return Model.DefaultRotation; }
             set
             {
-                _defaultRotation = value;
-                PropChanged("DefaultRotation");
+                Model.DefaultRotation = value;
+                PropChanged();
             }
         }
 
@@ -66,37 +71,33 @@ namespace BatchImageProcessor.ViewModel
 
         #region Crop Settings
 
-        private int _cropHeight = 600;
-        private int _cropWidth = 800;
-        private Alignment _defaultCropAlignment = Alignment.Middle_Center;
-
-        public Alignment DefaultCropAlignment
+	    public Alignment DefaultCropAlignment
         {
-            get { return _defaultCropAlignment; }
+            get { return Model.DefaultCropAlignment; }
             set
             {
-                _defaultCropAlignment = value;
-                PropChanged("DefaultCropAlignment");
+				Model.DefaultCropAlignment = value;
+                PropChanged();
             }
         }
 
         public int CropWidth
         {
-            get { return _cropWidth; }
+            get { return Model.CropWidth; }
             set
             {
-                _cropWidth = value;
-                PropChanged("CropWidth");
+                Model.CropWidth = value;
+                PropChanged();
             }
         }
 
         public int CropHeight
         {
-            get { return _cropHeight; }
+            get { return Model.CropHeight; }
             set
             {
-                _cropHeight = value;
-                PropChanged("CropHeight");
+                Model.CropHeight = value;
+                PropChanged();
             }
         }
 
@@ -104,49 +105,43 @@ namespace BatchImageProcessor.ViewModel
 
         #region Resize Settings
 
-        private ResizeMode _defaultResizeMode = ResizeMode.Smaller;
-        private int _resizeHeight = 600;
-        private int _resizeWidth = 800;
-
-        private bool _useAspectRatio = true;
-
-        public ResizeMode DefaultResizeMode
+	    public ResizeMode DefaultResizeMode
         {
-            get { return _defaultResizeMode; }
+            get { return Model.DefaultResizeMode; }
             set
             {
-                _defaultResizeMode = value;
-                PropChanged("DefaultResizeMode");
+                Model.DefaultResizeMode = value;
+                PropChanged();
             }
         }
 
         public bool UseAspectRatio
         {
-            get { return _useAspectRatio; }
+            get { return Model.UseAspectRatio; }
             set
             {
-                _useAspectRatio = value;
-                PropChanged("UseAspectRatio");
+                Model.UseAspectRatio = value;
+                PropChanged();
             }
         }
 
         public int ResizeWidth
         {
-            get { return _resizeWidth; }
+            get { return Model.ResizeWidth; }
             set
             {
-                _resizeWidth = value;
-                PropChanged("ResizeWidth");
+                Model.ResizeWidth = value;
+                PropChanged();
             }
         }
 
         public int ResizeHeight
         {
-            get { return _resizeHeight; }
+            get { return Model.ResizeHeight; }
             set
             {
-                _resizeHeight = value;
-                PropChanged("ResizeHeight");
+                Model.ResizeHeight = value;
+                PropChanged();
             }
         }
 
@@ -154,42 +149,33 @@ namespace BatchImageProcessor.ViewModel
 
         #region Watermark Settings
 
-        private WatermarkType _defaultWatermarkType = WatermarkType.Text;
-        private Alignment _watermarkAlignment = Alignment.Bottom_Right;
-        private Font _watermarkFont = new Font("Calibri", 12f);
-        private bool _watermarkGreyscale = true;
-        private string _watermarkImagePath = "<No File Set>";
-        private double _watermarkOpacity = 0.7;
-
-        private string _watermarkText = "Watermark Text";
-
-        public WatermarkType DefaultWatermarkType
+	    public WatermarkType DefaultWatermarkType
         {
-            get { return _defaultWatermarkType; }
+            get { return Model.DefaultWatermarkType; }
             set
             {
-                _defaultWatermarkType = value;
-                PropChanged("DefaultWatermarkType");
+                Model.DefaultWatermarkType = value;
+                PropChanged();
             }
         }
 
         public string WatermarkText
         {
-            get { return _watermarkText; }
+            get { return Model.WatermarkText; }
             set
             {
-                _watermarkText = value;
-                PropChanged("WatermarkText");
+                Model.WatermarkText = value;
+                PropChanged();
             }
         }
 
         public Font WatermarkFont
         {
-            get { return _watermarkFont; }
+            get { return Model.WatermarkFont; }
             set
             {
-                _watermarkFont = value;
-                PropChanged("WatermarkFont");
+                Model.WatermarkFont = value;
+                PropChanged();
                 PropChanged("WatermarkFontString");
             }
         }
@@ -199,41 +185,41 @@ namespace BatchImageProcessor.ViewModel
 
         public double WatermarkOpacity
         {
-            get { return _watermarkOpacity; }
+            get { return Model.WatermarkOpacity; }
             set
             {
-                _watermarkOpacity = value;
-                PropChanged("WatermarkOpacity");
+                Model.WatermarkOpacity = value;
+                PropChanged();
             }
         }
 
         public Alignment WatermarkAlignment
         {
-            get { return _watermarkAlignment; }
+            get { return Model.WatermarkAlignment; }
             set
             {
-                _watermarkAlignment = value;
-                PropChanged("WatermarkAlignment");
+                Model.WatermarkAlignment = value;
+                PropChanged();
             }
         }
 
         public string WatermarkImagePath
         {
-            get { return _watermarkImagePath; }
+            get { return Model.WatermarkImagePath; }
             set
             {
-                _watermarkImagePath = value;
-                PropChanged("WatermarkImagePath");
+                Model.WatermarkImagePath = value;
+                PropChanged();
             }
         }
 
         public bool WatermarkGreyscale
         {
-            get { return _watermarkGreyscale; }
+            get { return Model.WatermarkGreyscale; }
             set
             {
-                _watermarkGreyscale = value;
-                PropChanged("WatermarkGreyscale");
+                Model.WatermarkGreyscale = value;
+                PropChanged();
             }
         }
 
@@ -241,55 +227,51 @@ namespace BatchImageProcessor.ViewModel
 
 		#region Color Settings
 
-		private ColorType _colorType = ColorType.Saturation;
-	    private double _colorBrightness = 1.0, _colorContrast = 1.0, _colorSaturation = 1.0, _colorGamma = 1.0;
-
-
-		public ColorType ColorType
+	    public ColorType ColorType
 	    {
-		    get { return _colorType; }
-		    set { _colorType = value;
-			    PropChanged("ColorType");
+		    get { return Model.ColorType; }
+		    set { Model.ColorType = value;
+			    PropChanged();
 		    }
 	    }
 
 		public double ColorBrightness
 		{
-			get { return _colorBrightness; }
+			get { return Model.ColorBrightness; }
 			set
 			{
-				_colorBrightness = value;
-				PropChanged("ColorBrightness");
+				Model.ColorBrightness = value;
+				PropChanged();
 			}
 		}
 
 		public double ColorContrast
 		{
-			get { return _colorContrast; }
+			get { return Model.ColorContrast; }
 			set
 			{
-				_colorContrast = value;
-				PropChanged("ColorContrast");
+				Model.ColorContrast = value;
+				PropChanged();
 			}
 		}
 
 		public double ColorSaturation
 		{
-			get { return _colorSaturation; }
+			get { return Model.ColorSaturation; }
 			set
 			{
-				_colorSaturation = value;
-				PropChanged("ColorSaturation");
+				Model.ColorSaturation = value;
+				PropChanged();
 			}
 		}
 
 		public double ColorGamma
 		{
-			get { return _colorGamma; }
+			get { return Model.ColorGamma; }
 			set
 			{
-				_colorGamma = value;
-				PropChanged("ColorGamma");
+				Model.ColorGamma = value;
+				PropChanged();
 			}
 		}
 
@@ -297,52 +279,44 @@ namespace BatchImageProcessor.ViewModel
 
 		#region OutputSettings
 
-		private NameType _nameOption = NameType.Original;
-        private string _outputPath = Resources.ViewModel__outputPath__No_Path_Set;
-	    private Format _outputFormat = Format.Jpg;
-	    private double _jpegQuality = 0.95;
-
-        private bool _outputSet;
-        private string _outputTemplate = "{o} - Processed";
-
-        public string OutputPath
+	    public string OutputPath
         {
-            get { return _outputPath; }
+            get { return Model.OutputPath; }
             set
             {
-                _outputPath = value;
-                PropChanged("OutputPath");
+                Model.OutputPath = value;
+                PropChanged();
             }
         }
 
         public bool OutputSet
         {
-            get { return _outputSet; }
+            get { return Model.OutputSet; }
             set
             {
-                _outputSet = value;
-                PropChanged("OutputSet");
+                Model.OutputSet = value;
+                PropChanged();
                 PropChanged("Ready");
             }
         }
 
         public NameType NameOption
         {
-            get { return _nameOption; }
+            get { return Model.NameOption; }
             set
             {
-                _nameOption = value;
-                PropChanged("NameOption");
+                Model.NameOption = value;
+                PropChanged();
             }
         }
 
         public string OutputTemplate
         {
-            get { return _outputTemplate; }
+            get { return Model.OutputTemplate; }
             set
             {
-                _outputTemplate = value;
-                PropChanged("OutputTemplate");
+                Model.OutputTemplate = value;
+                PropChanged();
                 PropChanged("OutputTemplateExample");
             }
         }
@@ -361,99 +335,90 @@ namespace BatchImageProcessor.ViewModel
 
 	    public Format OutputFormat
 	    {
-			get { return _outputFormat;}
-			set { _outputFormat = value;PropChanged("OutputFormat"); }
+			get { return Model.OutputFormat;}
+			set { Model.OutputFormat = value;PropChanged(); }
 	    }
 
 		public double JpegQuality
-		{ get { return _jpegQuality; } set { _jpegQuality = value; PropChanged("JpegQuality"); } }
+		{ get { return Model.JpegQuality; } set { Model.JpegQuality = value; PropChanged(); } }
 
 		#endregion
 
 		#region Checkboxes
 
-		private bool _enableCrop;
-        private bool _enableResize;
-        private bool _enableRotation;
-        private bool _enableWatermark;
-		private bool _enableColor;
-
-		public bool EnableRotation
+	    public bool EnableRotation
         {
-            get { return _enableRotation; }
+            get { return Model.EnableRotation; }
             set
             {
-                _enableRotation = value;
-                PropChanged("EnableRotation");
+                Model.EnableRotation = value;
+                PropChanged();
             }
         }
 
         public bool EnableCrop
         {
-            get { return _enableCrop; }
+            get { return Model.EnableCrop; }
             set
             {
-                _enableCrop = value;
-                PropChanged("EnableCrop");
+                Model.EnableCrop = value;
+                PropChanged();
             }
         }
 
         public bool EnableResize
         {
-            get { return _enableResize; }
+            get { return Model.EnableResize; }
             set
             {
-                _enableResize = value;
-                PropChanged("EnableResize");
+                Model.EnableResize = value;
+                PropChanged();
             }
         }
 
         public bool EnableWatermark
         {
-            get { return _enableWatermark; }
+            get { return Model.EnableWatermark; }
             set
             {
-                _enableWatermark = value;
-                PropChanged("EnableWatermark");
+                Model.EnableWatermark = value;
+                PropChanged();
             }
         }
 
 		public bool EnableColor
 		{
-			get { return _enableColor; }
+			get { return Model.EnableColor; }
 			set
 			{
-				_enableColor = value;
-				PropChanged("EnableColor");
+				Model.EnableColor = value;
+				PropChanged();
 			}
 		}
 
 		#endregion
 
 		#region Progress
-
-		private int _doneImages;
+		
         private bool _showProgressBar;
-        private int _totalImages;
 	    
-
 	    public int TotalImages
         {
-            get { return _totalImages; }
+            get { return Model.TotalImages; }
             private set
             {
-                _totalImages = value;
-                PropChanged("TotalImages");
+                Model.TotalImages = value;
+                PropChanged();
             }
         }
 
         public int DoneImages
         {
-            get { return _doneImages; }
+            get { return Model.DoneImages; }
             private set
             {
-                _doneImages = value;
-                PropChanged("DoneImages");
+                Model.DoneImages = value;
+                PropChanged();
 
                 if (DoneImages == TotalImages)
                     PropChanged("Ready");
@@ -466,45 +431,34 @@ namespace BatchImageProcessor.ViewModel
             set
             {
                 _showProgressBar = value;
-                PropChanged("ShowProgressBar");
+                PropChanged();
             }
         }
 
         #endregion
 
         #endregion
-
-        #region Property Changed Stuff
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void PropChanged(string val)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(val));
-        }
-
-        #endregion
-
+		
         #region File/Folder Removal Overloads
 
-        internal void RemoveFolder(Folder folder)
+        internal void RemoveFolder(FolderWrapper folderWrapper)
         {
-            foreach (var parent in Folders)
+            foreach (var parent in Model.Folders.Cast<FolderWrapper>())
             {
-                if (parent == folder)
+                if (parent == folderWrapper)
                 {
-                    Folders.Remove(folder);
+					Model.Folders.Remove(folderWrapper);
                     break;
                 }
 
-                if (RemoveFolder(parent, folder))
+                if (RemoveFolder(parent, folderWrapper))
                     break;
             }
         }
 
-        private static bool RemoveFolder(Folder parent, IFolderable folder)
+        private static bool RemoveFolder(FolderWrapper parent, IFolderable folder)
         {
-	        if (!parent.Files.Contains(folder)) return parent.Files.Cast<Folder>().Any(p => RemoveFolder(p, folder));
+	        if (!parent.Files.Contains(folder)) return parent.Files.Cast<FolderWrapper>().Any(p => RemoveFolder(p, folder));
 	        parent.Files.Remove(folder);
 
 	        return true;
@@ -512,17 +466,30 @@ namespace BatchImageProcessor.ViewModel
 
         internal void RemoveFile(FileWrapper file)
         {
-            RemoveFile(file, Folders[0]);
+            RemoveFile(file, (FolderWrapper)Model.Folders[0]);
         }
 
-        private static bool RemoveFile(IFolderable file, Folder folder)
+        private static bool RemoveFile(IFolderable file, FolderWrapper folderWrapper)
         {
-	        if (!folder.Files.Contains(file))
-				return folder.Files.Cast<Folder>().Any(p => RemoveFile(file, p));
-	        folder.Files.Remove(file);
+	        if (!folderWrapper.Files.Contains(file))
+				return folderWrapper.Files.OfType<FolderWrapper>().Any(p => RemoveFile(file, p));
+	        folderWrapper.Files.Remove(file);
 	        return true;
         }
 
         #endregion
+
+	    public void Cancel()
+	    {
+		    Model.Cancel = true;
+	    }
+
+	    public event PropertyChangedEventHandler PropertyChanged;
+
+	    [NotifyPropertyChangedInvocator]
+	    protected virtual void PropChanged([CallerMemberName] string propertyName = null)
+	    {
+		    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+	    }
     }
 }

@@ -1,53 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class Folder : INotifyPropertyChanged, IFolderable
+    public class FolderWrapper : /*Folder,*/ INotifyPropertyChanged, IFolderable
     {
-        private string _name = Resources.New_Folder_Name;
-	    private static readonly ISet<char> InvalidCharacters = new HashSet<char>(Path.GetInvalidPathChars());
+	    private readonly Folder _folder;
 
-		public Folder(string fromPath = null, bool recursion = true, bool removable = true)
+	    public FolderWrapper(string fromPath = null, bool recursion = true, bool removable = true)
         {
             IsValidName = true;
-            Files = new ObservableCollection<IFolderable>();
+
+		    _folder = new Folder();
+			
             if (fromPath != null)
                 Populate(fromPath, recursion);
             Removable = removable;
+		    _folder.Name = Resources.New_Folder_Name;
         }
 
-		public ObservableCollection<IFolderable> Files { get; }
-        public bool Removable { get; private set; }
+	    public bool Removable { get; private set; }
 
         public string Name
         {
-            get { return _name; }
+            get { return _folder.Name; }
             set
             {
-                if (_name.Equals(value, StringComparison.Ordinal)) return;
+                if (_folder.Name.Equals(value, StringComparison.Ordinal)) return;
 
 	            var n = value.Trim();
-				if (n.Any(InvalidCharacters.Contains) || string.IsNullOrWhiteSpace(n) )
+				if (n.Any(Folder.InvalidCharacters.Contains) || string.IsNullOrWhiteSpace(n) )
                 {
                     IsValidName = false;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
                     throw new Exception("Data Validation Error");
                 }
 
-                _name = n;
+                _folder.Name = n;
                 IsValidName = true;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
             }
         }
 
-        public bool IsValidName { get; private set; }
+		public ObservableCollection<IFolderable> Files => _folder.Files;
+
+	    public bool IsValidName { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void Populate(string path, bool recursive)
@@ -62,31 +65,19 @@ namespace BatchImageProcessor.ViewModel
 
                 foreach (var inf in folders)
                 {
-                    Files.Add(new Folder(inf.FullName));
+                    _folder.Files.Add(new FolderWrapper(inf.FullName));
                 }
             }
 
             foreach (var inf in new[] {"*.jpg", "*.jpeg", "*.png"}.Select(str => info.GetFiles(str)).SelectMany(files => files))
             {
-                Files.Add(new FileWrapper(inf.FullName));
+                _folder.Files.Add(new FileWrapper(inf.FullName));
             }
         }
 
-        internal bool ContainsFile(string p)
-        {
-            return
-                Files.Any(
-                    o =>
-                        (o is Folder)
-                            ? string.Equals(((Folder) o).Name, p, StringComparison.Ordinal)
-                            : string.Equals(((FileWrapper) o).Name, p, StringComparison.Ordinal));
-        }
-
-        public Folder FindParent(Folder f)
-        {
-            return Files.Contains(f)
-                ? this
-                : (from Folder p in Files select p.FindParent(f)).FirstOrDefault(ret => ret != null);
-        }
-    }
+	    public bool ContainsFile(string p)
+	    {
+		    return _folder.ContainsFile(p);
+	    }
+	}
 }

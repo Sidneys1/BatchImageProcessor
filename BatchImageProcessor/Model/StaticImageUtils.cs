@@ -7,6 +7,8 @@ using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using BatchImageProcessor.Types;
+using Rotation = BatchImageProcessor.Types.Rotation;
 
 namespace BatchImageProcessor.Model
 {

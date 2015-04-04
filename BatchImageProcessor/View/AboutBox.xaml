@@ -1,4 +1,4 @@
-﻿<Window x:Class="BatchImageProcessor.AboutBox"
+﻿<Window x:Class="BatchImageProcessor.View.AboutBox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="About Batch Image Processor" Height="300" Width="450" WindowStartupLocation="CenterOwner"

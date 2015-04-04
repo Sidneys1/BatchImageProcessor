@@ -1,4 +1,5 @@
 ﻿using System.Windows.Data;
+using BatchImageProcessor.Model;
 
 namespace BatchImageProcessor.ViewModel
 {
@@ -6,7 +7,7 @@ namespace BatchImageProcessor.ViewModel
     {
         public FolderCollectionView()
         {
-            Filter += (o, e) => e.Accepted = e.Item is Folder;
+            Filter += (o, e) => e.Accepted = e.Item is FolderWrapper;
         }
     }
 }

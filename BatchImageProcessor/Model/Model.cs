@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -8,33 +9,61 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BatchImageProcessor.ViewModel;
+using BatchImageProcessor.Types;
+//using BatchImageProcessor.ViewModel;
 
 namespace BatchImageProcessor.Model
 {
-	public static class Engine
+	public class Model
 	{
-		private static ViewModel.ViewModel _model;
-		public static int TotalImages;
-		public static int DoneImages;
-		public static event EventHandler UpdateDone;
-		public static bool Cancel = false;
-		private static readonly Mutex NamingMutex = new Mutex();
+		public int TotalImages;
+		public int DoneImages;
+		public event EventHandler UpdateDone;
+		public bool Cancel = false;
+		private readonly Mutex _namingMutex = new Mutex();
+		public string OutputPath;
+		public NameType NameOption = NameType.Original;
+		public Format OutputFormat = Format.Jpg;
+		public double JpegQuality = 0.95;
+		public bool OutputSet = false;
+		public string OutputTemplate;
+		public bool EnableCrop = false;
+		public bool EnableResize = false;
+		public bool EnableRotation = false;
+		public bool EnableWatermark = false;
+		public bool EnableColor = false;
+		public Rotation DefaultRotation = Rotation.None;
+		public int CropHeight = 600;
+		public int CropWidth = 800;
+		public Alignment DefaultCropAlignment = Alignment.Middle_Center;
+		public ResizeMode DefaultResizeMode = ResizeMode.Smaller;
+		public int ResizeHeight = 600;
+		public int ResizeWidth = 800;
+		public bool UseAspectRatio = true;
+		public WatermarkType DefaultWatermarkType = WatermarkType.Text;
+		public Alignment WatermarkAlignment = Alignment.Bottom_Right;
+		public Font WatermarkFont = new Font("Calibri", 12f);
+		public bool WatermarkGreyscale = true;
+		public string WatermarkImagePath;
+		public double WatermarkOpacity = 0.7;
+		public string WatermarkText;
+		public ColorType ColorType = ColorType.Saturation;
+		public double ColorBrightness = 1.0;
+		public double ColorContrast = 1.0;
+		public double ColorSaturation = 1.0;
+		public double ColorGamma = 1.0;
+		public ObservableCollection<IFolderable> Folders { get; } = new ObservableCollection<IFolderable>();
 
-		public static void Process(ViewModel.ViewModel vm)
+		public void Process()
 		{
-			_model = vm;
 			TotalImages = 0;
 			DoneImages = 0;
-			int m, n;
-			ThreadPool.GetMaxThreads(out m, out n);
-			Trace.WriteLine(string.Format("Max threads: {0}", m));
-			Task.Factory.StartNew(() => QueueItems(vm.Folders[0], vm.OutputPath));
+			Task.Factory.StartNew(() => QueueItems((Folder)Folders[0], OutputPath));
 		}
 
-		private static void QueueItems(Folder folder, string path)
+		private void QueueItems(Folder folderWrapper, string path)
 		{
-			var enumerable = folder.Files.OfType<FileWrapper>().Where(wrapper => wrapper.Selected).Cast<File>();
+			var enumerable = folderWrapper.Files.OfType<File>().Where(wrapper => wrapper.Selected);
 			var fileWrappers = enumerable as List<File> ?? enumerable.ToList();
 			fileWrappers.ForEach(o =>
 			{
@@ -44,12 +73,12 @@ namespace BatchImageProcessor.Model
 
 			Parallel.ForEach(fileWrappers, ProcessImage);
 
-			var enumerable1 = folder.Files.OfType<Folder>();
+			var enumerable1 = folderWrapper.Files.OfType<Folder>();
 			var list = enumerable1 as List<Folder> ?? enumerable1.ToList();
 			list.ForEach(fold => QueueItems(fold, Path.Combine(path, fold.Name)));
 		}
 
-		public static void ProcessImage(File w)
+		public void ProcessImage(File w)
 		{
 			if (Cancel)
 			{
@@ -60,7 +89,7 @@ namespace BatchImageProcessor.Model
 
 			if (w != null)
 			{
-				var outFmt = w.OverrideFormat == Format.Default ? _model.OutputFormat : w.OverrideFormat;
+				var outFmt = w.OverrideFormat == Format.Default ? OutputFormat : w.OverrideFormat;
 
 				// Load Image
 				Image b = null;
@@ -82,20 +111,20 @@ namespace BatchImageProcessor.Model
 
 				#region Process Steps
 
-				if (w.OverrideRotation != Rotation.Default || _model.EnableRotation)
-					b.RotateImage(w.OverrideRotation == Rotation.Default ? _model.DefaultRotation : w.OverrideRotation);
+				if (w.OverrideRotation != Rotation.Default || EnableRotation)
+					b.RotateImage(w.OverrideRotation == Rotation.Default ? DefaultRotation : w.OverrideRotation);
 
-				if (_model.EnableResize && !w.OverrideResize)
-					b = b.ResizeImage(new Size(_model.ResizeWidth, _model.ResizeHeight), _model.DefaultResizeMode, _model.UseAspectRatio);
+				if (EnableResize && !w.OverrideResize)
+					b = b.ResizeImage(new Size(ResizeWidth, ResizeHeight), DefaultResizeMode, UseAspectRatio);
 
-				if (_model.EnableCrop && !w.OverrideCrop)
-					b = b.CropImage(new Size(_model.CropWidth, _model.CropHeight), _model.DefaultCropAlignment);
+				if (EnableCrop && !w.OverrideCrop)
+					b = b.CropImage(new Size(CropWidth, CropHeight), DefaultCropAlignment);
 
-				if (_model.EnableWatermark && !w.OverrideWatermark)
-					b.WatermarkImage(_model.WatermarkAlignment, (float)_model.WatermarkOpacity, _model.DefaultWatermarkType, _model.WatermarkText, _model.WatermarkFont, _model.WatermarkImagePath, _model.WatermarkGreyscale);
+				if (EnableWatermark && !w.OverrideWatermark)
+					b.WatermarkImage(WatermarkAlignment, (float)WatermarkOpacity, DefaultWatermarkType, WatermarkText, WatermarkFont, WatermarkImagePath, WatermarkGreyscale);
 
-				if (_model.EnableColor && !w.OverrideColor)
-					b = b.ColorImage((float)_model.ColorSaturation, _model.ColorType, _model.ColorContrast, _model.ColorBrightness, (float)_model.ColorGamma);
+				if (EnableColor && !w.OverrideColor)
+					b = b.ColorImage((float)ColorSaturation, ColorType, ColorContrast, ColorBrightness, (float)ColorGamma);
 
 				#endregion
 
@@ -131,7 +160,7 @@ namespace BatchImageProcessor.Model
 				{
 					var myEncoderParameters = new EncoderParameters(1);
 					var myencoder = Encoder.Quality;
-					var myEncoderParameter = new EncoderParameter(myencoder, (long)(_model.JpegQuality * 100));
+					var myEncoderParameter = new EncoderParameter(myencoder, (long)(JpegQuality * 100));
 					myEncoderParameters.Param[0] = myEncoderParameter;					
 					b.Save(outpath, StaticImageUtils.GetEncoder(encoder), myEncoderParameters);
 				}
@@ -145,7 +174,7 @@ namespace BatchImageProcessor.Model
 			UpdateDone?.Invoke(null, EventArgs.Empty);
 		}
 
-		private static FileStream GenerateOutputPath(File w, string name, Format outputFormat)
+		private FileStream GenerateOutputPath(File w, string name, Format outputFormat)
 		{
 			var ext = ".jpg";
 			switch (outputFormat)
@@ -170,7 +199,7 @@ namespace BatchImageProcessor.Model
 
 			var outpathFormat = outpath.Replace(ext, " ({0})" + ext);
 
-			NamingMutex.WaitOne();
+			_namingMutex.WaitOne();
 			if (System.IO.File.Exists(outpath))
 			{
 				var i = 0;
@@ -179,14 +208,14 @@ namespace BatchImageProcessor.Model
 			}
 
 			var ret = System.IO.File.Create(outpath);
-			NamingMutex.ReleaseMutex();
+			_namingMutex.ReleaseMutex();
 			return ret;
 		}
 
-		private static string GenerateFilename(File w, Image b)
+		private string GenerateFilename(File w, Image b)
 		{
 			string name = null;
-			switch (_model.NameOption)
+			switch (NameOption)
 			{
 				case NameType.Original:
 					name = w.Name;
@@ -195,7 +224,7 @@ namespace BatchImageProcessor.Model
 					name = w.ImageNumber.ToString(CultureInfo.InvariantCulture);
 					break;
 				case NameType.Custom:
-					name = _model.OutputTemplate;
+					name = OutputTemplate;
 					name = name.Replace("{o}", w.Name);
 					name = name.Replace("{w}", b.Width.ToString(CultureInfo.InvariantCulture));
 					name = name.Replace("{h}", b.Height.ToString(CultureInfo.InvariantCulture));

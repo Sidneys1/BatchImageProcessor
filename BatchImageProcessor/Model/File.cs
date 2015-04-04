@@ -1,10 +1,12 @@
-﻿namespace BatchImageProcessor.Model
+﻿using BatchImageProcessor.Types;
+
+namespace BatchImageProcessor.Model
 {
-    public class File : IoObject
+    public class File : IoObject, IFolderable
     {
 	    #region Variables
 
-	    public string Name;
+	    public string Name { get; set; }
 		public bool Selected = true;
 		public bool OverrideCrop = false;
 		public bool OverrideColor = false;

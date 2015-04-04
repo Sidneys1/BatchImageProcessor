@@ -79,6 +79,96 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bottom Center.
+        /// </summary>
+        public static string AlignBottomCenterTooltip {
+            get {
+                return ResourceManager.GetString("AlignBottomCenterTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bottom Left.
+        /// </summary>
+        public static string AlignBottomLeftTooltip {
+            get {
+                return ResourceManager.GetString("AlignBottomLeftTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bottom Right.
+        /// </summary>
+        public static string AlignBottomRightTooltip {
+            get {
+                return ResourceManager.GetString("AlignBottomRightTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Middle Center.
+        /// </summary>
+        public static string AlignMiddleCenterTooltip {
+            get {
+                return ResourceManager.GetString("AlignMiddleCenterTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Middle Left.
+        /// </summary>
+        public static string AlignMiddleLeftTooltip {
+            get {
+                return ResourceManager.GetString("AlignMiddleLeftTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Middle Right.
+        /// </summary>
+        public static string AlignMiddleRightTooltip {
+            get {
+                return ResourceManager.GetString("AlignMiddleRightTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Center.
+        /// </summary>
+        public static string AlignTopCenterTooltip {
+            get {
+                return ResourceManager.GetString("AlignTopCenterTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Left.
+        /// </summary>
+        public static string AlignTopLeftTooltip {
+            get {
+                return ResourceManager.GetString("AlignTopLeftTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Right.
+        /// </summary>
+        public static string AlignTopRightTooltip {
+            get {
+                return ResourceManager.GetString("AlignTopRightTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitmap (*.bmp).
+        /// </summary>
+        public static string BmpOutput {
+            get {
+                return ResourceManager.GetString("BmpOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string CancelText {
@@ -115,6 +205,42 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Brightness.
+        /// </summary>
+        public static string ColorBrightnessHeader {
+            get {
+                return ResourceManager.GetString("ColorBrightnessHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contrast.
+        /// </summary>
+        public static string ColorContrastHeader {
+            get {
+                return ResourceManager.GetString("ColorContrastHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gamma.
+        /// </summary>
+        public static string ColorGammaHeader {
+            get {
+                return ResourceManager.GetString("ColorGammaHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert to Greyscale.
+        /// </summary>
+        public static string ColorGreyscaleOption {
+            get {
+                return ResourceManager.GetString("ColorGreyscaleOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adjustments.
         /// </summary>
         public static string ColorOptionLabel_Text {
@@ -124,11 +250,56 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Saturation.
+        /// </summary>
+        public static string ColorSaturationHeader {
+            get {
+                return ResourceManager.GetString("ColorSaturationHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adjust Saturation.
+        /// </summary>
+        public static string ColorSaturationOption {
+            get {
+                return ResourceManager.GetString("ColorSaturationOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert to Sepia.
+        /// </summary>
+        public static string ColorSepiaOption {
+            get {
+                return ResourceManager.GetString("ColorSepiaOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adjustment Settings.
         /// </summary>
         public static string ColorSettings_Title {
             get {
                 return ResourceManager.GetString("ColorSettings_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  completed of .
+        /// </summary>
+        public static string CompleteOfLabel {
+            get {
+                return ResourceManager.GetString("CompleteOfLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crop alignment:.
+        /// </summary>
+        public static string CropAlignHeader {
+            get {
+                return ResourceManager.GetString("CropAlignHeader", resourceCulture);
             }
         }
         
@@ -187,6 +358,15 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default Output Format.
+        /// </summary>
+        public static string DefaultOutput {
+            get {
+                return ResourceManager.GetString("DefaultOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Settings.
         /// </summary>
         public static string DefaultSettingsLabel_Content {
@@ -210,6 +390,15 @@ namespace BatchImageProcessor.Properties {
         public static string FilesLabel_Text {
             get {
                 return ResourceManager.GetString("FilesLabel_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 500%.
+        /// </summary>
+        public static string FiveHundredPercentLabel {
+            get {
+                return ResourceManager.GetString("FiveHundredPercentLabel", resourceCulture);
             }
         }
         
@@ -250,6 +439,24 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Graphics Interchange Format (*.gif).
+        /// </summary>
+        public static string GifOutput {
+            get {
+                return ResourceManager.GetString("GifOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable/Disable This Image.
+        /// </summary>
+        public static string ImageEnableTooltip {
+            get {
+                return ResourceManager.GetString("ImageEnableTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import Folder(s)....
         /// </summary>
         public static string ImportFolderBtn_ToolTip {
@@ -259,11 +466,38 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import Folder.
+        /// </summary>
+        public static string ImportFolderDialogTitle {
+            get {
+                return ResourceManager.GetString("ImportFolderDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import Image(s)....
         /// </summary>
         public static string ImportImageBtn_ToolTip {
             get {
                 return ResourceManager.GetString("ImportImageBtn_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This folder has folders within it. Would you like to add those as well?.
+        /// </summary>
+        public static string ImportSubfoldersMessage {
+            get {
+                return ResourceManager.GetString("ImportSubfoldersMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JPEG (*.jpg).
+        /// </summary>
+        public static string JpegOutput {
+            get {
+                return ResourceManager.GetString("JpegOutput", resourceCulture);
             }
         }
         
@@ -376,6 +610,24 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name New Folder.
+        /// </summary>
+        public static string NewFolderDialogTitle {
+            get {
+                return ResourceManager.GetString("NewFolderDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;No File Set&gt;.
+        /// </summary>
+        public static string NoFileSet {
+            get {
+                return ResourceManager.GetString("NoFileSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string OkText {
@@ -385,11 +637,65 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 100%.
+        /// </summary>
+        public static string OneHundredPercentLabel {
+            get {
+                return ResourceManager.GetString("OneHundredPercentLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output Folder.
+        /// </summary>
+        public static string OutputFolder {
+            get {
+                return ResourceManager.GetString("OutputFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Format.
+        /// </summary>
+        public static string OutputFormatHeader {
+            get {
+                return ResourceManager.GetString("OutputFormatHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JPEG Quality.
+        /// </summary>
+        public static string OutputJpegQualityHeader {
+            get {
+                return ResourceManager.GetString("OutputJpegQualityHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Output.
         /// </summary>
         public static string OutputOptionLabel_Text {
             get {
                 return ResourceManager.GetString("OutputOptionLabel_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Override Output Format.
+        /// </summary>
+        public static string OutputOverrideHeader {
+            get {
+                return ResourceManager.GetString("OutputOverrideHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {o} - Processed.
+        /// </summary>
+        public static string OutputTemplate {
+            get {
+                return ResourceManager.GetString("OutputTemplate", resourceCulture);
             }
         }
         
@@ -487,11 +793,110 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adjustments Overridden.
+        /// </summary>
+        public static string OverriddenAdjustments {
+            get {
+                return ResourceManager.GetString("OverriddenAdjustments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crop Overridden.
+        /// </summary>
+        public static string OverriddenCrop {
+            get {
+                return ResourceManager.GetString("OverriddenCrop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resize Overridden.
+        /// </summary>
+        public static string OverriddenResize {
+            get {
+                return ResourceManager.GetString("OverriddenResize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Watermark Overridden.
+        /// </summary>
+        public static string OverriddenWatermark {
+            get {
+                return ResourceManager.GetString("OverriddenWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Override Adjustments.
+        /// </summary>
+        public static string OverrideAdjustmentsHeader {
+            get {
+                return ResourceManager.GetString("OverrideAdjustmentsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Override Crop.
+        /// </summary>
+        public static string OverrideCropHeader {
+            get {
+                return ResourceManager.GetString("OverrideCropHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Override Resize.
+        /// </summary>
+        public static string OverrideResizeHeader {
+            get {
+                return ResourceManager.GetString("OverrideResizeHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Override Watermark.
+        /// </summary>
+        public static string OverrideWatermarkHeader {
+            get {
+                return ResourceManager.GetString("OverrideWatermarkHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Portable Network Graphics (*.png).
+        /// </summary>
+        public static string PngOutput {
+            get {
+                return ResourceManager.GetString("PngOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Image.
+        /// </summary>
+        public static string RemoveImageHeader {
+            get {
+                return ResourceManager.GetString("RemoveImageHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove Item.
         /// </summary>
         public static string RemoveItemBtn_ToolTip {
             get {
                 return ResourceManager.GetString("RemoveItemBtn_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename Folder.
+        /// </summary>
+        public static string RenameFolderDialogTitle {
+            get {
+                return ResourceManager.GetString("RenameFolderDialogTitle", resourceCulture);
             }
         }
         
@@ -748,6 +1153,42 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stop.
+        /// </summary>
+        public static string StopBtn_Text {
+            get {
+                return ResourceManager.GetString("StopBtn_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 10%.
+        /// </summary>
+        public static string TenPercentLabel {
+            get {
+                return ResourceManager.GetString("TenPercentLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tagged Image File Format (*.tiff).
+        /// </summary>
+        public static string TifOutput {
+            get {
+                return ResourceManager.GetString("TifOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 200%.
+        /// </summary>
+        public static string TwoHundredPercentLabel {
+            get {
+                return ResourceManager.GetString("TwoHundredPercentLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disable Selected Items.
         /// </summary>
         public static string UncheckBtn_ToolTip {
@@ -766,11 +1207,29 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Watermark Alignment.
+        /// </summary>
+        public static string WatermarkAlignmentHeader {
+            get {
+                return ResourceManager.GetString("WatermarkAlignmentHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable/Disable Watermarking.
         /// </summary>
         public static string WatermarkChck_ToolTip {
             get {
                 return ResourceManager.GetString("WatermarkChck_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opacity.
+        /// </summary>
+        public static string WatermarkOpacityHeader {
+            get {
+                return ResourceManager.GetString("WatermarkOpacityHeader", resourceCulture);
             }
         }
         
@@ -888,6 +1347,33 @@ namespace BatchImageProcessor.Properties {
         public static string WatermarkSettings_TypeLabel_Text {
             get {
                 return ResourceManager.GetString("WatermarkSettings_TypeLabel_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Watermark Text.
+        /// </summary>
+        public static string WatermarkText {
+            get {
+                return ResourceManager.GetString("WatermarkText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0%.
+        /// </summary>
+        public static string ZeroPercentHeader {
+            get {
+                return ResourceManager.GetString("ZeroPercentHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0%.
+        /// </summary>
+        public static string ZeroPercentLabel {
+            get {
+                return ResourceManager.GetString("ZeroPercentLabel", resourceCulture);
             }
         }
     }

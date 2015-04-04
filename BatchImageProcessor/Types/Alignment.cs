@@ -1,4 +1,4 @@
-﻿namespace BatchImageProcessor.Model
+﻿namespace BatchImageProcessor.Types
 {
     public enum Alignment
     {

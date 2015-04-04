@@ -10,17 +10,16 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using BatchImageProcessor.Model;
-using BatchImageProcessor.View;
+using BatchImageProcessor.Native;
+using BatchImageProcessor.Types;
 using BatchImageProcessor.ViewModel;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
-using File = BatchImageProcessor.Model.File;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 
-namespace BatchImageProcessor
+namespace BatchImageProcessor.View
 {
 	/// <summary>
 	///     Interaction logic for MainWindow.xaml
@@ -30,7 +29,7 @@ namespace BatchImageProcessor
 		public MainWindow()
 		{
 			VModel = new ViewModel.ViewModel();
-			VModel.Folders.Add(new Folder(removable: false) { Name = "Output Folder" });
+			VModel.Folders.Add(new FolderWrapper(removable: false) { Name = Properties.Resources.OutputFolder });
 
 			InitializeComponent();
 
@@ -383,8 +382,8 @@ namespace BatchImageProcessor
 			if (inf.GetDirectories().Length > 0)
 			{
 				var res = MessageBox.Show(this,
-					"This folder has folders within it. Would you like to add those as well?",
-					"Import Folder", MessageBoxButton.YesNoCancel);
+					Properties.Resources.ImportSubfoldersMessage,
+					Properties.Resources.ImportFolderDialogTitle, MessageBoxButton.YesNoCancel);
 				switch (res)
 				{
 					case MessageBoxResult.Cancel:
@@ -395,19 +394,19 @@ namespace BatchImageProcessor
 				}
 			}
 
-			var f = new Folder(_folderBrowser.SelectedPath, recurs);
+			var f = new FolderWrapper(_folderBrowser.SelectedPath, recurs);
 
-			Folder parent;
+			FolderWrapper parent;
 
 			var item = e.Source as MenuItem;
 			if (item != null)
 			{
-				parent = item.DataContext as Folder;
+				parent = item.DataContext as FolderWrapper;
 			}
 			else
 			{
-				var folder = TreeView.SelectedItem as Folder;
-				parent = folder ?? VModel.Folders[0];
+				var folder = TreeView.SelectedItem as FolderWrapper;
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
 
 			if (parent != null && parent.ContainsFile(f.Name))
@@ -426,17 +425,17 @@ namespace BatchImageProcessor
 
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			Folder parent;
+			FolderWrapper parent;
 
 			var item = e.Source as MenuItem;
 			if (item != null)
 			{
-				parent = item.DataContext as Folder;
+				parent = item.DataContext as FolderWrapper;
 			}
 			else
 			{
-				var folder = TreeView.SelectedItem as Folder;
-				parent = folder ?? VModel.Folders[0];
+				var folder = TreeView.SelectedItem as FolderWrapper;
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
 
 			if (parent != null && parent.Removable)
@@ -446,22 +445,22 @@ namespace BatchImageProcessor
 		private void addFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
 			var fdlg = new RenameFileDialog();
-			var f = new Folder();
+			var f = new FolderWrapper();
 			fdlg.DataContext = f;
 			fdlg.Owner = this;
-			fdlg.Title = "Name New Folder";
+			fdlg.Title = Properties.Resources.NewFolderDialogTitle;
 			if (!fdlg.ShowDialog().GetValueOrDefault(false)) return;
-			Folder parent;
+			FolderWrapper parent;
 
 			var item = e.Source as MenuItem;
 			if (item != null)
 			{
-				parent = item.DataContext as Folder;
+				parent = item.DataContext as FolderWrapper;
 			}
 			else
 			{
-				var folder = TreeView.SelectedItem as Folder;
-				parent = folder ?? VModel.Folders[0];
+				var folder = TreeView.SelectedItem as FolderWrapper;
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
 
 			f.Name = f.Name.Trim();
@@ -483,17 +482,17 @@ namespace BatchImageProcessor
 		private void importImageBtn_Click(object sender, RoutedEventArgs e)
 		{
 			if (_fileBrowser.ShowDialog(this) != System.Windows.Forms.DialogResult.OK) return;
-			Folder parent;
+			FolderWrapper parent;
 
 			var item = e.Source as MenuItem;
 			if (item != null)
 			{
-				parent = item.DataContext as Folder;
+				parent = item.DataContext as FolderWrapper;
 			}
 			else
 			{
-				var folder = TreeView.SelectedItem as Folder;
-				parent = folder ?? VModel.Folders[0];
+				var folder = TreeView.SelectedItem as FolderWrapper;
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
 
 			foreach (var str in _fileBrowser.FileNames)
@@ -505,15 +504,15 @@ namespace BatchImageProcessor
 		private void RenameFolderMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			var menuItem = e.Source as MenuItem;
-			var target = menuItem?.DataContext as Folder;
+			var target = menuItem?.DataContext as FolderWrapper;
 
 			if (target == null) return;
 			var oldName = target.Name;
-			var fdlg = new RenameFileDialog { DataContext = target, Owner = this, Title = "Rename Folder" };
+			var fdlg = new RenameFileDialog { DataContext = target, Owner = this, Title = Properties.Resources.RenameFolderDialogTitle };
 
 			if (fdlg.ShowDialog().GetValueOrDefault(false))
 			{
-				var parent = VModel.Folders[0];
+				var parent = (FolderWrapper)VModel.Folders[0];
 
 				if (parent.ContainsFile(target.Name))
 				{
@@ -695,7 +694,7 @@ namespace BatchImageProcessor
 
 		private void StopBtn_Click(object sender, RoutedEventArgs e)
 		{
-			Engine.Cancel = true;
+			VModel.Cancel();
 		}
 
 		private void RemoveItemBtn_Click(object sender, RoutedEventArgs e)
@@ -704,7 +703,7 @@ namespace BatchImageProcessor
 			if (TreeView.SelectedValue is FileWrapper)
 				VModel.RemoveFile((FileWrapper)TreeView.SelectedValue);
 			else
-				VModel.RemoveFolder((Folder)TreeView.SelectedValue);
+				VModel.RemoveFolder((FolderWrapper)TreeView.SelectedValue);
 		}
 
 		private void MenuItem_Click(object sender, RoutedEventArgs e)

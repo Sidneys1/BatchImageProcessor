@@ -1,14 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Caching;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Shell;
 
-namespace BatchImageProcessor.Model
+namespace BatchImageProcessor.Types
 {
 	public class WeakThumbnail
 	{

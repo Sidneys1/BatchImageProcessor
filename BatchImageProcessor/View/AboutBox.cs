@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 
-namespace BatchImageProcessor
+namespace BatchImageProcessor.View
 {
     /// <summary>
     ///     Interaction logic for AboutBox.xaml
