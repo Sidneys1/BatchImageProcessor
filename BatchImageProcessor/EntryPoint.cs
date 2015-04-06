@@ -41,7 +41,10 @@ namespace BatchImageProcessor
 
 					#region Resize Flags
 
-					{ "resize=", "A {resize} transform.\n0=None,\n1=Smaller Than,\n2=Larger Than,\n3=Exact", (int o) => x.ResizeOptions.ResizeMode = (ResizeMode) o },
+					{ "resize=", "A {resize} transform.\n(None|Smaller|Larger|Exact)", o => {
+						ResizeMode r;
+						if (Enum.TryParse(o, true, out r)) x.ResizeOptions.ResizeMode = r;
+					}},
 					{ "rwidth=", "Resize {width}, in pixels.", (int o) => x.ResizeOptions.ResizeWidth = o},
 					{ "rheight=", "Resize {height}, in pixels.", (int o) => x.ResizeOptions.ResizeHeight = o},
 					{ "a|noaspect", "Disables automatic aspect\nratio matching when resizing.", o => x.ResizeOptions.UseAspectRatio = o == null},
@@ -60,12 +63,12 @@ namespace BatchImageProcessor
 					#region Watermark Flags
 
 					{ "w|watermark", "Enables watermarking.", o => x.EnableWatermark = o != null},
-					{ "wtype=", "Watermark {type}.\n[text|image]", o => {
+					{ "wtype=", "Watermark {type}.\n(text|image)", o => {
 						WatermarkType wt;
 						if (Enum.TryParse(o, true, out wt)) x.WatermarkOptions.WatermarkType = wt;
 					}},
 					{ "wtext=", "Watermark {text}, in quotes.", o => x.WatermarkOptions.WatermarkText = o},
-					{ "wfile=", "Watermark image file{path}, in quotes.", o => x.WatermarkOptions.WatermarkImagePath = o},
+					{ "wfile=", "Watermark image file{path}.", o => x.WatermarkOptions.WatermarkImagePath = o},
 					{ "wfont=", "Watermark {font} name.", o => fontname = o},
 					{ "wsize=", "Watermark font {size}, in pts.", (float o) => fontsize = o},
 					{ "wopac=", "Watermark {opacity}.", (double o) => x.WatermarkOptions.WatermarkOpacity = o},
@@ -87,11 +90,16 @@ namespace BatchImageProcessor
 					#region Output Flags
 
 					{ "output=", "Output directory {path}, in quotes.\nNot specifying this outputs\nto current working directory.", o => x.OutputOptions.OutputPath = o },
-					{ "format=", "Output format, defaults to Jpg.\nOptions: Jpg, Png, Bmp, Gif, Tiff", o => {
+					{ "naming=", "Output naming {method}.\n(Original|Numbered|Custom)", o => {
+						NameType t;
+						if (Enum.TryParse(o, true, out t)) x.OutputOptions.NameOption = t;
+					}},
+					{ "customname=", "Naming Template, in quotes.\nUse these identifiers:\n{{o}} = Original Filename\n{{w}} = Output Width\n{{h}} = Output Height\nE.g. \"{{o}} - {{w}}x{{h}}\" might result in\n\"DSCF001 - 800x600.jpg\"", o => x.OutputOptions.OutputTemplate = o },
+					{ "format=", "Output format, defaults to Jpg.\n(Jpg|Png|Bmp|Gif|Tiff)", o => {
 						Format f;
 						if (Enum.TryParse(o, true, out f)) x.OutputOptions.OutputFormat = f;
 					}},
-					{ "jquality=", "Jpeg quality {value}.\nDefaults to 0.95.\nE.g. 0.8=80%", (double o) => x.OutputOptions.JpegQuality = o},
+					{ "jquality=", "Jpeg quality {value}.\nDefaults to 0.95.\nE.g. 0.8 = 80%", (double o) => x.OutputOptions.JpegQuality = o},
 
 					#endregion
 

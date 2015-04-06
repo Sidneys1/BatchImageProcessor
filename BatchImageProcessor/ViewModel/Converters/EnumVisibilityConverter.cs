@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
-namespace BatchImageProcessor.ViewModel
+namespace BatchImageProcessor.ViewModel.Converters
 {
     public class EnumVisibilityConverter : IValueConverter
     {

@@ -1,7 +1,33 @@
 ﻿<Application x:Class="BatchImageProcessor.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:controls="clr-namespace:BatchImageProcessor.Controls">
 	<Application.Resources>
+		<system:String x:Key="AppTitle">Batch Image Processor</system:String>
+		<Style TargetType="{x:Type ListView}" BasedOn="{StaticResource {x:Type ListBox}}">
+			<Setter Property="BorderBrush" Value="Black" />
+			<Setter Property="BorderThickness" Value="0.5" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border x:Name="bd" BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}"
+						        Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}">
+							<ScrollViewer Margin="{TemplateBinding Padding}">
+								<controls:VirtualizingWrapPanel IsItemsHost="True"
+								                                Width="{Binding ActualWidth, FallbackValue=600, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"
+								                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+								                                ScrollViewer.VerticalScrollBarVisibility="Auto" />
+							</ScrollViewer>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
 
+		<Style TargetType="{x:Type Label}">
+			<Setter Property="FontSize" Value="14" />
+		</Style>
 	</Application.Resources>
 </Application>

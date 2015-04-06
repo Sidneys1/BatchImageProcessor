@@ -18,6 +18,8 @@ using Control = System.Windows.Forms.Control;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
+using static System.Environment;
+
 
 namespace BatchImageProcessor.View
 {
@@ -26,8 +28,10 @@ namespace BatchImageProcessor.View
 	/// </summary>
 	public partial class MainWindow : IWin32Window, IDisposable
 	{
-		private readonly bool _noShaders;
 		private readonly bool _noAero;
+		private readonly bool _noShaders;
+		private HwndSource _hsource;
+		private IntPtr _hwnd;
 
 		public MainWindow(bool noshaders = false, bool noaero = false)
 		{
@@ -35,7 +39,7 @@ namespace BatchImageProcessor.View
 			_noAero = noaero;
 
 			VModel = new ViewModel.ViewModel();
-			VModel.Folders.Add(new FolderWrapper(removable: false) { Name = Properties.Resources.OutputFolder });
+			VModel.Folders.Add(new FolderWrapper(removable: false) {Name = Properties.Resources.OutputFolder});
 
 			InitializeComponent();
 
@@ -50,9 +54,6 @@ namespace BatchImageProcessor.View
 #endif
 		}
 
-		private IntPtr _hwnd;
-		private HwndSource _hsource;
-
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			if (!_noShaders) return;
@@ -60,6 +61,17 @@ namespace BatchImageProcessor.View
 			Resources["BlurEffect"] = null;
 		}
 
+		private void StartBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (!VModel.Ready) return;
+
+			VModel.Begin();
+		}
+
+		private void StopBtn_Click(object sender, RoutedEventArgs e)
+		{
+			VModel.Cancel();
+		}
 
 		#region Aero
 
@@ -89,7 +101,7 @@ namespace BatchImageProcessor.View
 		private void AdjustWindowFrame()
 		{
 			if (DwmApiInterop.IsCompositionEnabled())
-				ExtendFrameIntoClientArea(0, 0, (int)(RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
+				ExtendFrameIntoClientArea(0, 0, (int) (RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
 			else
 				FallbackPaint();
 		}
@@ -118,7 +130,7 @@ namespace BatchImageProcessor.View
 
 		private void FallbackPaint()
 		{
-			Background = ContentRectangle.Fill;	// Brushes.White;
+			Background = ContentRectangle.Fill; // Brushes.White;
 		}
 
 		private bool IsOnExtendedFrame(int lParam)
@@ -137,8 +149,8 @@ namespace BatchImageProcessor.View
 				// Ignore clicks if desktop composition isn't enabled
 				case DwmApiInterop.WM_NCHITTEST:
 					if (DwmApiInterop.IsCompositionEnabled()
-						&& DwmApiInterop.IsOnClientArea(hwnd, msg, wParam, lParam)
-						&& IsOnExtendedFrame(lParam.ToInt32()))
+					    && DwmApiInterop.IsOnClientArea(hwnd, msg, wParam, lParam)
+					    && IsOnExtendedFrame(lParam.ToInt32()))
 					{
 						handled = true;
 						return new IntPtr(DwmApiInterop.HTCAPTION);
@@ -176,22 +188,21 @@ namespace BatchImageProcessor.View
 			CheckPathExists = true,
 			Filter = Properties.Resources.MainWindow__fileBrowser_Filter,
 			Multiselect = true,
-			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
-
+			InitialDirectory = GetFolderPath(SpecialFolder.MyPictures)
 		};
 
 		private readonly FolderBrowserDialog _folderBrowser = new FolderBrowserDialog
 		{
 			Description = Properties.Resources.MainWindow_FolderBrowser_Description,
-			RootFolder = Environment.SpecialFolder.MyComputer,
+			RootFolder = SpecialFolder.MyComputer,
 			ShowNewFolderButton = false
 		};
 
 		private readonly FolderBrowserDialog _outputBrowser = new FolderBrowserDialog
 		{
 			Description = Properties.Resources.MainWindow_OutputBrowser_Description,
-			RootFolder = Environment.SpecialFolder.MyComputer,
-			SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
+			RootFolder = SpecialFolder.MyComputer,
+			SelectedPath = GetFolderPath(SpecialFolder.MyPictures),
 			ShowNewFolderButton = true
 		};
 
@@ -202,7 +213,7 @@ namespace BatchImageProcessor.View
 			CheckPathExists = true,
 			Filter = Properties.Resources.MainWindow__watermarkFileBrowser_Filter,
 			Multiselect = false,
-			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
+			InitialDirectory = GetFolderPath(SpecialFolder.MyPictures)
 		};
 
 		private readonly FontDialog _watermarkFontDlg = new FontDialog
@@ -257,7 +268,6 @@ namespace BatchImageProcessor.View
 			{
 				ThumbnailView.SelectedItems.Add(item);
 			}
-
 		}
 
 		private void CheckInvBtn_Click(object sender, RoutedEventArgs e)
@@ -409,7 +419,7 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper)VModel.Folders[0];
+				parent = folder ?? (FolderWrapper) VModel.Folders[0];
 			}
 
 			if (parent != null && parent.ContainsFile(f.Name))
@@ -423,7 +433,7 @@ namespace BatchImageProcessor.View
 				f.Name = string.Format(s, i);
 			}
 
-			parent?.Files.Insert(0,f);
+			parent?.Files.Insert(0, f);
 		}
 
 		private void RemoveFolderMenuItem_Click(object sender, RoutedEventArgs e)
@@ -438,7 +448,7 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper)VModel.Folders[0];
+				parent = folder ?? (FolderWrapper) VModel.Folders[0];
 			}
 
 			if (parent != null && parent.Removable)
@@ -463,7 +473,7 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper)VModel.Folders[0];
+				parent = folder ?? (FolderWrapper) VModel.Folders[0];
 			}
 
 			f.Name = f.Name.Trim();
@@ -479,7 +489,7 @@ namespace BatchImageProcessor.View
 				f.Name = string.Format(s, i);
 			}
 
-			parent?.Files.Insert(0,f);
+			parent?.Files.Insert(0, f);
 		}
 
 		private void importImageBtn_Click(object sender, RoutedEventArgs e)
@@ -495,7 +505,7 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper)VModel.Folders[0];
+				parent = folder ?? (FolderWrapper) VModel.Folders[0];
 			}
 
 			foreach (var str in _fileBrowser.FileNames)
@@ -511,11 +521,16 @@ namespace BatchImageProcessor.View
 
 			if (target == null) return;
 			var oldName = target.Name;
-			var fdlg = new RenameFileDialog { DataContext = target, Owner = this, Title = Properties.Resources.RenameFolderDialogTitle };
+			var fdlg = new RenameFileDialog
+			{
+				DataContext = target,
+				Owner = this,
+				Title = Properties.Resources.RenameFolderDialogTitle
+			};
 
 			if (fdlg.ShowDialog().GetValueOrDefault(false))
 			{
-				var parent = (FolderWrapper)VModel.Folders[0];
+				var parent = (FolderWrapper) VModel.Folders[0];
 
 				if (parent.ContainsFile(target.Name))
 				{
@@ -546,7 +561,7 @@ namespace BatchImageProcessor.View
 
 		private void aboutBtn_Click(object sender, RoutedEventArgs e)
 		{
-			var b = new AboutBox { Owner = this };
+			var b = new AboutBox {Owner = this};
 			b.ShowDialog();
 		}
 
@@ -576,7 +591,6 @@ namespace BatchImageProcessor.View
 				ColorSettings.Visibility = Visibility.Visible;
 			else if (Equals(OptionsBox.SelectedItem, OutputBox))
 				OutputSettings.Visibility = Visibility.Visible;
-
 		}
 
 		private void CropBtn_Click(object sender, RoutedEventArgs e)
@@ -685,34 +699,21 @@ namespace BatchImageProcessor.View
 			Dispose(true);
 		}
 
-
 		#endregion
-
-		private void StartBtn_Click(object sender, RoutedEventArgs e)
-		{
-			if (!VModel.Ready) return;
-
-			VModel.Begin();
-		}
-
-		private void StopBtn_Click(object sender, RoutedEventArgs e)
-		{
-			VModel.Cancel();
-		}
 
 		private void RemoveItemBtn_Click(object sender, RoutedEventArgs e)
 		{
 			// ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
 			if (TreeView.SelectedValue is FileWrapper)
-				VModel.RemoveFile((FileWrapper)TreeView.SelectedValue);
+				VModel.RemoveFile((FileWrapper) TreeView.SelectedValue);
 			else
-				VModel.RemoveFolder((FolderWrapper)TreeView.SelectedValue);
+				VModel.RemoveFolder((FolderWrapper) TreeView.SelectedValue);
 		}
 
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			var m = (ContextMenu) Resources["ImageCtxMenu"];
-			VModel.RemoveFile((FileWrapper)m.DataContext);
+			VModel.RemoveFile((FileWrapper) m.DataContext);
 		}
 	}
 }

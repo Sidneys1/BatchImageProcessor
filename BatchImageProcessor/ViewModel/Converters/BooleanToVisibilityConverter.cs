@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace BatchImageProcessor.ViewModel
+namespace BatchImageProcessor.ViewModel.Converters
 {
     public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
     {

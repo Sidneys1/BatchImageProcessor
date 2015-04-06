@@ -84,6 +84,9 @@
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
+  <PropertyGroup>
+  	<UICulture>en-US</UICulture>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -156,13 +159,13 @@
     <Compile Include="Types\WatermarkOptions.cs" />
     <Compile Include="Types\WatermarkType.cs" />
     <Compile Include="Types\WeakThumbnail.cs" />
-    <Compile Include="ViewModel\BooleanConverter.cs" />
-    <Compile Include="ViewModel\BooleanToEffectConverter.cs" />
-    <Compile Include="ViewModel\BooleanToOpacityConverter.cs" />
-    <Compile Include="ViewModel\BooleanToVisibilityConverter.cs" />
-    <Compile Include="ViewModel\EnumBooleanConverter.cs" />
-    <Compile Include="ViewModel\EnumStringConverter.cs" />
-    <Compile Include="ViewModel\EnumVisibilityConverter.cs" />
+    <Compile Include="ViewModel\Converters\BooleanConverter.cs" />
+    <Compile Include="ViewModel\Converters\BooleanToEffectConverter.cs" />
+    <Compile Include="ViewModel\Converters\BooleanToOpacityConverter.cs" />
+    <Compile Include="ViewModel\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="ViewModel\Converters\EnumBooleanConverter.cs" />
+    <Compile Include="ViewModel\Converters\EnumStringConverter.cs" />
+    <Compile Include="ViewModel\Converters\EnumVisibilityConverter.cs" />
     <Compile Include="ViewModel\FileWrapper.cs" />
     <Compile Include="ViewModel\FolderWrapper.cs" />
     <Compile Include="ViewModel\FolderCollectionView.cs" />

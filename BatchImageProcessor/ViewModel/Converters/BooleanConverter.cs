@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace BatchImageProcessor.ViewModel
+namespace BatchImageProcessor.ViewModel.Converters
 {
     public class BooleanConverter<T> : IValueConverter
     {

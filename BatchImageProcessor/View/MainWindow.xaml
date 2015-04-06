@@ -1,37 +1,31 @@
 ﻿<Window x:Name="Window" x:Class="BatchImageProcessor.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:controls="clr-namespace:BatchImageProcessor.Controls"
         xmlns:viewmodel="clr-namespace:BatchImageProcessor.ViewModel"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:properties="clr-namespace:BatchImageProcessor.Properties"
-        Title="Batch Image Processor" Height="720" Width="1280" MinWidth="1024" MinHeight="650"
+        xmlns:converters="clr-namespace:BatchImageProcessor.ViewModel.Converters"
+        Title="{DynamicResource AppTitle}" Height="720" Width="1280" MinWidth="800" MinHeight="600"
         UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="../Images/ImageRotator.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
         DataContext="{Binding VModel, Mode=OneWay, RelativeSource={RelativeSource Self}}"
         SourceInitialized="MainWindow_OnSourceInitialized">
 	<Window.Resources>
-		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-		<viewmodel:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverterInverted" True="Collapsed" False="Visible" />
 		<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-		<viewmodel:FileCollectionView x:Key="FileFilterCollection"
-		                              Source="{Binding SelectedItem.Files, ElementName=TreeView}" />
-
-		<!-- #region Effects -->
+		<viewmodel:FileCollectionView x:Key="FileFilterCollection" Source="{Binding SelectedItem.Files, ElementName=TreeView}" />
 
 		<BlurEffect x:Key="BlurEffect" Radius="8" />
 		<DropShadowEffect x:Key="DropShadowFx" Opacity="0.6" BlurRadius="6" ShadowDepth="0" RenderingBias="Quality" />
 
-		<!-- #region Converters -->
-
+		<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverterInverted" True="Collapsed" False="Visible" />
+		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 		<viewmodel:TypeConverter x:Key="TypeConv" />
-		<viewmodel:EnumBooleanConverter x:Key="EnumConv" />
-		<viewmodel:EnumVisibilityConverter x:Key="EnumVisConv" />
-		<viewmodel:EnumStringConverter x:Key="EnumStrConv" />
-		<viewmodel:BooleanToVisibilityConverter x:Key="InvBoolVisConv" True="Visible" False="Collapsed" />
-		<viewmodel:BooleanToOpacityConverter x:Key="BoolOpacConv" True="1" False="0.5" />
-		<viewmodel:BooleanToEffectConverter x:Key="BoolEffConv" True="{StaticResource DropShadowFx}" False="{x:Null}" />
-
+		<converters:EnumBooleanConverter x:Key="EnumConv" />
+		<converters:EnumVisibilityConverter x:Key="EnumVisConv" />
+		<converters:EnumStringConverter x:Key="EnumStrConv" />
+		<converters:BooleanToVisibilityConverter x:Key="InvBoolVisConv" True="Visible" False="Collapsed" />
+		<converters:BooleanToOpacityConverter x:Key="BoolOpacConv" True="1" False="0.5" />
+		<converters:BooleanToEffectConverter x:Key="BoolEffConv" True="{StaticResource DropShadowFx}" False="{x:Null}" />
 
 		<!-- Simple Button Control Template -->
 		<ControlTemplate x:Key="ButtonTemplate" TargetType="{x:Type Button}">
@@ -54,33 +48,6 @@
 					<Setter Property="BorderBrush" Value="#DEDEDE" />
 				</MultiTrigger>
 			</Style.Triggers>
-		</Style>
-
-		<Style TargetType="{x:Type ListView}" BasedOn="{StaticResource {x:Type ListBox}}">
-			<Setter Property="BorderBrush" Value="Black" />
-			<Setter Property="BorderThickness" Value="0.5" />
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate>
-						<Border x:Name="bd" BorderBrush="{TemplateBinding BorderBrush}"
-						        BorderThickness="{TemplateBinding BorderThickness}"
-						        Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}">
-							<ScrollViewer Margin="{TemplateBinding Padding}">
-								<controls:VirtualizingWrapPanel IsItemsHost="True"
-								                                Width="{Binding ActualWidth, FallbackValue=600, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"
-								                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-								                                ScrollViewer.VerticalScrollBarVisibility="Auto" />
-							</ScrollViewer>
-						</Border>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
-		<!-- Label Header Style (Global Override) -->
-		<Style TargetType="{x:Type Label}">
-			<Setter Property="FontSize" Value="14" />
-			<!--<Setter Property="Effect" Value="{DynamicResource DropShadowFx}" />-->
 		</Style>
 
 		<!-- Simple Button Style (Global Override) -->
@@ -114,11 +81,6 @@
 				</DataTrigger>
 			</Style.Triggers>
 		</Style>
-
-		<!--<Style TargetType="{x:Type ListViewItem}">
-			<Setter Property="HorizontalContentAlignment" Value="Left" />
-			<Setter Property="VerticalContentAlignment" Value="Center" />
-		</Style>-->
 
 		<!-- Thumbnail Fall-back Image -->
 		<BitmapImage x:Key="LoadingImage" CacheOption="OnLoad" UriSource="../Images/refresh.png" />
@@ -225,7 +187,7 @@
 
 	<Grid x:Name="RootGrid">
 		<Grid.RowDefinitions>
-			<RowDefinition Name="Toolbars" Height="26" />
+			<RowDefinition Name="Toolbars" Height="Auto" />
 			<RowDefinition Name="ContentRow" Height="*" />
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -237,38 +199,50 @@
 		<Rectangle x:Name="ContentRectangle" Grid.Row="1" Grid.ColumnSpan="3"
 		           Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
 
-		<Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center">
-			<Rectangle x:Name="BluRectangle2" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+		<!--Left Toolbar-->
+		<Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,0,5">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+			<TextBlock Text="Import Images" Grid.ColumnSpan="6" HorizontalAlignment="Center"/>
+			<Rectangle x:Name="BluRectangle2" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Grid.ColumnSpan="6"
+			           Grid.Column="0"
 			           StrokeThickness="0" RadiusX="6" RadiusY="6" Height="16" Opacity="0.3"
-			           Effect="{DynamicResource BlurEffect}" />
-			<StackPanel Orientation="Horizontal">
-				<Button x:Name="ImportImageBtn" ToolTip="{x:Static properties:Resources.ImportImageBtn_ToolTip}" Cursor="Hand"
-				        Click="importImageBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/image-import.png" Stretch="None" />
-				</Button>
-				<Border Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
-				        BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
-					<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
-				</Border>
-				<Button x:Name="AddFolderBtn" ToolTip="{x:Static properties:Resources.AddFolderBtn_ToolTip}" Cursor="Hand"
-				        Click="addFolderBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/folder--plus.png" Stretch="None" />
-				</Button>
-				<Button x:Name="ImportFolderBtn" ToolTip="{x:Static properties:Resources.ImportFolderBtn_ToolTip}" Cursor="Hand"
-				        Click="importFolderBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/folder-import.png" Stretch="None" />
-				</Button>
-				<Border Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
-				        BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
-					<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
-				</Border>
-				<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-				<Button x:Name="RemoveItemBtn" ToolTip="{x:Static properties:Resources.RemoveItemBtn_ToolTip}" Cursor="Hand"
-				        IsEnabled="{Binding SelectedItem.Removable, ElementName=TreeView}" Click="RemoveItemBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/cross.png" Stretch="None" />
-				</Button>
-			</StackPanel>
-
+			           Effect="{DynamicResource BlurEffect}" Grid.Row="1" />
+			<Button Grid.Column="0" x:Name="ImportImageBtn" ToolTip="{x:Static properties:Resources.ImportImageBtn_ToolTip}" Cursor="Hand"
+				    Click="importImageBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/image-import.png" Stretch="None" />
+			</Button>
+			<Border Grid.Column="1" Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
+				    BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Grid.Row="1">
+				<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+			</Border>
+			<Button Grid.Column="2" x:Name="AddFolderBtn" ToolTip="{x:Static properties:Resources.AddFolderBtn_ToolTip}" Cursor="Hand"
+				    Click="addFolderBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/folder--plus.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="3" x:Name="ImportFolderBtn" ToolTip="{x:Static properties:Resources.ImportFolderBtn_ToolTip}" Cursor="Hand"
+				    Click="importFolderBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/folder-import.png" Stretch="None" />
+			</Button>
+			<Border Grid.Column="4" Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
+				    BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Grid.Row="1">
+				<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+			</Border>
+			<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+			<Button Grid.Column="5" x:Name="RemoveItemBtn" ToolTip="{x:Static properties:Resources.RemoveItemBtn_ToolTip}" Cursor="Hand"
+				    IsEnabled="{Binding SelectedItem.Removable, ElementName=TreeView}" Click="RemoveItemBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/cross.png" Stretch="None" />
+			</Button>
 		</Grid>
 
 		<!-- Treeview File Explorer -->
@@ -341,91 +315,112 @@
 			</TreeView.Resources>
 		</TreeView>
 
-		<Grid Grid.Row="0" Grid.Column="1" Margin="15,0" HorizontalAlignment="Center">
-			<Rectangle x:Name="BluRectangle1" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-			           StrokeThickness="0" RadiusX="6" RadiusY="6" Height="16" Opacity="0.3"
-			           Effect="{DynamicResource BlurEffect}" />
+		<!-- Middle Toolbar -->
+		<Grid Grid.Row="0" Grid.Column="1" Margin="15,0,15,5" HorizontalAlignment="Center">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
 
-			<StackPanel Orientation="Horizontal">
-				<Button x:Name="CheckAllBtn" ToolTip="{x:Static properties:Resources.CheckAllBtn_ToolTip}" Cursor="Hand"
-				        Click="checkAllBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/ui-check-box.png" Stretch="None" />
-				</Button>
-				<Button x:Name="CheckInvBtn" ToolTip="{x:Static properties:Resources.CheckInvBtn_ToolTip}" Cursor="Hand"
-				        Click="CheckInvBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/ui-check-boxes.png" Stretch="None" />
-				</Button>
-				<Button x:Name="UncheckBtn" ToolTip="{x:Static properties:Resources.UncheckBtn_ToolTip}" Cursor="Hand"
-				        Click="uncheckBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/ui-check-box-uncheck.png" Stretch="None" />
-				</Button>
+			<TextBlock Grid.ColumnSpan="3" HorizontalAlignment="Center" Text="Enabling"/>
+			<TextBlock Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="7" HorizontalAlignment="Center" Text="Rotation"/>
+			<TextBlock Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="3" HorizontalAlignment="Center" Text="Selection"/>
 
-				<Border Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
-				        BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
-					<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
-				</Border>
+			<Rectangle x:Name="BluRectangle1" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Grid.ColumnSpan="15"
+			           Grid.Column="0" Grid.Row="1" StrokeThickness="0" RadiusX="6" RadiusY="6" Height="16" Opacity="0.3" Effect="{DynamicResource BlurEffect}" />
 
-				<Button x:Name="LandRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}"
-				        Cursor="Hand" Click="landRotBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/image.png" Stretch="None" />
-				</Button>
-				<Button x:Name="CcRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}"
-				        Cursor="Hand" Click="ccRotBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/arrow-circle-ccwise.png" Stretch="None" />
-				</Button>
-				<Button x:Name="NoRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}"
-				        Cursor="Hand" Click="noRotBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/arrow-noturn.png" Stretch="None" />
-				</Button>
-				<Button x:Name="DefRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_DefaultRotationMenuItem_Header}"
-				        Cursor="Hand" Click="defRotBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/image-rotate--asterisk.png" Stretch="None" />
-				</Button>
-				<Button x:Name="UpRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}"
-				        Cursor="Hand" Click="upRotBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/arrow-circle-180.png" Stretch="None" />
-				</Button>
-				<Button x:Name="CRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}"
-				        Cursor="Hand" Click="cRotBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/arrow-circle-cwise.png" Stretch="None" />
-				</Button>
-				<Button x:Name="PortRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}"
-				        Cursor="Hand" Click="portRotBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/image-vertical.png" Stretch="None" />
-				</Button>
-				<Border Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
-				        BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
-					<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
-				</Border>
+			<Button Grid.Column="0" x:Name="CheckAllBtn" ToolTip="{x:Static properties:Resources.CheckAllBtn_ToolTip}" Cursor="Hand"
+				    Click="checkAllBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/ui-check-box.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="1" x:Name="CheckInvBtn" ToolTip="{x:Static properties:Resources.CheckInvBtn_ToolTip}" Cursor="Hand"
+				    Click="CheckInvBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/ui-check-boxes.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="2" x:Name="UncheckBtn" ToolTip="{x:Static properties:Resources.UncheckBtn_ToolTip}" Cursor="Hand"
+				    Click="uncheckBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/ui-check-box-uncheck.png" Stretch="None" />
+			</Button>
 
-				<Button x:Name="SelectAllBtn" ToolTip="{x:Static properties:Resources.SelectAllBtn_ToolTip}" Cursor="Hand"
-				        Click="selectAllBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/selection-select.png" Stretch="None" />
-				</Button>
-				<Button x:Name="SelectInvBtn" ToolTip="{x:Static properties:Resources.SelectInvBtn_ToolTip}" Cursor="Hand"
-				        Click="SelectInvBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/selection-exclude.png" Stretch="None" />
-				</Button>
-				<Button x:Name="DeselectBtn" ToolTip="{x:Static properties:Resources.DeselectBtn_ToolTip}" Cursor="Hand"
-				        Click="deselectBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/selection.png" Stretch="None" />
-				</Button>
-			</StackPanel>
+			<Border Grid.Column="3" Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
+				    BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Grid.Row="1">
+				<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+			</Border>
+
+			<Button Grid.Column="4" x:Name="LandRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}"
+				    Cursor="Hand" Click="landRotBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/image.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="5" x:Name="CcRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}"
+				    Cursor="Hand" Click="ccRotBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/arrow-circle-ccwise.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="6" x:Name="NoRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}"
+				    Cursor="Hand" Click="noRotBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/arrow-noturn.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="7" x:Name="DefRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_DefaultRotationMenuItem_Header}"
+				    Cursor="Hand" Click="defRotBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/image-rotate--asterisk.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="8" x:Name="UpRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}"
+				    Cursor="Hand" Click="upRotBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/arrow-circle-180.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="9" x:Name="CRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}"
+				    Cursor="Hand" Click="cRotBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/arrow-circle-cwise.png" Stretch="None" />
+			</Button>
+			<Button x:Name="PortRotBtn" ToolTip="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}"
+				    Cursor="Hand" Click="portRotBtn_Click" Grid.Row="1" Grid.Column="10">
+				<Image Width="18" Height="18" Source="../Images/image-vertical.png" Stretch="None" />
+			</Button>
+			<Border Grid.Column="11" Margin="3,7" Opacity="0.7" BorderThickness="1,1,0,0"
+				    BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Grid.Row="1">
+				<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+			</Border>
+
+			<Button Grid.Column="12" x:Name="SelectAllBtn" ToolTip="{x:Static properties:Resources.SelectAllBtn_ToolTip}" Cursor="Hand"
+				    Click="selectAllBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/selection-select.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="13" x:Name="SelectInvBtn" ToolTip="{x:Static properties:Resources.SelectInvBtn_ToolTip}" Cursor="Hand"
+				    Click="SelectInvBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/selection-exclude.png" Stretch="None" />
+			</Button>
+			<Button Grid.Column="14" x:Name="DeselectBtn" ToolTip="{x:Static properties:Resources.DeselectBtn_ToolTip}" Cursor="Hand"
+				        Click="deselectBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/selection.png" Stretch="None" />
+			</Button>
 
 		</Grid>
-
-		<!-- Middle Toolbar -->
 		<Border Grid.Row="0" Grid.Column="1" Margin="0,5" Opacity="0.7" BorderThickness="1,1,0,0"
 		        BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" HorizontalAlignment="Left">
 			<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
 			        Opacity="0.7" />
 		</Border>
+
 		<GridSplitter Grid.Row="0" Grid.Column="1" Width="3" ResizeDirection="Columns" HorizontalAlignment="Left"
 		              IsTabStop="False" Background="Transparent" />
 
-		<!-- Grid Splitter -->
-
-		<!-- Item View -->
+		<!-- Photo View -->
 		<ListView Grid.Row="1" Grid.Column="1" x:Name="ThumbnailView" Margin="3,0,0,0"
 		          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 		          ItemsSource="{Binding Source={StaticResource FileFilterCollection}}">
@@ -500,28 +495,36 @@
 			</ListView.Resources>
 		</ListView>
 
+		<!--Right Toolbar-->
 		<Border Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" Margin="0,5" Opacity="0.7" BorderThickness="1,1,0,0"
 		        BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
 			<Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
 			        Opacity="0.7" />
 		</Border>
-
-		<Grid Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center">
+		<Grid Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Margin="0,0,0,5">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
 			<Rectangle x:Name="BluRectangle3" Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
 			           StrokeThickness="0" RadiusX="6" RadiusY="6" Height="16" Opacity="0.3"
-			           Effect="{DynamicResource BlurEffect}" />
-			<StackPanel Orientation="Horizontal">
-				<Button x:Name="GcBtn" ToolTip="{x:Static properties:Resources.GcBtn_ToolTip}" Cursor="Hand" Click="gcBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/bin.png" Stretch="None" StretchDirection="DownOnly" />
-				</Button>
-				<Button x:Name="AboutBtn" ToolTip="{x:Static properties:Resources.AboutBtn_ToolTip}" Cursor="Hand"
-				        Click="aboutBtn_Click">
-					<Image Width="18" Height="18" Source="../Images/information.png" Stretch="None" StretchDirection="DownOnly" />
-				</Button>
-			</StackPanel>
+			           Effect="{DynamicResource BlurEffect}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
+			<TextBlock Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center" Text="About"/>
+			<Button Grid.Column="0" x:Name="GcBtn" ToolTip="{x:Static properties:Resources.GcBtn_ToolTip}" Cursor="Hand" Click="gcBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/bin.png" Stretch="None" StretchDirection="DownOnly" />
+			</Button>
+			<Button Grid.Column="1" x:Name="AboutBtn" ToolTip="{x:Static properties:Resources.AboutBtn_ToolTip}" Cursor="Hand"
+				    Click="aboutBtn_Click" Grid.Row="1">
+				<Image Width="18" Height="18" Source="../Images/information.png" Stretch="None" StretchDirection="DownOnly" />
+			</Button>
 
 		</Grid>
 
+		<!-- Right Column -->
 		<Grid Grid.Column="2" Grid.Row="1" Margin="3,0,0,0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
@@ -612,14 +615,14 @@
 						</StackPanel>
 					</StackPanel>
 				</ListBoxItem>
-				
+
 				<ListBoxItem  x:Name="ColorBox">
 					<StackPanel Orientation="Horizontal" Margin="20,0">
 						<Image Source="../Images/color-adjustment.png" />
 						<Label Content="{x:Static properties:Resources.ColorOptionLabel_Text}" />
 					</StackPanel>
 				</ListBoxItem>
-				
+
 				<ListBoxItem x:Name="OutputBox">
 					<StackPanel Orientation="Horizontal" Margin="20,0">
 						<Image Source="../Images/image-export.png" />

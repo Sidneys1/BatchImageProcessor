@@ -1,6 +1,6 @@
-﻿using System.Windows.Media.Effects;
+using System.Windows.Media.Effects;
 
-namespace BatchImageProcessor.ViewModel
+namespace BatchImageProcessor.ViewModel.Converters
 {
     public sealed class BooleanToEffectConverter : BooleanConverter<Effect>
     {
