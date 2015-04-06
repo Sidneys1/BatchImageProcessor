@@ -650,42 +650,42 @@
 						<StackPanel Grid.Row="1" IsEnabled="{Binding EnableRotation}">
 							<TextBlock Text="{x:Static properties:Resources.RotateAllImagesLabel_Text}" FontWeight="Bold" />
 							<RadioButton Margin="0,5,0,2"
-							             IsChecked="{Binding DefaultRotation, ConverterParameter=None, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding Rotation, ConverterParameter=None, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/arrow-noturn.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultRotation, ConverterParameter=Clockwise, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding Rotation, ConverterParameter=Clockwise, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/arrow-circle-cwise.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultRotation, ConverterParameter=UpsideDown, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding Rotation, ConverterParameter=UpsideDown, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/arrow-circle-180.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultRotation, ConverterParameter=CounterClockwise, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding Rotation, ConverterParameter=CounterClockwise, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/arrow-circle-ccwise.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultRotation, ConverterParameter=Portrait, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding Rotation, ConverterParameter=Portrait, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/image-vertical.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultRotation, ConverterParameter=Landscape, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding Rotation, ConverterParameter=Landscape, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/image.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}" Margin="5,0" />
@@ -704,21 +704,21 @@
 						<StackPanel Grid.Row="1" IsEnabled="{Binding EnableResize}">
 							<TextBlock Text="{x:Static properties:Resources.ResizeModeLabel_Text}" FontWeight="Bold" />
 							<RadioButton Margin="0,5,0,2"
-							             IsChecked="{Binding DefaultResizeMode, ConverterParameter=Smaller, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding ResizeMode, ConverterParameter=Smaller, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/image-resize-actual.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.ResizeMode_SmallerRadioBtn_Text}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultResizeMode, ConverterParameter=Larger, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding ResizeMode, ConverterParameter=Larger, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/image-resize.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.ResizeMode_LargerRadioBtn_Text}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultResizeMode, ConverterParameter=Exact, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding ResizeMode, ConverterParameter=Exact, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/image-resize-exact.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.ResizeMode_ExactRadioBtn_Text}" Margin="5,0" />
@@ -830,7 +830,7 @@
 								</Button>
 							</Grid>
 							<TextBlock
-								Text="{Binding DefaultCropAlignment, Converter={StaticResource EnumStrConv}, FallbackValue=No Binding}"
+								Text="{Binding CropAlignment, Converter={StaticResource EnumStrConv}, FallbackValue=No Binding}"
 								HorizontalAlignment="Center" />
 						</StackPanel>
 					</Grid>
@@ -844,14 +844,14 @@
 						<StackPanel Grid.Row="1" IsEnabled="{Binding EnableWatermark}">
 							<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TypeLabel_Text}" FontWeight="Bold" />
 							<RadioButton Margin="0,5,0,2"
-							             IsChecked="{Binding DefaultWatermarkType, ConverterParameter=Text, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding WatermarkType, ConverterParameter=Text, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/edit.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextOpt_Text}" Margin="5,0" />
 								</StackPanel>
 							</RadioButton>
 							<RadioButton Margin="0,2"
-							             IsChecked="{Binding DefaultWatermarkType, ConverterParameter=Image, Converter={StaticResource EnumConv}}">
+							             IsChecked="{Binding WatermarkType, ConverterParameter=Image, Converter={StaticResource EnumConv}}">
 								<StackPanel Orientation="Horizontal">
 									<Image Source="../Images/image.png" StretchDirection="DownOnly" />
 									<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageOpt_Text}" Margin="5,0" />
@@ -859,7 +859,7 @@
 							</RadioButton>
 
 							<StackPanel Margin="0,10,0,0"
-							            Visibility="{Binding DefaultWatermarkType, ConverterParameter=Text, Converter={StaticResource EnumVisConv}}">
+							            Visibility="{Binding WatermarkType, ConverterParameter=Text, Converter={StaticResource EnumVisConv}}">
 								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_TextOpts_Title}" FontWeight="Bold" />
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -889,7 +889,7 @@
 								</Grid>
 							</StackPanel>
 							<StackPanel Margin="0,10,0,0"
-							            Visibility="{Binding DefaultWatermarkType, ConverterParameter=Image, Converter={StaticResource EnumVisConv}}">
+							            Visibility="{Binding WatermarkType, ConverterParameter=Image, Converter={StaticResource EnumVisConv}}">
 								<TextBlock Text="{x:Static properties:Resources.WatermarkSettings_ImageOpts_Title}" FontWeight="Bold" />
 								<Grid>
 									<Grid.ColumnDefinitions>

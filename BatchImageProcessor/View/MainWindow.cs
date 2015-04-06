@@ -586,25 +586,25 @@ namespace BatchImageProcessor.View
 			if (model == null) return;
 
 			if (Equals(sender, CropTopLeftBtn))
-				model.DefaultCropAlignment = Alignment.Top_Left;
+				model.CropAlignment = Alignment.Top_Left;
 			else if (Equals(sender, CropTopCenterBtn))
-				model.DefaultCropAlignment = Alignment.Top_Center;
+				model.CropAlignment = Alignment.Top_Center;
 			else if (Equals(sender, CropTopRightBtn))
-				model.DefaultCropAlignment = Alignment.Top_Right;
+				model.CropAlignment = Alignment.Top_Right;
 
 			else if (Equals(sender, CropMiddleLeftBtn))
-				model.DefaultCropAlignment = Alignment.Middle_Left;
+				model.CropAlignment = Alignment.Middle_Left;
 			else if (Equals(sender, CropMiddleCenterButton))
-				model.DefaultCropAlignment = Alignment.Middle_Center;
+				model.CropAlignment = Alignment.Middle_Center;
 			else if (Equals(sender, CropMiddleRightBtn))
-				model.DefaultCropAlignment = Alignment.Middle_Right;
+				model.CropAlignment = Alignment.Middle_Right;
 
 			else if (Equals(sender, CropBottomLeftBtn))
-				model.DefaultCropAlignment = Alignment.Bottom_Left;
+				model.CropAlignment = Alignment.Bottom_Left;
 			else if (Equals(sender, CropBottomCenterBtn))
-				model.DefaultCropAlignment = Alignment.Bottom_Center;
+				model.CropAlignment = Alignment.Bottom_Center;
 			else if (Equals(sender, CropBottomRightBtn))
-				model.DefaultCropAlignment = Alignment.Bottom_Right;
+				model.CropAlignment = Alignment.Bottom_Right;
 		}
 
 		private void watermarkFontBtn_Click(object sender, RoutedEventArgs e)

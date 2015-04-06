@@ -17,77 +17,97 @@ namespace BatchImageProcessor.Model
 	{
 		public int TotalImages;
 		public int DoneImages;
+
 		public event EventHandler UpdateDone;
+
 		public bool Cancel = false;
+
 		private readonly Mutex _namingMutex = new Mutex();
-		public string OutputPath;
-		public NameType NameOption = NameType.Original;
-		public Format OutputFormat = Format.Jpg;
-		public double JpegQuality = 0.95;
-		public bool OutputSet = false;
-		public string OutputTemplate;
-		public bool EnableCrop;
-		public bool EnableResize;
-		public bool EnableRotation;
-		public bool EnableWatermark;
-		public Rotation DefaultRotation = Rotation.None;
-		public int CropHeight = 600;
-		public int CropWidth = 800;
-		public Alignment DefaultCropAlignment = Alignment.Middle_Center;
-		public ResizeMode DefaultResizeMode = ResizeMode.Smaller;
-		public int ResizeHeight = 600;
-		public int ResizeWidth = 800;
-		public bool UseAspectRatio = true;
-		public WatermarkType DefaultWatermarkType = WatermarkType.Text;
-		public Alignment WatermarkAlignment = Alignment.Bottom_Right;
-		public Font WatermarkFont = new Font("Calibri", 12f);
-		public bool WatermarkGreyscale = true;
-		public string WatermarkImagePath;
-		public double WatermarkOpacity = 0.7;
-		public string WatermarkText;
-		public ColorType ColorType = ColorType.Saturation;
-		public double ColorBrightness = 1.0;
-		public double ColorContrast = 1.0;
-		public double ColorSaturation = 1.0;
-		public double ColorGamma = 1.0;
+
+		public bool OutputSet { get; set; } = false;
+
 		public ObservableCollection<IFolderableHost> Folders { get; } = new ObservableCollection<IFolderableHost>();
+
 		private readonly bool _console;
 
+		//public string OutputPath;
+		//public NameType NameOption = NameType.Original;
+		//public Format OutputFormat = Format.Jpg;
+		//public double JpegQuality = 0.95;
+		//public string OutputTemplate;
+
+		//public bool EnableCrop;
+		//public bool EnableResize;
+		//public bool EnableRotation;
+		//public bool EnableWatermark;
+
+		//public Rotation Rotation = Rotation.None;
+
+		//public int CropHeight = 600;
+		//public int CropWidth = 800;
+		//public Alignment CropAlignment = Alignment.Middle_Center;
+
+		//public ResizeMode ResizeMode = ResizeMode.Smaller;
+		//public int ResizeHeight = 600;
+		//public int ResizeWidth = 800;
+		//public bool UseAspectRatio = true;
+
+		//public WatermarkType WatermarkType = WatermarkType.Text;
+		//public Alignment WatermarkAlignment = Alignment.Bottom_Right;
+		//public Font WatermarkFont = new Font("Calibri", 12f);
+		//public bool WatermarkGreyscale = true;
+		//public string WatermarkImagePath;
+		//public double WatermarkOpacity = 0.7;
+		//public string WatermarkText;
+
+		//public ColorType ColorType = ColorType.Saturation;
+		//public double ColorBrightness = 1.0;
+		//public double ColorContrast = 1.0;
+		//public double ColorSaturation = 1.0;
+		//public double ColorGamma = 1.0;
+
+		public OptionSet Options { get; } = new OptionSet();
+		
 		public Model() { }
 
-		public Model(OptionStruct x)
+		public Model(OptionSet x, List<string> files)
 		{
 			var rootFolder = new Folder();
 			Folders.Add(rootFolder);
 
-			EnableCrop = x.Crop;
-			EnableWatermark = x.Watermark;
-			UseAspectRatio = x.SizeSmart;
-			WatermarkGreyscale = x.WatermarkGrey;
-			OutputPath = x.Output;
-			Enum.TryParse(x.Format, out OutputFormat);
-			Enum.TryParse(x.WatermarkType, out DefaultWatermarkType);
-			WatermarkText = WatermarkImagePath = x.WatermarkText;
-			WatermarkFont = new Font(x.WatermarkFont, x.WatermarkFontsize, GraphicsUnit.Point);
-			DefaultResizeMode = (ResizeMode)x.Size;
-			EnableResize = DefaultResizeMode != ResizeMode.None;
-			DefaultRotation = (Rotation)x.Rotation;
-			EnableRotation = DefaultRotation != Rotation.None;
-			ResizeWidth = x.SizeWidth;
-			ResizeHeight = x.SizeHeight;
-			CropWidth = x.CropWidth;
-			CropHeight = x.CropHeight;
-			DefaultCropAlignment = (Alignment)x.CropAlign;
-			WatermarkAlignment = (Alignment)x.WatermarkAlign;
-			ColorType = (ColorType)x.ColorSatMode;
-			WatermarkOpacity = x.WatermarkOpac;
-			ColorBrightness = x.ColorBright;
-			ColorContrast = x.ColorContrast;
-			ColorGamma = x.ColorGamma;
-			ColorSaturation = x.ColorSat;
-			JpegQuality = x.OutJpeg;
+			Options = x;
+
+			/* EnableCrop = x.EnableCrop;
+			 * EnableWatermark = x.EnableWatermark;
+			 * UseAspectRatio = x.UseAspectRatio;
+			 * WatermarkGreyscale = x.WatermarkGreyscale;
+			 * OutputPath = x.OutputPath;
+			 * OutputFormat = x.OutputFormat;
+			 * WatermarkType = x.WatermarkType;
+			 * WatermarkText = WatermarkImagePath = x.WatermarkText;
+			 * WatermarkFont = x.WatermarkFont;
+			 * ResizeMode = x.ResizeMode;
+			 * EnableResize = ResizeMode != ResizeMode.None;
+			 * Rotation = x.Rotation;
+			 * EnableRotation = Rotation != Rotation.None;
+			 * ResizeWidth = x.ResizeWidth;
+			 * ResizeHeight = x.ResizeHeight;
+			 * CropWidth = x.CropWidth;
+			 * CropHeight = x.CropHeight;
+			 * CropAlignment = x.CropAlignment;
+			 * WatermarkAlignment = x.WatermarkAlignment;
+			 * ColorType = x.ColorType;
+			 * WatermarkOpacity = x.WatermarkOpacity;
+			 * ColorBrightness = x.ColorBright;
+			 * ColorContrast = x.ColorContrast;
+			 * ColorGamma = x.ColorGamma;
+			 * ColorSaturation = x.ColorSaturation;
+			 * JpegQuality = x.JpegQuality;
+			 */
+
 			_console = true;
-			x.Files.ForEach(o => rootFolder.Files.Add(new File(o)));
+
+			files.ForEach(o => rootFolder.Files.Add(new File(o)));
 		}
 
 		public void Process()
@@ -95,9 +115,9 @@ namespace BatchImageProcessor.Model
 			TotalImages = 0;
 			DoneImages = 0;
 			if (_console)
-				QueueItems(Folders[0], OutputPath);
+				QueueItems(Folders[0], Options.OutputOptions.OutputPath);
 			else
-				Task.Factory.StartNew(() => QueueItems(Folders[0], OutputPath));
+				Task.Factory.StartNew(() => QueueItems(Folders[0], Options.OutputOptions.OutputPath));
 
 		}
 
@@ -129,7 +149,7 @@ namespace BatchImageProcessor.Model
 
 			if (w != null)
 			{
-				var outFmt = w.OverrideFormat == Format.Default ? OutputFormat : w.OverrideFormat;
+				var outFmt = w.OverrideFormat == Format.Default ? Options.OutputOptions.OutputFormat : w.OverrideFormat;
 
 				// Load Image
 				Image b = null;
@@ -151,20 +171,20 @@ namespace BatchImageProcessor.Model
 
 				#region Process Steps
 
-				if (w.OverrideRotation != Rotation.Default || EnableRotation)
-					b.RotateImage(w.OverrideRotation == Rotation.Default ? DefaultRotation : w.OverrideRotation);
+				if (w.OverrideRotation != Rotation.Default || Options.EnableRotation)
+					b.RotateImage(w.OverrideRotation == Rotation.Default ? Options.Rotation : w.OverrideRotation);
 
-				if (EnableResize && !w.OverrideResize)
-					b = b.ResizeImage(new Size(ResizeWidth, ResizeHeight), DefaultResizeMode, UseAspectRatio);
+				if (Options.EnableResize && !w.OverrideResize)
+					b = b.ResizeImage(Options.ResizeOptions);
 
-				if (EnableCrop && !w.OverrideCrop)
-					b = b.CropImage(new Size(CropWidth, CropHeight), DefaultCropAlignment);
+				if (Options.EnableCrop && !w.OverrideCrop)
+					b = b.CropImage(Options.CropOptions);
 
-				if (EnableWatermark && !w.OverrideWatermark)
-					b.WatermarkImage(WatermarkAlignment, (float)WatermarkOpacity, DefaultWatermarkType, WatermarkText, WatermarkFont, WatermarkImagePath, WatermarkGreyscale);
+				if (Options.EnableWatermark && !w.OverrideWatermark)
+					b.WatermarkImage(Options.WatermarkOptions);
 
 				if (!w.OverrideColor)
-					b = b.ColorImage((float)ColorSaturation, ColorType, ColorContrast, ColorBrightness, (float)ColorGamma);
+					b = b.AdjustImage(Options.AdjustmentOptions);
 
 				#endregion
 
@@ -200,7 +220,7 @@ namespace BatchImageProcessor.Model
 				{
 					var myEncoderParameters = new EncoderParameters(1);
 					var myencoder = Encoder.Quality;
-					var myEncoderParameter = new EncoderParameter(myencoder, (long)(JpegQuality * 100));
+					var myEncoderParameter = new EncoderParameter(myencoder, (long)(Options.OutputOptions.JpegQuality * 100));
 					myEncoderParameters.Param[0] = myEncoderParameter;
 					b.Save(outpath, StaticImageUtils.GetEncoder(encoder), myEncoderParameters);
 				}
@@ -255,7 +275,7 @@ namespace BatchImageProcessor.Model
 		private string GenerateFilename(IFile w, Image b)
 		{
 			string name = null;
-			switch (NameOption)
+			switch (Options.OutputOptions.NameOption)
 			{
 				case NameType.Original:
 					name = w.Name;
@@ -264,7 +284,7 @@ namespace BatchImageProcessor.Model
 					name = w.ImageNumber.ToString(CultureInfo.InvariantCulture);
 					break;
 				case NameType.Custom:
-					name = OutputTemplate;
+					name = Options.OutputOptions.OutputTemplate;
 					name = name.Replace("{o}", w.Name);
 					name = name.Replace("{w}", b.Width.ToString(CultureInfo.InvariantCulture));
 					name = name.Replace("{h}", b.Height.ToString(CultureInfo.InvariantCulture));

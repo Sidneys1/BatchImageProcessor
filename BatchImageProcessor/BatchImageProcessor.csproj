@@ -142,13 +142,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Types\AdjustmentOptions.cs" />
     <Compile Include="Types\Alignment.cs" />
     <Compile Include="Types\ColorType.cs" />
+    <Compile Include="Types\CropOptions.cs" />
     <Compile Include="Types\Format.cs" />
     <Compile Include="Types\NameType.cs" />
-    <Compile Include="Types\OptionStruct.cs" />
+    <Compile Include="Types\OptionSet.cs" />
+    <Compile Include="Types\OutputOptions.cs" />
     <Compile Include="Types\ResizeMode.cs" />
+    <Compile Include="Types\ResizeOptions.cs" />
     <Compile Include="Types\Rotation.cs" />
+    <Compile Include="Types\WatermarkOptions.cs" />
     <Compile Include="Types\WatermarkType.cs" />
     <Compile Include="Types\WeakThumbnail.cs" />
     <Compile Include="ViewModel\BooleanConverter.cs" />

@@ -73,12 +73,12 @@ namespace BatchImageProcessor.Model
 			}
 		}
 
-		public static Image ResizeImage(this Image b, Size size, ResizeMode resizeMode, bool useAspectRatio)
+		public static Image ResizeImage(this Image b, ResizeOptions options)
 		{
 			var newSize = b.Size;
-			var targetSize = size;
+			var targetSize = new Size(options.ResizeWidth, options.ResizeHeight);
 
-			if (useAspectRatio)
+			if (options.UseAspectRatio)
 			{
 				if (b.Width > b.Height) // landscape
 				{
@@ -94,7 +94,7 @@ namespace BatchImageProcessor.Model
 				}
 			}
 
-			switch (resizeMode)
+			switch (options.ResizeMode)
 			{
 				case ResizeMode.Smaller:
 					if (b.Width > targetSize.Width || b.Height > targetSize.Height)
@@ -141,9 +141,9 @@ namespace BatchImageProcessor.Model
 			return two;
 		}
 
-		public static Image CropImage(this Image b, Size size, Alignment defaultCropAlignment)
+		public static Image CropImage(this Image b, CropOptions options)
 		{
-			var cropSize = size;
+			var cropSize = new Size(options.CropWidth, options.CropHeight);
 
 			if (cropSize.Width > b.Width || cropSize.Height > b.Height)
 				cropSize = new Size(
@@ -152,7 +152,7 @@ namespace BatchImageProcessor.Model
 
 			int x = 0, y = 0;
 
-			switch (defaultCropAlignment)
+			switch (options.CropAlignment)
 			{
 				case Alignment.Middle_Left:
 				case Alignment.Middle_Center:
@@ -167,7 +167,7 @@ namespace BatchImageProcessor.Model
 					break;
 			}
 
-			switch (defaultCropAlignment)
+			switch (options.CropAlignment)
 			{
 				case Alignment.Top_Center:
 				case Alignment.Middle_Center:
@@ -193,19 +193,17 @@ namespace BatchImageProcessor.Model
 			return ret;
 		}
 
-		public static void WatermarkImage(this Image b, Alignment watermarkAlignment, float watermarkOpacity,
-			WatermarkType defaultWatermarkType, string watermarkText, Font watermarkFont, string watermarkImagePath,
-			bool watermarkGreyscale)
+		public static void WatermarkImage(this Image b, WatermarkOptions options)
 		{
 			using (var g = Graphics.FromImage(b))
 			{
-				var align = watermarkAlignment;
-				var opac = watermarkOpacity;
+				var align = options.WatermarkAlignment;
+				var opac = options.WatermarkOpacity;
 				var margin = new SizeF(20, 20);
-				if (defaultWatermarkType == WatermarkType.Text)
+				if (options.WatermarkType == WatermarkType.Text)
 				{
-					var text = watermarkText;
-					var font = watermarkFont;
+					var text = options.WatermarkText;
+					var font = options.WatermarkFont;
 
 					var tSize = g.MeasureString(text, font);
 
@@ -260,12 +258,12 @@ namespace BatchImageProcessor.Model
 				}
 				else
 				{
-					var path = watermarkImagePath;
+					var path = options.WatermarkImagePath;
 
 					if (!System.IO.File.Exists(path))
 						return;
 
-					var grey = watermarkGreyscale;
+					var grey = options.WatermarkGreyscale;
 
 					float tl = 1f, tc = 0f, tr = 0f, ml = 0f, mc = 1f, mr = 0f, bl = 0f, bc = 0f, br = 1f;
 
@@ -291,7 +289,7 @@ namespace BatchImageProcessor.Model
 
 					var imageAttributes = new ImageAttributes();
 					imageAttributes.ClearColorMatrix();
-					var colorMatrix = new ColorMatrix(ptsArray) {Matrix33 = opac};
+					var colorMatrix = new ColorMatrix(ptsArray) {Matrix33 = (float)opac};
 					imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
 
 					var i = Image.FromFile(path);
@@ -340,10 +338,9 @@ namespace BatchImageProcessor.Model
 			}
 		}
 
-		public static Image ColorImage(this Image image, float colorSaturation, ColorType colorType, double colorContrast,
-			double colorBrightness, float colorGamma)
+		public static Image AdjustImage(this Image image, AdjustmentOptions options)
 		{
-			var sat = colorSaturation;
+			var sat = (float)options.ColorSaturation;
 
 			float tl = 1f, tc = 0f, tr = 0f, ml = 0f, mc = 1f, mr = 0f, bl = 0f, bc = 0f, br = 1f;
 
@@ -351,7 +348,7 @@ namespace BatchImageProcessor.Model
 			const float gwgt = .6094f;
 			const float bwgt = .0820f;
 
-			switch (colorType)
+			switch (options.ColorType)
 			{
 				case ColorType.Greyscale:
 					tl = tc = tr = rwgt;
@@ -381,9 +378,9 @@ namespace BatchImageProcessor.Model
 					break;
 			}
 
-			tl *= (float) colorContrast;
-			mc *= (float) colorContrast;
-			br *= (float) colorContrast;
+			tl *= (float)options.ColorContrast;
+			mc *= (float)options.ColorContrast;
+			br *= (float)options.ColorContrast;
 
 			float[][] ptsArray =
 			{
@@ -391,13 +388,13 @@ namespace BatchImageProcessor.Model
 				new[] {ml, mc, mr, 0f, 0f}, // GREEN
 				new[] {bl, bc, br, 0f, 0f}, // BLUE
 				new[] {0f, 0f, 0f, 1f, 0f}, // Alpha
-				new[] {(float) colorBrightness - 1f, (float) colorBrightness - 1f, (float) colorBrightness - 1f, 0f, 1f}
+				new[] {(float)options.ColorBrightness - 1f, (float)options.ColorBrightness - 1f, (float)options.ColorBrightness - 1f, 0f, 1f}
 			};
 
 			var imageAttributes = new ImageAttributes();
 			imageAttributes.ClearColorMatrix();
 			imageAttributes.SetColorMatrix(new ColorMatrix(ptsArray), ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-			imageAttributes.SetGamma(colorGamma, ColorAdjustType.Bitmap);
+			imageAttributes.SetGamma((float)options.ColorGamma, ColorAdjustType.Bitmap);
 
 			using (var g = Graphics.FromImage(image))
 			{

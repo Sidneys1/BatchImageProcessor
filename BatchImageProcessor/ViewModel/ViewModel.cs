@@ -13,25 +13,25 @@ namespace BatchImageProcessor.ViewModel
 {
     public class ViewModel :IDisposable, INotifyPropertyChanged
     {
-	    public Model.Model Model;
+	    public Model.Model Model { get; }
+		public OptionSet OptionSet => Model.Options;
 
 	    public ObservableCollection<IFolderableHost> Folders => Model.Folders;
 
 		public ViewModel()
-        {
-	        Model = new Model.Model
-	        {
-		        OutputTemplate = Resources.OutputTemplate,
-				WatermarkImagePath = Resources.NoFileSet,
-				WatermarkText = Resources.WatermarkText
-			};
+		{
+			Model = new Model.Model();
+			OptionSet.OutputOptions.OutputTemplate = Resources.OutputTemplate;
+			OptionSet.WatermarkOptions.WatermarkImagePath = Resources.NoFileSet;
+			OptionSet.WatermarkOptions.WatermarkText = Resources.WatermarkText;
+
 			OutputPath= Resources.ViewModel__outputPath__No_Path_Set;
 			Model.UpdateDone += Engine_UpdateDone;
         }
 
         public void Dispose()
         {
-            Model.WatermarkFont.Dispose();
+			OptionSet.WatermarkOptions.WatermarkFont.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -57,12 +57,12 @@ namespace BatchImageProcessor.ViewModel
 
         #region Rotate Settings
 
-	    public Rotation DefaultRotation
+	    public Rotation Rotation
         {
-            get { return Model.DefaultRotation; }
+            get { return OptionSet.Rotation; }
             set
             {
-                Model.DefaultRotation = value;
+                OptionSet.Rotation = value;
                 PropChanged();
             }
         }
@@ -71,32 +71,32 @@ namespace BatchImageProcessor.ViewModel
 
         #region Crop Settings
 
-	    public Alignment DefaultCropAlignment
+	    public Alignment CropAlignment
         {
-            get { return Model.DefaultCropAlignment; }
+            get { return OptionSet.CropOptions.CropAlignment; }
             set
             {
-				Model.DefaultCropAlignment = value;
+				OptionSet.CropOptions.CropAlignment = value;
                 PropChanged();
             }
         }
 
         public int CropWidth
         {
-            get { return Model.CropWidth; }
+            get { return OptionSet.CropOptions.CropWidth; }
             set
             {
-                Model.CropWidth = value;
+                OptionSet.CropOptions.CropWidth = value;
                 PropChanged();
             }
         }
 
         public int CropHeight
         {
-            get { return Model.CropHeight; }
+            get { return OptionSet.CropOptions.CropHeight; }
             set
             {
-                Model.CropHeight = value;
+                OptionSet.CropOptions.CropHeight = value;
                 PropChanged();
             }
         }
@@ -105,42 +105,42 @@ namespace BatchImageProcessor.ViewModel
 
         #region Resize Settings
 
-	    public ResizeMode DefaultResizeMode
+	    public ResizeMode ResizeMode
         {
-            get { return Model.DefaultResizeMode; }
+            get { return OptionSet.ResizeOptions.ResizeMode; }
             set
             {
-                Model.DefaultResizeMode = value;
+                OptionSet.ResizeOptions.ResizeMode = value;
                 PropChanged();
             }
         }
 
         public bool UseAspectRatio
         {
-            get { return Model.UseAspectRatio; }
+            get { return OptionSet.ResizeOptions.UseAspectRatio; }
             set
             {
-                Model.UseAspectRatio = value;
+                OptionSet.ResizeOptions.UseAspectRatio = value;
                 PropChanged();
             }
         }
 
         public int ResizeWidth
         {
-            get { return Model.ResizeWidth; }
+            get { return OptionSet.ResizeOptions.ResizeWidth; }
             set
             {
-                Model.ResizeWidth = value;
+                OptionSet.ResizeOptions.ResizeWidth = value;
                 PropChanged();
             }
         }
 
         public int ResizeHeight
         {
-            get { return Model.ResizeHeight; }
+            get { return OptionSet.ResizeOptions.ResizeHeight; }
             set
             {
-                Model.ResizeHeight = value;
+                OptionSet.ResizeOptions.ResizeHeight = value;
                 PropChanged();
             }
         }
@@ -149,32 +149,32 @@ namespace BatchImageProcessor.ViewModel
 
         #region Watermark Settings
 
-	    public WatermarkType DefaultWatermarkType
+	    public WatermarkType WatermarkType
         {
-            get { return Model.DefaultWatermarkType; }
+            get { return OptionSet.WatermarkOptions.WatermarkType; }
             set
             {
-                Model.DefaultWatermarkType = value;
+                OptionSet.WatermarkOptions.WatermarkType = value;
                 PropChanged();
             }
         }
 
         public string WatermarkText
         {
-            get { return Model.WatermarkText; }
+            get { return OptionSet.WatermarkOptions.WatermarkText; }
             set
             {
-                Model.WatermarkText = value;
+                OptionSet.WatermarkOptions.WatermarkText = value;
                 PropChanged();
             }
         }
 
         public Font WatermarkFont
         {
-            get { return Model.WatermarkFont; }
+            get { return OptionSet.WatermarkOptions.WatermarkFont; }
             set
             {
-                Model.WatermarkFont = value;
+                OptionSet.WatermarkOptions.WatermarkFont = value;
                 PropChanged();
                 PropChanged("WatermarkFontString");
             }
@@ -185,40 +185,40 @@ namespace BatchImageProcessor.ViewModel
 
         public double WatermarkOpacity
         {
-            get { return Model.WatermarkOpacity; }
+            get { return OptionSet.WatermarkOptions.WatermarkOpacity; }
             set
             {
-                Model.WatermarkOpacity = value;
+                OptionSet.WatermarkOptions.WatermarkOpacity = value;
                 PropChanged();
             }
         }
 
         public Alignment WatermarkAlignment
         {
-            get { return Model.WatermarkAlignment; }
+            get { return OptionSet.WatermarkOptions.WatermarkAlignment; }
             set
             {
-                Model.WatermarkAlignment = value;
+                OptionSet.WatermarkOptions.WatermarkAlignment = value;
                 PropChanged();
             }
         }
 
         public string WatermarkImagePath
         {
-            get { return Model.WatermarkImagePath; }
+            get { return OptionSet.WatermarkOptions.WatermarkImagePath; }
             set
             {
-                Model.WatermarkImagePath = value;
+                OptionSet.WatermarkOptions.WatermarkImagePath = value;
                 PropChanged();
             }
         }
 
         public bool WatermarkGreyscale
         {
-            get { return Model.WatermarkGreyscale; }
+            get { return OptionSet.WatermarkOptions.WatermarkGreyscale; }
             set
             {
-                Model.WatermarkGreyscale = value;
+                OptionSet.WatermarkOptions.WatermarkGreyscale = value;
                 PropChanged();
             }
         }
@@ -229,48 +229,48 @@ namespace BatchImageProcessor.ViewModel
 
 	    public ColorType ColorType
 	    {
-		    get { return Model.ColorType; }
-		    set { Model.ColorType = value;
+		    get { return OptionSet.AdjustmentOptions.ColorType; }
+		    set { OptionSet.AdjustmentOptions.ColorType = value;
 			    PropChanged();
 		    }
 	    }
 
 		public double ColorBrightness
 		{
-			get { return Model.ColorBrightness; }
+			get { return OptionSet.AdjustmentOptions.ColorBrightness; }
 			set
 			{
-				Model.ColorBrightness = value;
+				OptionSet.AdjustmentOptions.ColorBrightness = value;
 				PropChanged();
 			}
 		}
 
 		public double ColorContrast
 		{
-			get { return Model.ColorContrast; }
+			get { return OptionSet.AdjustmentOptions.ColorContrast; }
 			set
 			{
-				Model.ColorContrast = value;
+				OptionSet.AdjustmentOptions.ColorContrast = value;
 				PropChanged();
 			}
 		}
 
 		public double ColorSaturation
 		{
-			get { return Model.ColorSaturation; }
+			get { return OptionSet.AdjustmentOptions.ColorSaturation; }
 			set
 			{
-				Model.ColorSaturation = value;
+				OptionSet.AdjustmentOptions.ColorSaturation = value;
 				PropChanged();
 			}
 		}
 
 		public double ColorGamma
 		{
-			get { return Model.ColorGamma; }
+			get { return OptionSet.AdjustmentOptions.ColorGamma; }
 			set
 			{
-				Model.ColorGamma = value;
+				OptionSet.AdjustmentOptions.ColorGamma = value;
 				PropChanged();
 			}
 		}
@@ -281,10 +281,10 @@ namespace BatchImageProcessor.ViewModel
 
 	    public string OutputPath
         {
-            get { return Model.OutputPath; }
+            get { return OptionSet.OutputOptions.OutputPath; }
             set
             {
-                Model.OutputPath = value;
+                OptionSet.OutputOptions.OutputPath = value;
                 PropChanged();
             }
         }
@@ -294,7 +294,7 @@ namespace BatchImageProcessor.ViewModel
             get { return Model.OutputSet; }
             set
             {
-                Model.OutputSet = value;
+				Model.OutputSet = value;
                 PropChanged();
                 PropChanged("Ready");
             }
@@ -302,20 +302,20 @@ namespace BatchImageProcessor.ViewModel
 
         public NameType NameOption
         {
-            get { return Model.NameOption; }
+            get { return OptionSet.OutputOptions.NameOption; }
             set
             {
-                Model.NameOption = value;
+                OptionSet.OutputOptions.NameOption = value;
                 PropChanged();
             }
         }
 
         public string OutputTemplate
         {
-            get { return Model.OutputTemplate; }
+            get { return OptionSet.OutputOptions.OutputTemplate; }
             set
             {
-                Model.OutputTemplate = value;
+                OptionSet.OutputOptions.OutputTemplate = value;
                 PropChanged();
                 PropChanged("OutputTemplateExample");
             }
@@ -335,12 +335,12 @@ namespace BatchImageProcessor.ViewModel
 
 	    public Format OutputFormat
 	    {
-			get { return Model.OutputFormat;}
-			set { Model.OutputFormat = value;PropChanged(); }
+			get { return OptionSet.OutputOptions.OutputFormat;}
+			set { OptionSet.OutputOptions.OutputFormat = value;PropChanged(); }
 	    }
 
 		public double JpegQuality
-		{ get { return Model.JpegQuality; } set { Model.JpegQuality = value; PropChanged(); } }
+		{ get { return OptionSet.OutputOptions.JpegQuality; } set { OptionSet.OutputOptions.JpegQuality = value; PropChanged(); } }
 
 		#endregion
 
@@ -348,40 +348,40 @@ namespace BatchImageProcessor.ViewModel
 
 	    public bool EnableRotation
         {
-            get { return Model.EnableRotation; }
+            get { return OptionSet.EnableRotation; }
             set
             {
-                Model.EnableRotation = value;
+                OptionSet.EnableRotation = value;
                 PropChanged();
             }
         }
 
         public bool EnableCrop
         {
-            get { return Model.EnableCrop; }
+            get { return OptionSet.EnableCrop; }
             set
             {
-                Model.EnableCrop = value;
+                OptionSet.EnableCrop = value;
                 PropChanged();
             }
         }
 
         public bool EnableResize
         {
-            get { return Model.EnableResize; }
+            get { return OptionSet.EnableResize; }
             set
             {
-                Model.EnableResize = value;
+                OptionSet.EnableResize = value;
                 PropChanged();
             }
         }
 
         public bool EnableWatermark
         {
-            get { return Model.EnableWatermark; }
+            get { return OptionSet.EnableWatermark; }
             set
             {
-                Model.EnableWatermark = value;
+                OptionSet.EnableWatermark = value;
                 PropChanged();
             }
         }
@@ -397,7 +397,7 @@ namespace BatchImageProcessor.ViewModel
             get { return Model.TotalImages; }
             private set
             {
-                Model.TotalImages = value;
+				Model.TotalImages = value;
                 PropChanged();
             }
         }
@@ -407,7 +407,7 @@ namespace BatchImageProcessor.ViewModel
             get { return Model.DoneImages; }
             private set
             {
-                Model.DoneImages = value;
+				Model.DoneImages = value;
                 PropChanged();
 
                 if (DoneImages == TotalImages)
@@ -471,7 +471,7 @@ namespace BatchImageProcessor.ViewModel
 
 	    public void Cancel()
 	    {
-		    Model.Cancel = true;
+			Model.Cancel = true;
 	    }
 
 	    public event PropertyChangedEventHandler PropertyChanged;
