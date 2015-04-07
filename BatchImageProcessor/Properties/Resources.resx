@@ -562,4 +562,7 @@
 	<data name="StopBtn_Text" xml:space="preserve">
     <value>Stop</value>
   </data>
+	<data name="OutputNotSetLabel" xml:space="preserve">
+    <value>(Output Location not Set)</value>
+  </data>
 </root>

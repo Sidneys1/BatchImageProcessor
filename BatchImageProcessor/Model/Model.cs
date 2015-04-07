@@ -13,12 +13,25 @@ using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.Model
 {
+	public struct ModelProgressUpdate
+	{
+		public int Total;
+		public int Done;
+
+		public ModelProgressUpdate(int total, int done)
+		{
+			Total = total;
+			Done = done;
+		}
+
+	}
+
 	public class Model
 	{
-		public int TotalImages;
-		public int DoneImages;
+		private int _totalImages;
+		private int _doneImages;
 
-		public event EventHandler UpdateDone;
+		//public event EventHandler UpdateDone;
 
 		public bool Cancel = false;
 
@@ -29,45 +42,8 @@ namespace BatchImageProcessor.Model
 		public ObservableCollection<IFolderableHost> Folders { get; } = new ObservableCollection<IFolderableHost>();
 
 		private readonly bool _console;
-
-		//public string OutputPath;
-		//public NameType NameOption = NameType.Original;
-		//public Format OutputFormat = Format.Jpg;
-		//public double JpegQuality = 0.95;
-		//public string OutputTemplate;
-
-		//public bool EnableCrop;
-		//public bool EnableResize;
-		//public bool EnableRotation;
-		//public bool EnableWatermark;
-
-		//public Rotation Rotation = Rotation.None;
-
-		//public int CropHeight = 600;
-		//public int CropWidth = 800;
-		//public Alignment CropAlignment = Alignment.Middle_Center;
-
-		//public ResizeMode ResizeMode = ResizeMode.Smaller;
-		//public int ResizeHeight = 600;
-		//public int ResizeWidth = 800;
-		//public bool UseAspectRatio = true;
-
-		//public WatermarkType WatermarkType = WatermarkType.Text;
-		//public Alignment WatermarkAlignment = Alignment.Bottom_Right;
-		//public Font WatermarkFont = new Font("Calibri", 12f);
-		//public bool WatermarkGreyscale = true;
-		//public string WatermarkImagePath;
-		//public double WatermarkOpacity = 0.7;
-		//public string WatermarkText;
-
-		//public ColorType ColorType = ColorType.Saturation;
-		//public double ColorBrightness = 1.0;
-		//public double ColorContrast = 1.0;
-		//public double ColorSaturation = 1.0;
-		//public double ColorGamma = 1.0;
-
 		public OptionSet Options { get; } = new OptionSet();
-		
+
 		public Model() { }
 
 		public Model(OptionSet x, List<string> files)
@@ -110,40 +86,44 @@ namespace BatchImageProcessor.Model
 			files.ForEach(o => rootFolder.Files.Add(new File(o)));
 		}
 
-		public void Process()
+		public void Process(IProgress<ModelProgressUpdate> progress = null)
 		{
-			TotalImages = 0;
-			DoneImages = 0;
+			_totalImages = 0;
+			_doneImages = 0;
 			if (_console)
-				QueueItems(Folders[0], Options.OutputOptions.OutputPath);
+				QueueItems(Folders[0], Options.OutputOptions.OutputPath, progress);
 			else
-				Task.Factory.StartNew(() => QueueItems(Folders[0], Options.OutputOptions.OutputPath));
-
+				Task.Factory.StartNew(() => QueueItems(Folders[0], Options.OutputOptions.OutputPath, progress));
 		}
 
-		private void QueueItems(IFolderableHost folderWrapper, string path)
+		private void QueueItems(IFolderableHost folderWrapper, string path, IProgress<ModelProgressUpdate> progress = null)
 		{
 			var enumerable = folderWrapper.Files.OfType<IFile>().Where(wrapper => wrapper.Selected);
 			var fileWrappers = enumerable as List<IFile> ?? enumerable.ToList();
 			fileWrappers.ForEach(o =>
 			{
 				o.OutputPath = path;
-				o.ImageNumber = TotalImages++;
+				o.ImageNumber = _totalImages++;
 			});
 
-			Parallel.ForEach(fileWrappers, ProcessImage);
+			progress?.Report(new ModelProgressUpdate(_totalImages, _doneImages));
+
+			Parallel.ForEach(fileWrappers, o => ProcessImage(o, progress));
 
 			var enumerable1 = folderWrapper.Files.OfType<IFolderableHost>();
 			var list = enumerable1 as List<IFolderableHost> ?? enumerable1.ToList();
 			list.ForEach(fold => QueueItems(fold, Path.Combine(path, fold.Name)));
+
+			
 		}
 
-		public void ProcessImage(IFile w)
+		private void ProcessImage(IFile w, IProgress<ModelProgressUpdate> progress = null)
 		{
 			if (Cancel)
 			{
-				Interlocked.Decrement(ref TotalImages);
-				UpdateDone?.Invoke(null, EventArgs.Empty);
+				Interlocked.Decrement(ref _totalImages);
+				progress?.Report(new ModelProgressUpdate(_totalImages, _doneImages));
+				//UpdateDone?.Invoke(null, EventArgs.Empty);
 				return;
 			}
 
@@ -164,8 +144,9 @@ namespace BatchImageProcessor.Model
 
 				if (b == null)
 				{
-					Interlocked.Decrement(ref TotalImages);
-					UpdateDone?.Invoke(null, EventArgs.Empty);
+					Interlocked.Decrement(ref _totalImages);
+					progress?.Report(new ModelProgressUpdate(_totalImages, _doneImages));
+					//UpdateDone?.Invoke(null, EventArgs.Empty);
 					return;
 				}
 
@@ -230,8 +211,9 @@ namespace BatchImageProcessor.Model
 				outpath.Close();
 			}
 
-			Interlocked.Increment(ref DoneImages);
-			UpdateDone?.Invoke(null, EventArgs.Empty);
+			Interlocked.Increment(ref _doneImages);
+			progress?.Report(new ModelProgressUpdate(_totalImages, _doneImages));
+			//UpdateDone?.Invoke(null, EventArgs.Empty);
 		}
 
 		private FileStream GenerateOutputPath(IFile w, string name, Format outputFormat)
@@ -263,7 +245,9 @@ namespace BatchImageProcessor.Model
 			if (System.IO.File.Exists(outpath))
 			{
 				var i = 0;
-				while (System.IO.File.Exists(string.Format(outpathFormat, ++i))) ;
+				while (System.IO.File.Exists(string.Format(outpathFormat, ++i)))
+				{
+				}
 				outpath = string.Format(outpathFormat, i);
 			}
 

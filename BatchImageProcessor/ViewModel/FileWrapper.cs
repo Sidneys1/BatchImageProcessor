@@ -15,7 +15,7 @@ namespace BatchImageProcessor.ViewModel
         {
 			_file = new File(path);
 			Thumbnail = new WeakThumbnail(path);
-		    Thumbnail.SourceUpdated += () => { PropChanged("Thumbnail"); };
+		    Thumbnail.SourceUpdated += () => { PropChanged(nameof(Thumbnail)); };
 		    Name = IoObject.GetName(path);
         }
 

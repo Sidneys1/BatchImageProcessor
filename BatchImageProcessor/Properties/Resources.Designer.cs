@@ -673,6 +673,15 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (Output Location not Set).
+        /// </summary>
+        public static string OutputNotSetLabel {
+            get {
+                return ResourceManager.GetString("OutputNotSetLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Output.
         /// </summary>
         public static string OutputOptionLabel_Text {

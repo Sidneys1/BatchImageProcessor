@@ -5,6 +5,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:properties="clr-namespace:BatchImageProcessor.Properties"
         xmlns:converters="clr-namespace:BatchImageProcessor.ViewModel.Converters"
+        xmlns:controls="clr-namespace:BatchImageProcessor.Controls"
         Title="{DynamicResource AppTitle}" Height="720" Width="1280" MinWidth="800" MinHeight="600"
         UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="../Images/ImageRotator.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
@@ -183,6 +184,31 @@
 				</MenuItem.Icon>
 			</MenuItem>
 		</ContextMenu>
+
+		<Style TargetType="{x:Type ListView}" BasedOn="{StaticResource {x:Type ListBox}}">
+			<Setter Property="BorderBrush" Value="Black" />
+			<Setter Property="BorderThickness" Value="0.5" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border x:Name="bd" BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}"
+						        Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}">
+							<ScrollViewer Margin="{TemplateBinding Padding}">
+								<controls:VirtualizingWrapPanel IsItemsHost="True"
+								                                Width="{Binding ActualWidth, FallbackValue=600, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"
+								                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+								                                ScrollViewer.VerticalScrollBarVisibility="Auto" />
+							</ScrollViewer>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style TargetType="{x:Type Label}">
+			<Setter Property="FontSize" Value="14" />
+		</Style>
 	</Window.Resources>
 
 	<Grid x:Name="RootGrid">
@@ -530,6 +556,7 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
@@ -1193,9 +1220,10 @@
 				<TextBlock Text="{x:Static properties:Resources.CompleteOfLabel}" />
 				<TextBlock Text="{Binding TotalImages, FallbackValue=0, StringFormat=N0}" />
 			</StackPanel>
+			<TextBlock Grid.Row="5" Text="{x:Static properties:Resources.OutputNotSetLabel}" HorizontalAlignment="Center" Visibility="{Binding OutputSet, Converter={StaticResource BooleanToVisibilityConverterInverted}}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" FontSize="10.667" />
 
 			<!-- Start Button -->
-			<Button Grid.Row="5" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" IsEnabled="{Binding Ready}"
+			<Button Grid.Row="6" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" IsEnabled="{Binding Ready}"
 			        Click="StartBtn_Click"
 			        Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
 				<StackPanel Orientation="Horizontal">
@@ -1204,8 +1232,7 @@
 					<Image Source="../Images/32/image-transition.png" VerticalAlignment="Center" />
 				</StackPanel>
 			</Button>
-
-			<Button Grid.Row="6" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" Click="StopBtn_Click"
+			<Button Grid.Row="7" HorizontalAlignment="Center" Margin="10,0" Cursor="Hand" Click="StopBtn_Click"
 			        Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverter}}">
 				<StackPanel Orientation="Horizontal">
 					<Label Content="{x:Static properties:Resources.StopBtn_Text}" FontSize="20" Margin="0,0,10,0"

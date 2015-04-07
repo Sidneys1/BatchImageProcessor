@@ -14,7 +14,7 @@ namespace BatchImageProcessor.Model
         {
             var file = System.IO.File.Exists(path);
             if (!(file || Directory.Exists(path)))
-                throw new FileNotFoundException(string.Format(@"File/folder at ""{0}"" does not exist.", path));
+                throw new FileNotFoundException($@"File/folder at ""{path}"" does not exist.");
 
             IsFile = file;
             Path = path;
@@ -84,7 +84,7 @@ namespace BatchImageProcessor.Model
 				return System.IO.Path.GetFileName(path);
 			if (System.IO.File.Exists(path))
 				return System.IO.Path.GetFileNameWithoutExtension(path);
-			throw new FileNotFoundException(string.Format(@"File/folder at ""{0}"" does not exist.", path));
+			throw new FileNotFoundException($@"File/folder at ""{path}"" does not exist.");
 		}
 	}
 }

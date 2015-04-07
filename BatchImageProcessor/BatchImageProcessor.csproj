@@ -85,7 +85,7 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <PropertyGroup>
-  	<UICulture>en-US</UICulture>
+    <UICulture>en-US</UICulture>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack">
@@ -137,6 +137,7 @@
     <Compile Include="Native\HookEventArgs.cs" />
     <Compile Include="Native\HookType.cs" />
     <Compile Include="Native\LocalWindowsHook.cs" />
+    <Compile Include="Native\Natives.cs" />
     <Compile Include="Native\ShellContextMenu.cs" />
     <Compile Include="Native\ShellContextMenuException.cs" />
     <Compile Include="Properties\Annotations.cs" />

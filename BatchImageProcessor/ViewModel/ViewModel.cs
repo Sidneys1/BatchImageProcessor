@@ -6,12 +6,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Interface;
+using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
 using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class ViewModel :IDisposable, INotifyPropertyChanged
+    public class ViewModel :IDisposable, INotifyPropertyChanged, IProgress<ModelProgressUpdate>
     {
 	    public Model.Model Model { get; }
 		public OptionSet OptionSet => Model.Options;
@@ -26,7 +27,7 @@ namespace BatchImageProcessor.ViewModel
 			OptionSet.WatermarkOptions.WatermarkText = Resources.WatermarkText;
 
 			OutputPath= Resources.ViewModel__outputPath__No_Path_Set;
-			Model.UpdateDone += Engine_UpdateDone;
+			//Model.UpdateDone += Engine_UpdateDone;
         }
 
         public void Dispose()
@@ -40,15 +41,8 @@ namespace BatchImageProcessor.ViewModel
             ShowProgressBar = true;
             TotalImages = 1;
             DoneImages = 0;
-            PropChanged("Ready");
-			Model.Process();
-        }
-
-        private void Engine_UpdateDone(object sender, EventArgs e)
-        {
-            if (DoneImages != TotalImages) return;
-            ShowProgressBar = false;
-			Model.Cancel = false;
+            PropChanged(nameof(Ready));
+			Model.Process(this);
         }
 
         #region Properties
@@ -176,12 +170,12 @@ namespace BatchImageProcessor.ViewModel
             {
                 OptionSet.WatermarkOptions.WatermarkFont = value;
                 PropChanged();
-                PropChanged("WatermarkFontString");
+                PropChanged(nameof(WatermarkFontString));
             }
         }
 
         public string WatermarkFontString
-            => string.Format("{0}, {1}pt", WatermarkFont.FontFamily.Name, WatermarkFont.SizeInPoints);
+            => $"{WatermarkFont.FontFamily.Name}, {WatermarkFont.SizeInPoints}pt";
 
         public double WatermarkOpacity
         {
@@ -296,7 +290,7 @@ namespace BatchImageProcessor.ViewModel
             {
 				Model.OutputSet = value;
                 PropChanged();
-                PropChanged("Ready");
+                PropChanged(nameof(Ready));
             }
         }
 
@@ -317,7 +311,7 @@ namespace BatchImageProcessor.ViewModel
             {
                 OptionSet.OutputOptions.OutputTemplate = value;
                 PropChanged();
-                PropChanged("OutputTemplateExample");
+                PropChanged(nameof(OutputTemplateExample));
             }
         }
 
@@ -391,27 +385,29 @@ namespace BatchImageProcessor.ViewModel
 		#region Progress
 		
         private bool _showProgressBar;
-	    
+	    private int _totalImages;
+	    private int _doneImages;
+
 	    public int TotalImages
         {
-            get { return Model.TotalImages; }
+            get { return _totalImages; }
             private set
             {
-				Model.TotalImages = value;
+				_totalImages = value;
                 PropChanged();
             }
         }
 
         public int DoneImages
         {
-            get { return Model.DoneImages; }
+            get { return _doneImages; }
             private set
             {
-				Model.DoneImages = value;
+				_doneImages = value;
                 PropChanged();
 
                 if (DoneImages == TotalImages)
-                    PropChanged("Ready");
+                    PropChanged(nameof(Ready));
             }
         }
 
@@ -456,7 +452,7 @@ namespace BatchImageProcessor.ViewModel
 
         internal void RemoveFile(FileWrapper file)
         {
-            RemoveFile(file, (FolderWrapper)Model.Folders[0]);
+            RemoveFile(file, Model.Folders[0]);
         }
 
         private static bool RemoveFile(IFolderable file, IFolderableHost folderWrapper)
@@ -481,5 +477,14 @@ namespace BatchImageProcessor.ViewModel
 	    {
 		    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	    }
+
+	    public void Report(ModelProgressUpdate value)
+	    {
+		    TotalImages = value.Total;
+		    DoneImages = value.Done;
+			if (DoneImages != TotalImages) return;
+			ShowProgressBar = false;
+			Model.Cancel = false;
+		}
     }
 }

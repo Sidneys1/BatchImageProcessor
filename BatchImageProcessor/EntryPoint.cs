@@ -5,20 +5,24 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BatchImageProcessor.Model;
+using BatchImageProcessor.Native;
 using BatchImageProcessor.Types;
 using BatchImageProcessor.View;
 using NDesk.Options;
 using Xceed.Wpf.Toolkit;
-using FontFamily = System.Windows.Media.FontFamily;
+using File = System.IO.File;
 using OptionSet = BatchImageProcessor.Types.OptionSet;
 
 namespace BatchImageProcessor
 {
-	public class EntryPoint
+	public class EntryPoint : IProgress<ModelProgressUpdate>
 	{
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			Natives.AllocConsole();
+			
 			var noShaders = false;
 			var noAero = false;
 
@@ -86,10 +90,10 @@ namespace BatchImageProcessor
 					{ "saturation=", "Saturation {value}.\nE.g. 0.8=80%", (double o) => x.AdjustmentOptions.ColorSaturation = o},
 
 					#endregion
-					
+
 					#region Output Flags
 
-					{ "output=", "Output directory {path}, in quotes.\nNot specifying this outputs\nto current working directory.", o => x.OutputOptions.OutputPath = o },
+					{ "o|output=", "Output directory {path}, in quotes.\nNot specifying this outputs\nto current working directory.", o => x.OutputOptions.OutputPath = o },
 					{ "naming=", "Output naming {method}.\n(Original|Numbered|Custom)", o => {
 						NameType t;
 						if (Enum.TryParse(o, true, out t)) x.OutputOptions.NameOption = t;
@@ -108,7 +112,7 @@ namespace BatchImageProcessor
 					{"s|noshaders", "Disables shaders in the GUI", o => noShaders = o != null},
 					{"e|noaero", "Disables Windows Aero extensions", o => noAero = o != null}
 				};
-				
+
 				#endregion
 
 				List<string> extra;
@@ -155,7 +159,7 @@ namespace BatchImageProcessor
 						{
 							while (!r.EndOfStream)
 							{
-								var s = r.ReadLine();
+								var s = r.ReadLine()?.Replace("\"", "");
 								if (File.Exists(s))
 									files.Add(s);
 							}
@@ -166,8 +170,19 @@ namespace BatchImageProcessor
 						x.OutputOptions.OutputPath = new DirectoryInfo(".").FullName;
 
 					var mod = new Model.Model(x, files);
-					mod.Process();
 
+					Console.BufferHeight = Console.WindowWidth;
+					Console.BufferWidth = Console.BufferHeight;
+					Console.WriteLine();
+					Console.CursorVisible = false;
+
+					mod.Process(new EntryPoint());
+
+					Console.WriteLine(@"Press ENTER to exit...");
+
+					Console.ReadLine();
+
+					Natives.FreeConsole();
 					return;
 				}
 			}
@@ -195,8 +210,25 @@ namespace BatchImageProcessor
 			s.WriteLine("Options:");
 			p.WriteOptionDescriptions(s);
 
-			var m = new MessageBox { FontFamily = new FontFamily("Courier New"), Text = b.ToString(), Width = 600 };
+			var m = new MessageBox { FontFamily = new System.Windows.Media.FontFamily("Courier New"), Text = b.ToString(), Width = 600 };
 			m.ShowDialog();
+		}
+
+		public void Report(ModelProgressUpdate value)
+		{
+			lock (this)
+			{
+				var s = $@"Done {value.Done} out of {value.Total}";
+
+				Console.SetCursorPosition((Console.WindowWidth/2) - (s.Length/2), Console.WindowHeight/2);
+				Console.WriteLine(s);
+
+				var max = Console.WindowWidth - 2;
+
+				var val = (float) value.Done/value.Total;
+				Console.WriteLine(@" " + new string('|', val > 0 ? (int) (max*val) : 1));
+				Console.Out.Flush();
+			}
 		}
 	}
 }
