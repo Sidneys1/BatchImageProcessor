@@ -10,9 +10,12 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Shell;
+using BatchImageProcessor.Model;
 using BatchImageProcessor.Native;
 using BatchImageProcessor.Types;
 using BatchImageProcessor.ViewModel;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
 using IWin32Window = System.Windows.Forms.IWin32Window;
@@ -26,19 +29,20 @@ namespace BatchImageProcessor.View
 	/// <summary>
 	///     Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : IWin32Window, IDisposable
+	public partial class MainWindow : IWin32Window, IDisposable, IProgress<ModelProgressUpdate>
 	{
 		private readonly bool _noAero;
 		private readonly bool _noShaders;
 		private HwndSource _hsource;
 		private IntPtr _hwnd;
+		private TaskbarManager _manager;
 
 		public MainWindow(bool noshaders = false, bool noaero = false)
 		{
 			_noShaders = noshaders;
 			_noAero = noaero;
 
-			VModel = new ViewModel.ViewModel();
+			VModel = new ViewModel.ViewModel(this);
 			VModel.Folders.Add(new FolderWrapper(removable: false) {Name = Properties.Resources.OutputFolder});
 
 			InitializeComponent();
@@ -48,7 +52,7 @@ namespace BatchImageProcessor.View
 			_watermarkFontDlg.Font = VModel.WatermarkFont;
 
 			Handle = new WindowInteropHelper(this).Handle;
-
+			
 #if !DEBUG
 			GcBtn.Visibility = Visibility.Collapsed;
 #endif
@@ -56,16 +60,22 @@ namespace BatchImageProcessor.View
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
+			_manager = TaskbarManager.Instance;
+
 			if (!_noShaders) return;
 			Resources["DropShadowFx"] = null;
 			Resources["BlurEffect"] = null;
 		}
 
-		private void StartBtn_Click(object sender, RoutedEventArgs e)
+		private async void StartBtn_Click(object sender, RoutedEventArgs e)
 		{
 			if (!VModel.Ready) return;
 
-			VModel.Begin();
+			_manager.SetOverlayIcon(Properties.Resources.image_export, "Processing");
+			TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
+			await VModel.Begin();
+			TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+			_manager.SetOverlayIcon(null, "");
 		}
 
 		private void StopBtn_Click(object sender, RoutedEventArgs e)
@@ -714,6 +724,14 @@ namespace BatchImageProcessor.View
 		{
 			var m = (ContextMenu) Resources["ImageCtxMenu"];
 			VModel.RemoveFile((FileWrapper) m.DataContext);
+		}
+
+		public void Report(ModelProgressUpdate value)
+		{
+			Dispatcher.Invoke(() =>
+			{
+				TaskbarItemInfo.ProgressValue = (double) value.Done/value.Total;
+			});
 		}
 	}
 }

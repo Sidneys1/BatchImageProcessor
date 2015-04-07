@@ -34,7 +34,7 @@ namespace BatchImageProcessor.Model
 		//public event EventHandler UpdateDone;
 
 		public bool Cancel = false;
-
+		
 		private readonly Mutex _namingMutex = new Mutex();
 
 		public bool OutputSet { get; set; } = false;
@@ -86,14 +86,15 @@ namespace BatchImageProcessor.Model
 			files.ForEach(o => rootFolder.Files.Add(new File(o)));
 		}
 
-		public void Process(IProgress<ModelProgressUpdate> progress = null)
+		public async Task Process(IProgress<ModelProgressUpdate> progress = null)
 		{
 			_totalImages = 0;
 			_doneImages = 0;
+
 			if (_console)
 				QueueItems(Folders[0], Options.OutputOptions.OutputPath, progress);
 			else
-				Task.Factory.StartNew(() => QueueItems(Folders[0], Options.OutputOptions.OutputPath, progress));
+				await Task.Factory.StartNew(() => QueueItems(Folders[0], Options.OutputOptions.OutputPath, progress));
 		}
 
 		private void QueueItems(IFolderableHost folderWrapper, string path, IProgress<ModelProgressUpdate> progress = null)
@@ -113,8 +114,6 @@ namespace BatchImageProcessor.Model
 			var enumerable1 = folderWrapper.Files.OfType<IFolderableHost>();
 			var list = enumerable1 as List<IFolderableHost> ?? enumerable1.ToList();
 			list.ForEach(fold => QueueItems(fold, Path.Combine(path, fold.Name)));
-
-			
 		}
 
 		private void ProcessImage(IFile w, IProgress<ModelProgressUpdate> progress = null)

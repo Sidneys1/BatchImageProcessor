@@ -448,6 +448,16 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon image_export {
+            get {
+                object obj = ResourceManager.GetObject("image_export", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable/Disable This Image.
         /// </summary>
         public static string ImageEnableTooltip {

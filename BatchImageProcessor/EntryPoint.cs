@@ -11,6 +11,7 @@ using BatchImageProcessor.Types;
 using BatchImageProcessor.View;
 using NDesk.Options;
 using Xceed.Wpf.Toolkit;
+using Nito.AsyncEx;
 using File = System.IO.File;
 using OptionSet = BatchImageProcessor.Types.OptionSet;
 
@@ -21,8 +22,6 @@ namespace BatchImageProcessor
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			Natives.AllocConsole();
-			
 			var noShaders = false;
 			var noAero = false;
 
@@ -171,24 +170,23 @@ namespace BatchImageProcessor
 
 					var mod = new Model.Model(x, files);
 
+					Natives.AllocConsole();
 					Console.BufferHeight = Console.WindowWidth;
 					Console.BufferWidth = Console.BufferHeight;
 					Console.WriteLine();
 					Console.CursorVisible = false;
-
+					
 					mod.Process(new EntryPoint());
 
 					Console.WriteLine(@"Press ENTER to exit...");
-
 					Console.ReadLine();
-
 					Natives.FreeConsole();
+
 					return;
 				}
 			}
 			var app = new App();
 			app.Run(new MainWindow(noShaders, noAero));
-
 		}
 
 		static void ShowHelp(NDesk.Options.OptionSet p)

@@ -484,85 +484,89 @@
   <data name="AlignTopCenterTooltip" xml:space="preserve">
     <value>Top Center</value>
   </data>
-	<data name="AlignTopRightTooltip" xml:space="preserve">
+  <data name="AlignTopRightTooltip" xml:space="preserve">
     <value>Top Right</value>
   </data>
-	<data name="AlignMiddleLeftTooltip" xml:space="preserve">
+  <data name="AlignMiddleLeftTooltip" xml:space="preserve">
     <value>Middle Left</value>
   </data>
-	<data name="AlignMiddleCenterTooltip" xml:space="preserve">
+  <data name="AlignMiddleCenterTooltip" xml:space="preserve">
     <value>Middle Center</value>
   </data>
-	<data name="AlignMiddleRightTooltip" xml:space="preserve">
+  <data name="AlignMiddleRightTooltip" xml:space="preserve">
     <value>Middle Right</value>
   </data>
-	<data name="AlignBottomLeftTooltip" xml:space="preserve">
+  <data name="AlignBottomLeftTooltip" xml:space="preserve">
     <value>Bottom Left</value>
   </data>
-	<data name="AlignBottomCenterTooltip" xml:space="preserve">
+  <data name="AlignBottomCenterTooltip" xml:space="preserve">
     <value>Bottom Center</value>
   </data>
-	<data name="AlignBottomRightTooltip" xml:space="preserve">
+  <data name="AlignBottomRightTooltip" xml:space="preserve">
     <value>Bottom Right</value>
   </data>
-	<data name="WatermarkOpacityHeader" xml:space="preserve">
+  <data name="WatermarkOpacityHeader" xml:space="preserve">
     <value>Opacity</value>
   </data>
-	<data name="ZeroPercentLabel" xml:space="preserve">
+  <data name="ZeroPercentLabel" xml:space="preserve">
     <value>0%</value>
   </data>
-	<data name="OneHundredPercentLabel" xml:space="preserve">
+  <data name="OneHundredPercentLabel" xml:space="preserve">
     <value>100%</value>
   </data>
-	<data name="WatermarkAlignmentHeader" xml:space="preserve">
+  <data name="WatermarkAlignmentHeader" xml:space="preserve">
     <value>Watermark Alignment</value>
   </data>
-	<data name="ColorBrightnessHeader" xml:space="preserve">
+  <data name="ColorBrightnessHeader" xml:space="preserve">
     <value>Brightness</value>
   </data>
-	<data name="TwoHundredPercentLabel" xml:space="preserve">
+  <data name="TwoHundredPercentLabel" xml:space="preserve">
     <value>200%</value>
   </data>
-	<data name="ColorContrastHeader" xml:space="preserve">
+  <data name="ColorContrastHeader" xml:space="preserve">
     <value>Contrast</value>
   </data>
-	<data name="FiveHundredPercentLabel" xml:space="preserve">
+  <data name="FiveHundredPercentLabel" xml:space="preserve">
     <value>500%</value>
   </data>
-	<data name="ColorGammaHeader" xml:space="preserve">
+  <data name="ColorGammaHeader" xml:space="preserve">
     <value>Gamma</value>
   </data>
-	<data name="TenPercentLabel" xml:space="preserve">
+  <data name="TenPercentLabel" xml:space="preserve">
     <value>10%</value>
   </data>
-	<data name="ColorSaturationOption" xml:space="preserve">
+  <data name="ColorSaturationOption" xml:space="preserve">
     <value>Adjust Saturation</value>
   </data>
-	<data name="ColorGreyscaleOption" xml:space="preserve">
+  <data name="ColorGreyscaleOption" xml:space="preserve">
     <value>Convert to Greyscale</value>
   </data>
-	<data name="ColorSepiaOption" xml:space="preserve">
+  <data name="ColorSepiaOption" xml:space="preserve">
     <value>Convert to Sepia</value>
   </data>
-	<data name="ColorSaturationHeader" xml:space="preserve">
+  <data name="ColorSaturationHeader" xml:space="preserve">
     <value>Saturation</value>
   </data>
-	<data name="ZeroPercentHeader" xml:space="preserve">
+  <data name="ZeroPercentHeader" xml:space="preserve">
     <value>0%</value>
   </data>
-	<data name="OutputFormatHeader" xml:space="preserve">
+  <data name="OutputFormatHeader" xml:space="preserve">
     <value>File Format</value>
   </data>
-	<data name="OutputJpegQualityHeader" xml:space="preserve">
+  <data name="OutputJpegQualityHeader" xml:space="preserve">
     <value>JPEG Quality</value>
   </data>
-	<data name="CompleteOfLabel" xml:space="preserve">
+  <data name="CompleteOfLabel" xml:space="preserve">
     <value> completed of </value>
   </data>
-	<data name="StopBtn_Text" xml:space="preserve">
+  <data name="StopBtn_Text" xml:space="preserve">
     <value>Stop</value>
   </data>
-	<data name="OutputNotSetLabel" xml:space="preserve">
+  <data name="OutputNotSetLabel" xml:space="preserve">
     <value>(Output Location not Set)</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="image_export" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image-export.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

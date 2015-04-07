@@ -210,7 +210,9 @@
 			<Setter Property="FontSize" Value="14" />
 		</Style>
 	</Window.Resources>
-
+	<Window.TaskbarItemInfo>
+		<TaskbarItemInfo/>
+	</Window.TaskbarItemInfo>
 	<Grid x:Name="RootGrid">
 		<Grid.RowDefinitions>
 			<RowDefinition Name="Toolbars" Height="Auto" />

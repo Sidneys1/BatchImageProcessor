@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
@@ -12,14 +13,16 @@ using BatchImageProcessor.Types;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class ViewModel :IDisposable, INotifyPropertyChanged, IProgress<ModelProgressUpdate>
+    public class ViewModel : IDisposable, INotifyPropertyChanged, IProgress<ModelProgressUpdate>
     {
 	    public Model.Model Model { get; }
 		public OptionSet OptionSet => Model.Options;
 
 	    public ObservableCollection<IFolderableHost> Folders => Model.Folders;
 
-		public ViewModel()
+	    private readonly IProgress<ModelProgressUpdate> _windowProgress;
+
+		public ViewModel(IProgress<ModelProgressUpdate> windowProgress = null)
 		{
 			Model = new Model.Model();
 			OptionSet.OutputOptions.OutputTemplate = Resources.OutputTemplate;
@@ -27,8 +30,8 @@ namespace BatchImageProcessor.ViewModel
 			OptionSet.WatermarkOptions.WatermarkText = Resources.WatermarkText;
 
 			OutputPath= Resources.ViewModel__outputPath__No_Path_Set;
-			//Model.UpdateDone += Engine_UpdateDone;
-        }
+			_windowProgress = windowProgress;
+		}
 
         public void Dispose()
         {
@@ -36,13 +39,15 @@ namespace BatchImageProcessor.ViewModel
             GC.SuppressFinalize(this);
         }
 
-        public void Begin()
+        public async Task Begin()
         {
             ShowProgressBar = true;
             TotalImages = 1;
             DoneImages = 0;
             PropChanged(nameof(Ready));
-			Model.Process(this);
+			
+			await Model.Process(this);
+			ShowProgressBar = false;
         }
 
         #region Properties
@@ -482,9 +487,7 @@ namespace BatchImageProcessor.ViewModel
 	    {
 		    TotalImages = value.Total;
 		    DoneImages = value.Done;
-			if (DoneImages != TotalImages) return;
-			ShowProgressBar = false;
-			Model.Cancel = false;
+			_windowProgress?.Report(value);
 		}
     }
 }
