@@ -35,7 +35,7 @@ namespace BatchImageProcessor.Model
 
 		public bool Cancel = false;
 		
-		private readonly Mutex _namingMutex = new Mutex();
+		//private readonly Mutex _namingMutex = new Mutex();
 
 		public bool OutputSet { get; set; } = false;
 
@@ -52,35 +52,6 @@ namespace BatchImageProcessor.Model
 			Folders.Add(rootFolder);
 
 			Options = x;
-
-			/* EnableCrop = x.EnableCrop;
-			 * EnableWatermark = x.EnableWatermark;
-			 * UseAspectRatio = x.UseAspectRatio;
-			 * WatermarkGreyscale = x.WatermarkGreyscale;
-			 * OutputPath = x.OutputPath;
-			 * OutputFormat = x.OutputFormat;
-			 * WatermarkType = x.WatermarkType;
-			 * WatermarkText = WatermarkImagePath = x.WatermarkText;
-			 * WatermarkFont = x.WatermarkFont;
-			 * ResizeMode = x.ResizeMode;
-			 * EnableResize = ResizeMode != ResizeMode.None;
-			 * Rotation = x.Rotation;
-			 * EnableRotation = Rotation != Rotation.None;
-			 * ResizeWidth = x.ResizeWidth;
-			 * ResizeHeight = x.ResizeHeight;
-			 * CropWidth = x.CropWidth;
-			 * CropHeight = x.CropHeight;
-			 * CropAlignment = x.CropAlignment;
-			 * WatermarkAlignment = x.WatermarkAlignment;
-			 * ColorType = x.ColorType;
-			 * WatermarkOpacity = x.WatermarkOpacity;
-			 * ColorBrightness = x.ColorBright;
-			 * ColorContrast = x.ColorContrast;
-			 * ColorGamma = x.ColorGamma;
-			 * ColorSaturation = x.ColorSaturation;
-			 * JpegQuality = x.JpegQuality;
-			 */
-
 			_console = true;
 
 			files.ForEach(o => rootFolder.Files.Add(new File(o)));
@@ -122,7 +93,6 @@ namespace BatchImageProcessor.Model
 			{
 				Interlocked.Decrement(ref _totalImages);
 				progress?.Report(new ModelProgressUpdate(_totalImages, _doneImages));
-				//UpdateDone?.Invoke(null, EventArgs.Empty);
 				return;
 			}
 
@@ -134,7 +104,7 @@ namespace BatchImageProcessor.Model
 				Image b = null;
 				try
 				{
-					b = StaticImageUtils.LoadImage(w.Path);
+					b = StaticImageUtils.LoadImage(w);
 				}
 				catch (Exception e)
 				{
@@ -145,11 +115,18 @@ namespace BatchImageProcessor.Model
 				{
 					Interlocked.Decrement(ref _totalImages);
 					progress?.Report(new ModelProgressUpdate(_totalImages, _doneImages));
-					//UpdateDone?.Invoke(null, EventArgs.Empty);
 					return;
 				}
 
 				#region Process Steps
+
+				var clone = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppPArgb);
+				using (var gr = Graphics.FromImage(clone))
+				{
+					gr.DrawImage(b, new Rectangle(0, 0, clone.Width, clone.Height));
+				}
+				b.Dispose();
+				b = clone;
 
 				if (w.OverrideRotation != Rotation.Default || Options.EnableRotation)
 					b.RotateImage(w.OverrideRotation == Rotation.Default ? Options.Rotation : w.OverrideRotation);
@@ -212,7 +189,6 @@ namespace BatchImageProcessor.Model
 
 			Interlocked.Increment(ref _doneImages);
 			progress?.Report(new ModelProgressUpdate(_totalImages, _doneImages));
-			//UpdateDone?.Invoke(null, EventArgs.Empty);
 		}
 
 		private FileStream GenerateOutputPath(IFile w, string name, Format outputFormat)
@@ -240,18 +216,20 @@ namespace BatchImageProcessor.Model
 
 			var outpathFormat = outpath.Replace(ext, " ({0})" + ext);
 
-			_namingMutex.WaitOne();
-			if (System.IO.File.Exists(outpath))
+			FileStream ret;
+			lock (this)
 			{
-				var i = 0;
-				while (System.IO.File.Exists(string.Format(outpathFormat, ++i)))
+				if (System.IO.File.Exists(outpath))
 				{
+					var i = 0;
+					while (System.IO.File.Exists(string.Format(outpathFormat, ++i)))
+					{
+					}
+					outpath = string.Format(outpathFormat, i);
 				}
-				outpath = string.Format(outpathFormat, i);
-			}
 
-			var ret = System.IO.File.Create(outpath);
-			_namingMutex.ReleaseMutex();
+				ret = System.IO.File.Create(outpath);
+			}
 			return ret;
 		}
 

@@ -1,6 +1,6 @@
 namespace BatchImageProcessor.Interface
 {
-    public interface IFolderable
-    {
-    }
+	public interface IFolderable
+	{
+	}
 }

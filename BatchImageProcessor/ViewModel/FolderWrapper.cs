@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using BatchImageProcessor.Interface;
@@ -9,7 +10,7 @@ using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class FolderWrapper : /*Folder,*/ INotifyPropertyChanged, IFolderable, IFolderableHost
+    public class FolderWrapper : INotifyPropertyChanged, IFolderable, IFolderableHost, IEditableObject
     {
 	    private readonly Folder _folder;
 
@@ -80,5 +81,31 @@ namespace BatchImageProcessor.ViewModel
 	    {
 		    return _folder.ContainsFile(p);
 	    }
-	}
+
+	    #region IEditableObject
+
+	    private string _backupName;
+
+	    public void BeginEdit()
+	    {
+		    _backupName = Name;
+	    }
+
+	    public void EndEdit()
+	    {
+		    _backupName = null;
+	    }
+
+	    public void CancelEdit()
+	    {
+		    if (_backupName != null) Name = _backupName;
+	    }
+
+	    #endregion
+
+	    public void AddFile(string str)
+		{
+			Files.Add(new FileWrapper(str));
+		}
+    }
 }

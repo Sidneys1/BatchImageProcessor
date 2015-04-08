@@ -16,9 +16,9 @@ namespace BatchImageProcessor.Model
 		public bool ContainsFile(string p)
 		{
 			return Files.Any(o => (o is Folder)
-								? string.Equals(((Folder)o).Name, p, StringComparison.Ordinal)
-								: string.Equals(((File)o).Name, p, StringComparison.Ordinal)
-							);
+				? string.Equals(((Folder)o).Name, p, StringComparison.Ordinal)
+				: string.Equals(((File)o).Name, p, StringComparison.Ordinal)
+			);
 		}
 	}
 }

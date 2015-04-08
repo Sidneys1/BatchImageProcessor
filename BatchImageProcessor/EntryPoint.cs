@@ -11,9 +11,9 @@ using BatchImageProcessor.Types;
 using BatchImageProcessor.View;
 using NDesk.Options;
 using Xceed.Wpf.Toolkit;
-using Nito.AsyncEx;
 using File = System.IO.File;
-using OptionSet = BatchImageProcessor.Types.OptionSet;
+using FontFamily = System.Windows.Media.FontFamily;
+using OptionSet = NDesk.Options.OptionSet;
 
 namespace BatchImageProcessor
 {
@@ -28,7 +28,7 @@ namespace BatchImageProcessor
 			if (args != null && args.Length > 0)
 			{
 				var showHelp = false;
-				var x = new OptionSet();
+				var x = new Types.OptionSet();
 				var manifest = string.Empty;
 
 				var fontsize = 12f;
@@ -36,7 +36,7 @@ namespace BatchImageProcessor
 
 				#region Option Definitions
 
-				var p = new NDesk.Options.OptionSet
+				var p = new OptionSet
 				{
 					{"man=", "A {manifest} file", o => manifest = o},
 
@@ -189,7 +189,7 @@ namespace BatchImageProcessor
 			app.Run(new MainWindow(noShaders, noAero));
 		}
 
-		static void ShowHelp(NDesk.Options.OptionSet p)
+		static void ShowHelp(OptionSet p)
 		{
 			var b = new StringBuilder();
 			var s = new StringWriter(b);
@@ -208,7 +208,7 @@ namespace BatchImageProcessor
 			s.WriteLine("Options:");
 			p.WriteOptionDescriptions(s);
 
-			var m = new MessageBox { FontFamily = new System.Windows.Media.FontFamily("Courier New"), Text = b.ToString(), Width = 600 };
+			var m = new MessageBox { FontFamily = new FontFamily("Courier New"), Text = b.ToString(), Width = 600 };
 			m.ShowDialog();
 		}
 

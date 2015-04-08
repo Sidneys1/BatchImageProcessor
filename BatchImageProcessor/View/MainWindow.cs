@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
+using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Native;
 using BatchImageProcessor.Types;
@@ -196,7 +197,7 @@ namespace BatchImageProcessor.View
 			Title = Properties.Resources.MainWindow__fileBrowser_Title,
 			CheckFileExists = true,
 			CheckPathExists = true,
-			Filter = Properties.Resources.MainWindow__fileBrowser_Filter,
+			Filter = Properties.Resources.ImageExts + @"|" + Properties.Resources.RawExts,
 			Multiselect = true,
 			InitialDirectory = GetFolderPath(SpecialFolder.MyPictures)
 		};
@@ -488,15 +489,21 @@ namespace BatchImageProcessor.View
 
 			f.Name = f.Name.Trim();
 
-			if (parent != null && parent.ContainsFile(f.Name))
+			var v = parent?.Files.OfType<FolderWrapper>();
+			if (v != null)
 			{
-				var s = f.Name + " ({0})";
-				var i = 0;
-				while (parent.ContainsFile(string.Format(s, ++i)))
+				var folderWrappers = v as FolderWrapper[] ?? v.ToArray();
+				if (folderWrappers.Any(o => o.Name == f.Name))
 				{
-				}
+					var s = f.Name + " ({0})";
+					var i = 0;
+					while (folderWrappers.Any(o => o.Name == string.Format(s, i)))
+					{
+						i++;
+					}
 
-				f.Name = string.Format(s, i);
+					f.Name = string.Format(s, i);
+				}
 			}
 
 			parent?.Files.Insert(0, f);
@@ -518,10 +525,9 @@ namespace BatchImageProcessor.View
 				parent = folder ?? (FolderWrapper) VModel.Folders[0];
 			}
 
-			foreach (var str in _fileBrowser.FileNames)
-			{
-				parent?.Files.Add(new FileWrapper(str));
-			}
+			
+			VModel.ImportFiles(this, _fileBrowser.FileNames, parent);
+			
 		}
 
 		private void RenameFolderMenuItem_Click(object sender, RoutedEventArgs e)
@@ -530,7 +536,6 @@ namespace BatchImageProcessor.View
 			var target = menuItem?.DataContext as FolderWrapper;
 
 			if (target == null) return;
-			var oldName = target.Name;
 			var fdlg = new RenameFileDialog
 			{
 				DataContext = target,
@@ -538,25 +543,32 @@ namespace BatchImageProcessor.View
 				Title = Properties.Resources.RenameFolderDialogTitle
 			};
 
+			target.BeginEdit();
+
 			if (fdlg.ShowDialog().GetValueOrDefault(false))
 			{
 				var parent = (FolderWrapper) VModel.Folders[0];
 
-				if (parent.ContainsFile(target.Name))
+				var v = parent.Files.OfType<FolderWrapper>();
+				var folderWrappers = v as FolderWrapper[] ?? v.ToArray();
+				if (folderWrappers.Any(o => o != target && o.Name == target.Name))
 				{
 					var s = target.Name + " ({0})";
 					var i = 0;
-					while (parent.ContainsFile(string.Format(s, ++i)))
+					while (folderWrappers.Any(o => o != target && o.Name == string.Format(s, i)))
 					{
+						i++;
 					}
 
 					target.Name = string.Format(s, i);
 				}
 
 				target.Name = target.Name.Trim();
+
+				target.EndEdit();
 			}
 			else
-				target.Name = oldName;
+				target.CancelEdit();
 		}
 
 		#endregion
@@ -732,6 +744,13 @@ namespace BatchImageProcessor.View
 			{
 				TaskbarItemInfo.ProgressValue = (double) value.Done/value.Total;
 			});
+		}
+
+		private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+		{
+			var m = (ContextMenu)Resources["ImageCtxMenu"];
+			var x = new RawOptions(m.DataContext as FileWrapper) {Owner = this};
+			x.ShowDialog();
 		}
 	}
 }

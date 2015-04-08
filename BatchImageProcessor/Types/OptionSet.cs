@@ -2,6 +2,8 @@
 {
 	public class OptionSet
 	{
+
+
 		#region Enabled
 
 		public bool EnableCrop { get; set; } = false;

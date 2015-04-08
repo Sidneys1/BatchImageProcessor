@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
 using BatchImageProcessor.Types;
+using BatchImageProcessor.View;
+using RawOptions = BatchImageProcessor.View.RawOptions;
+using ResizeMode = BatchImageProcessor.Types.ResizeMode;
 
 namespace BatchImageProcessor.ViewModel
 {
@@ -489,5 +495,66 @@ namespace BatchImageProcessor.ViewModel
 		    DoneImages = value.Done;
 			_windowProgress?.Report(value);
 		}
+
+	    public void ImportFiles(MainWindow sender, string[] strs, FolderWrapper folder)
+	    {
+		    Types.RawOptions overrideOptions = null;
+			
+		    foreach (var str in strs)
+		    {
+			    var f = new FileInfo(str);
+			    if (!f.Exists)
+			    {
+					MessageBox.Show(sender, $"File does not exist.\r\n{str}", "RAW Import Error");
+					continue; // Doesn't exist
+				}
+
+			    var rawExts = Resources.RawExts.Split('|')[1].Replace("*", "").Split(';');
+
+			    if (rawExts.Contains(f.Extension))
+			    {
+				    // RAW!
+				    var p = new Process
+				    {
+					    StartInfo = new ProcessStartInfo(".\\Exec\\dcraw.exe", $"-i \"{f.FullName}\"")
+					    {
+						    RedirectStandardOutput = true,
+						    UseShellExecute = false,
+						    CreateNoWindow = true
+					    }
+				    };
+
+				    p.Start();
+				    p.WaitForExit();
+
+				    if (p.ExitCode != 0)
+				    {
+					    MessageBox.Show(sender, $"Cannot decode RAW file.\r\n{str}", "RAW Import Error");
+					    continue; // Can't decode!
+				    }
+
+				    // RAW Import Options
+				    if (overrideOptions == null)
+				    {
+					    p.StartInfo.Arguments = $"-i -v \"{f.FullName}\"";
+					    p.Start();
+					    var info = p.StandardOutput.ReadToEnd();
+					    var x = new RawOptions(str, info) {Owner = sender};
+					    if (x.ShowDialog() == false) continue; // Cancelled!
+
+					    if (x.ApplyToAll)
+						    overrideOptions = (x.DataContext as FileWrapper)?.RawOptions;
+					    ((FileWrapper) x.DataContext).IsRaw = true;
+					    folder.Files.Add(x.DataContext as FileWrapper);
+
+					    x.Close();
+					    continue;
+				    }
+				    folder.Files.Add(new FileWrapper(str) {RawOptions = overrideOptions.Copy(), IsRaw = true});
+			    }
+			    else
+				    folder.AddFile(str);
+		    }
+	    }
     }
 }

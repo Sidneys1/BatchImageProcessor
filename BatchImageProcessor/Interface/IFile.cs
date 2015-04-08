@@ -13,5 +13,7 @@ namespace BatchImageProcessor.Interface
 		Rotation OverrideRotation { get; set; }
 		int ImageNumber { get; set; }
 		string OutputPath { get; set; }
+		RawOptions RawOptions { get; set; }
+		bool IsRaw { get; set; }
 	}
 }

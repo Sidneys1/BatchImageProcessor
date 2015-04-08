@@ -7,7 +7,9 @@ using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using BatchImageProcessor.Interface;
 using BatchImageProcessor.Types;
+using InterpolationMode = BatchImageProcessor.Types.InterpolationMode;
 using Rotation = BatchImageProcessor.Types.Rotation;
 
 namespace BatchImageProcessor.Model
@@ -20,17 +22,83 @@ namespace BatchImageProcessor.Model
 			return imageCodecInfo.FirstOrDefault(codec => codec.FormatID == format.Guid);
 		}
 
-		public static Image GetRawImageData(string path, string execDcrawExe)
+		public static Image GetRawImageData(IFile file, string execDcrawExe)
 		{
 			var f = new FileInfo(execDcrawExe);
+			var args = "-c -T";
+
+			if (file.RawOptions != null)
+			{
+				switch (file.RawOptions.WhiteBalance)
+				{
+					case WhiteBalanceMode.Camera:
+						args += " -w";
+						break;
+					case WhiteBalanceMode.Average:
+						args += " -a";
+						break;
+					case WhiteBalanceMode.AverageArea:
+						args += $" -A {file.RawOptions.WhiteBalanceLeft} {file.RawOptions.WhiteBalanceTop} {file.RawOptions.WhiteBalanceWidth} {file.RawOptions.WhiteBalanceHeight}";
+						break;
+					case WhiteBalanceMode.Custom:
+						args += $" -r {file.RawOptions.WhiteBalanceMul0} {file.RawOptions.WhiteBalanceMul1} {file.RawOptions.WhiteBalanceMul2} {file.RawOptions.WhiteBalanceMul3} ";
+						break;
+				}
+
+				switch (file.RawOptions.InterpolationMode)
+				{
+					case InterpolationMode.Grayscale:
+						args += " -d";
+						break;
+					case InterpolationMode.GrayscaleUnscaled:
+						args += " -D";
+						break;
+					case InterpolationMode.GrayscaleUnscaledNoCrop:
+						args += " -E";
+						break;
+					case InterpolationMode.Halfsize:
+						args += " -h";
+						break;
+					case InterpolationMode.Q0:
+						args += " -q 0";
+						break;
+					case InterpolationMode.Q1:
+						args += " -q 1";
+						break;
+					case InterpolationMode.Q2:
+						args += " -q 2";
+						break;
+					case InterpolationMode.Q3:
+						args += " -q 3";
+						break;
+					case InterpolationMode.FourColor:
+						args += " -f";
+						break;
+				}
+
+				if (file.RawOptions.Cleanup)
+					args += $" -m {file.RawOptions.CleanupPasses}";
+
+				if (file.RawOptions.FixedWhiteLevel)
+					args += " -W";
+
+				if (Math.Abs(file.RawOptions.Brighness - 1.0) > 0.01)
+					args += $" -b {file.RawOptions.Brighness}";
+
+				if (file.RawOptions.DisableAutoOrient)
+					args += " -t 0";
+
+				if (file.RawOptions.NoStretch)
+					args += " -j";
+			}
+			
 			var startInfo = new ProcessStartInfo(f.FullName)
 			{
-				Arguments = "-c -T -W \"" + path + "\"",
+				Arguments = $"{args} \"{file.Path}\"",
 				RedirectStandardOutput = true,
 				UseShellExecute = false,
 				CreateNoWindow = true
 			};
-
 			var process = Process.Start(startInfo);
 
 			if (process == null) return null;
@@ -80,7 +148,7 @@ namespace BatchImageProcessor.Model
 
 			if (options.UseAspectRatio)
 			{
-				if (b.Width > b.Height) // landscape
+				if (b.Width > b.Height)	// landscape
 				{
 					targetSize = new Size(
 						targetSize.Width > targetSize.Height ? targetSize.Width : targetSize.Height,
@@ -99,14 +167,14 @@ namespace BatchImageProcessor.Model
 				case ResizeMode.Smaller:
 					if (b.Width > targetSize.Width || b.Height > targetSize.Height)
 					{
-						var ratioX = targetSize.Width/(double) b.Width;
-						var ratioY = targetSize.Height/(double) b.Height;
+						var ratioX = targetSize.Width / (double)b.Width;
+						var ratioY = targetSize.Height / (double)b.Height;
 						// use whichever multiplier is smaller
 						var ratio = ratioX < ratioY ? ratioX : ratioY;
 
 						// now we can get the new height and width
-						var newHeight = Convert.ToInt32(b.Height*ratio);
-						var newWidth = Convert.ToInt32(b.Width*ratio);
+						var newHeight = Convert.ToInt32(b.Height * ratio);
+						var newWidth = Convert.ToInt32(b.Width * ratio);
 
 						newSize = new Size(newWidth, newHeight);
 					}
@@ -114,14 +182,14 @@ namespace BatchImageProcessor.Model
 				case ResizeMode.Larger:
 					if (b.Width < targetSize.Width || b.Height < targetSize.Height)
 					{
-						var ratioX = targetSize.Width/(double) b.Width;
-						var ratioY = targetSize.Height/(double) b.Height;
+						var ratioX = targetSize.Width / (double)b.Width;
+						var ratioY = targetSize.Height / (double)b.Height;
 						// use whichever multiplier is larger
 						var ratio = ratioX > ratioY ? ratioX : ratioY;
 
 						// now we can get the new height and width
-						var newHeight = Convert.ToInt32(b.Height*ratio);
-						var newWidth = Convert.ToInt32(b.Width*ratio);
+						var newHeight = Convert.ToInt32(b.Height * ratio);
+						var newWidth = Convert.ToInt32(b.Width * ratio);
 
 						newSize = new Size(newWidth, newHeight);
 					}
@@ -157,7 +225,7 @@ namespace BatchImageProcessor.Model
 				case Alignment.Middle_Left:
 				case Alignment.Middle_Center:
 				case Alignment.Middle_Right:
-					y = ((b.Height/2) - (cropSize.Height/2));
+					y = ((b.Height / 2) - (cropSize.Height / 2));
 					break;
 
 				case Alignment.Bottom_Left:
@@ -172,7 +240,7 @@ namespace BatchImageProcessor.Model
 				case Alignment.Top_Center:
 				case Alignment.Middle_Center:
 				case Alignment.Bottom_Center:
-					x = ((b.Width/2) - (cropSize.Width/2));
+					x = ((b.Width / 2) - (cropSize.Width / 2));
 					break;
 
 				case Alignment.Top_Right:
@@ -219,7 +287,7 @@ namespace BatchImageProcessor.Model
 						case Alignment.Middle_Left:
 						case Alignment.Middle_Center:
 						case Alignment.Middle_Right:
-							tPos.Y = (b.Height/2f) - (tSize.Height/2f);
+							tPos.Y = (b.Height / 2f) - (tSize.Height / 2f);
 							break;
 						case Alignment.Bottom_Left:
 						case Alignment.Bottom_Center:
@@ -238,7 +306,7 @@ namespace BatchImageProcessor.Model
 						case Alignment.Top_Center:
 						case Alignment.Middle_Center:
 						case Alignment.Bottom_Center:
-							tPos.X = (b.Width/2f) - (tSize.Width/2f);
+							tPos.X = (b.Width / 2f) - (tSize.Width / 2f);
 							break;
 						case Alignment.Top_Right:
 						case Alignment.Middle_Right:
@@ -247,13 +315,13 @@ namespace BatchImageProcessor.Model
 							break;
 					}
 
-					using (var brush = new SolidBrush(Color.FromArgb((int) (255*opac), Color.White)))
+					using (var brush = new SolidBrush(Color.FromArgb((int)(255 * opac), Color.White)))
 					{
 						g.SmoothingMode = SmoothingMode.HighQuality;
 						g.TextRenderingHint = TextRenderingHint.AntiAlias;
 						g.DrawString(text, font, brush, tPos.X, tPos.Y);
-						brush.Color = Color.FromArgb((int) (255*opac), Color.Black);
-						g.DrawString(text, font, brush, tPos.X - (font.SizeInPoints/24) - 1, tPos.Y - (font.SizeInPoints/24) - 1);
+						brush.Color = Color.FromArgb((int)(255 * opac), Color.Black);
+						g.DrawString(text, font, brush, tPos.X - (font.SizeInPoints / 24) - 1, tPos.Y - (font.SizeInPoints / 24) - 1);
 					}
 				}
 				else
@@ -280,16 +348,16 @@ namespace BatchImageProcessor.Model
 
 					float[][] ptsArray =
 					{
-						new[] {tl, tc, tr, 0f, 0f}, // RED
-						new[] {ml, mc, mr, 0f, 0f}, // GREEN
-						new[] {bl, bc, br, 0f, 0f}, // BLUE
-						new[] {0f, 0f, 0f, 1f, 0f}, // Alpha
+						new[] {tl, tc, tr, 0f, 0f},	// RED
+						new[] {ml, mc, mr, 0f, 0f},	// GREEN
+						new[] {bl, bc, br, 0f, 0f},	// BLUE
+						new[] {0f, 0f, 0f, 1f, 0f},	// Alpha
 						new[] {0, 0, 0, 0f, 1f}
 					};
 
 					var imageAttributes = new ImageAttributes();
 					imageAttributes.ClearColorMatrix();
-					var colorMatrix = new ColorMatrix(ptsArray) {Matrix33 = (float)opac};
+					var colorMatrix = new ColorMatrix(ptsArray) { Matrix33 = (float)opac };
 					imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
 
 					var i = Image.FromFile(path);
@@ -304,7 +372,7 @@ namespace BatchImageProcessor.Model
 						case Alignment.Middle_Left:
 						case Alignment.Middle_Center:
 						case Alignment.Middle_Right:
-							tPos.Y = (b.Height/2f) - (i.Height/2f);
+							tPos.Y = (b.Height / 2f) - (i.Height / 2f);
 							break;
 						case Alignment.Bottom_Left:
 						case Alignment.Bottom_Center:
@@ -323,7 +391,7 @@ namespace BatchImageProcessor.Model
 						case Alignment.Top_Center:
 						case Alignment.Middle_Center:
 						case Alignment.Bottom_Center:
-							tPos.X = (b.Width/2f) - (i.Width/2f);
+							tPos.X = (b.Width / 2f) - (i.Width / 2f);
 							break;
 						case Alignment.Top_Right:
 						case Alignment.Middle_Right:
@@ -332,7 +400,7 @@ namespace BatchImageProcessor.Model
 							break;
 					}
 
-					g.DrawImage(i, new Rectangle((int) tPos.X, (int) tPos.Y, i.Width, i.Height), 0, 0, i.Width, i.Height,
+					g.DrawImage(i, new Rectangle((int)tPos.X, (int)tPos.Y, i.Width, i.Height), 0, 0, i.Width, i.Height,
 						GraphicsUnit.Pixel, imageAttributes);
 				}
 			}
@@ -367,14 +435,14 @@ namespace BatchImageProcessor.Model
 					br = .131f;
 					break;
 				case ColorType.Saturation:
-					tl = (1f - sat)*rwgt + sat;
-					tc = tr = (1f - sat)*rwgt;
+					tl = (1f - sat) * rwgt + sat;
+					tc = tr = (1f - sat) * rwgt;
 
-					mc = (1f - sat)*gwgt + sat;
-					ml = mr = (1f - sat)*gwgt;
+					mc = (1f - sat) * gwgt + sat;
+					ml = mr = (1f - sat) * gwgt;
 
-					br = (1f - sat)*bwgt + sat;
-					bl = bc = (1f - sat)*bwgt;
+					br = (1f - sat) * bwgt + sat;
+					bl = bc = (1f - sat) * bwgt;
 					break;
 			}
 
@@ -384,10 +452,10 @@ namespace BatchImageProcessor.Model
 
 			float[][] ptsArray =
 			{
-				new[] {tl, tc, tr, 0f, 0f}, // RED
-				new[] {ml, mc, mr, 0f, 0f}, // GREEN
-				new[] {bl, bc, br, 0f, 0f}, // BLUE
-				new[] {0f, 0f, 0f, 1f, 0f}, // Alpha
+				new[] {tl, tc, tr, 0f, 0f},	// RED
+				new[] {ml, mc, mr, 0f, 0f},	// GREEN
+				new[] {bl, bc, br, 0f, 0f},	// BLUE
+				new[] {0f, 0f, 0f, 1f, 0f},	// Alpha
 				new[] {(float)options.ColorBrightness - 1f, (float)options.ColorBrightness - 1f, (float)options.ColorBrightness - 1f, 0f, 1f}
 			};
 
@@ -405,14 +473,15 @@ namespace BatchImageProcessor.Model
 			return image;
 		}
 
-		public static Image LoadImage(string fileName)
+		private static readonly string[] RawExts = {
+			".3fr", ".ari", ".arw", ".bay", ".crw", ".cr2", ".cap", ".dcs", ".dcr", ".dng", ".drf", ".eip", ".erf", ".fff",
+			".iiq", ".k25", ".kdc", ".mdc", ".mef", ".mos", ".mrw", ".nef", ".nrw", ".obm", ".orf", ".pef", ".ptx", ".pxn",
+			".r3d", ".raf", ".raw", ".rwl", ".rw2", ".rwz", ".sr2", ".srf", ".srw", ".x3f"
+		};
+		public static Image LoadImage(IFile file)
 		{
-			var f = new FileInfo(fileName);
-			if (f.Extension.ToUpper() != ".DNG" && f.Extension.ToUpper() != ".NEF")
-			{
-				return Image.FromFile(fileName, true);
-			}
-			return GetRawImageData(fileName, ".\\Exec\\dcraw.exe");
+			var f = new FileInfo(file.Path);
+			return RawExts.Contains(f.Extension, StringComparer.OrdinalIgnoreCase) ? Image.FromFile(file.Path, true) : GetRawImageData(file, ".\\Exec\\dcraw.exe");
 		}
 
 		#endregion

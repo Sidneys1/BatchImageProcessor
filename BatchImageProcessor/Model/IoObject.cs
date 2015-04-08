@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
+using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Interface;
 
 namespace BatchImageProcessor.Model
@@ -39,19 +41,17 @@ namespace BatchImageProcessor.Model
 
 		public string Name { get; set; }
 		
-
 		public string Path
         {
             get { return _path; }
             set
             {
                 _path = value;
-                PropChanged("Name");
-                PropChanged("Path");
+                PropChanged(nameof(Name));
+                PropChanged();
             }
         }
-
-        //public string Name => _name ?? (_name = GetName(Path));
+		
         public bool IsFile { get; set; }
 
         public void Dispose()
@@ -71,8 +71,9 @@ namespace BatchImageProcessor.Model
 	        Path = e.FullPath;
 	        _watcher.Filter = e.Name;
         }
-		
-        public void PropChanged(string propertyName)
+
+		[NotifyPropertyChangedInvocator]
+		public void PropChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

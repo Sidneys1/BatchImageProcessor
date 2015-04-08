@@ -467,6 +467,15 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png;.
+        /// </summary>
+        public static string ImageExts {
+            get {
+                return ResourceManager.GetString("ImageExts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import Folder(s)....
         /// </summary>
         public static string ImportFolderBtn_ToolTip {
@@ -508,15 +517,6 @@ namespace BatchImageProcessor.Properties {
         public static string JpegOutput {
             get {
                 return ResourceManager.GetString("JpegOutput", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png;|Raw Image Files|*.3fr;*.ari;*.arw;*.bay;*.crw;*.cr2;*.cap;*.dcs;*.dcr;*.dng;*.drf;*.eip;*.erf;*.fff;*.iiq;*.k25;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.obm;*.orf;*.pef;*.ptx;*.pxn;*.r3d;*.raf;*.raw;*.rwl;*.rw2;*.rwz;*.sr2;*.srf;*.srw;*.x3f.
-        /// </summary>
-        public static string MainWindow__fileBrowser_Filter {
-            get {
-                return ResourceManager.GetString("MainWindow__fileBrowser_Filter", resourceCulture);
             }
         }
         
@@ -889,6 +889,15 @@ namespace BatchImageProcessor.Properties {
         public static string PngOutput {
             get {
                 return ResourceManager.GetString("PngOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw Image Files|*.3fr;*.ari;*.arw;*.bay;*.crw;*.cr2;*.cap;*.dcs;*.dcr;*.dng;*.drf;*.eip;*.erf;*.fff;*.iiq;*.k25;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.obm;*.orf;*.pef;*.ptx;*.pxn;*.r3d;*.raf;*.raw;*.rwl;*.rw2;*.rwz;*.sr2;*.srf;*.srw;*.x3f.
+        /// </summary>
+        public static string RawExts {
+            get {
+                return ResourceManager.GetString("RawExts", resourceCulture);
             }
         }
         
