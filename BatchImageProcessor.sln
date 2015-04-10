@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchImageProcessor", "Batc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchImageProcessor.Model", "BatchImageProcessor.Model\BatchImageProcessor.Model.csproj", "{7165D238-5543-40FB-A74F-F792368BE597}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchImageProcessor.CLI", "BatchImageProcessor.CLI\BatchImageProcessor.CLI.csproj", "{293511AC-5E5D-4182-833D-7E802796891C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7165D238-5543-40FB-A74F-F792368BE597}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7165D238-5543-40FB-A74F-F792368BE597}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7165D238-5543-40FB-A74F-F792368BE597}.Release|Any CPU.Build.0 = Release|Any CPU
+		{293511AC-5E5D-4182-833D-7E802796891C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{293511AC-5E5D-4182-833D-7E802796891C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{293511AC-5E5D-4182-833D-7E802796891C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{293511AC-5E5D-4182-833D-7E802796891C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

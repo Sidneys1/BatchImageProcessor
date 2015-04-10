@@ -9,14 +9,13 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using BatchImageProcessor.Annotations;
-using BatchImageProcessor.Interface;
-using BatchImageProcessor.Model;
+using BatchImageProcessor.Model.Interface;
+using BatchImageProcessor.Model.Types;
+using BatchImageProcessor.Model.Types.Enums;
 using BatchImageProcessor.Properties;
-using BatchImageProcessor.Types;
-using BatchImageProcessor.Types.Enums;
 using BatchImageProcessor.View;
 using RawOptions = BatchImageProcessor.View.RawOptions;
-using ResizeMode = BatchImageProcessor.Types.Enums.ResizeMode;
+using ResizeMode = BatchImageProcessor.Model.Types.Enums.ResizeMode;
 
 namespace BatchImageProcessor.ViewModel
 {
@@ -499,7 +498,7 @@ namespace BatchImageProcessor.ViewModel
 
 	    public void ImportFiles(MainWindow sender, string[] strs, FolderWrapper folder)
 	    {
-		    Types.RawOptions overrideOptions = null;
+		    Model.Types.RawOptions overrideOptions = null;
 			
 		    foreach (var str in strs)
 		    {

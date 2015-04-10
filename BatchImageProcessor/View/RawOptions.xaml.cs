@@ -21,7 +21,7 @@ namespace BatchImageProcessor.View
 			Info = info;
 			InitializeComponent();
 
-			_dataContext = new FileWrapper(str) {RawOptions = new Types.RawOptions()};
+			_dataContext = new FileWrapper(str) {RawOptions = new Model.Types.RawOptions()};
 		}
 
 		public RawOptions(FileWrapper opts)

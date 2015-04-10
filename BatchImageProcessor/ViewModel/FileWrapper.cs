@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using BatchImageProcessor.Annotations;
-using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
-using BatchImageProcessor.Types;
-using BatchImageProcessor.Types.Enums;
+using BatchImageProcessor.Model.Interface;
+using BatchImageProcessor.Model.Types;
+using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.ViewModel
 {

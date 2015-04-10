@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
+using BatchImageProcessor.Model.Interface;
 using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel

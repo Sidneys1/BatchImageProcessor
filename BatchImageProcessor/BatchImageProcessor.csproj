@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BatchImageProcessor</RootNamespace>
     <AssemblyName>BatchImageProcessor</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -94,9 +94,6 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions">
-      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
-    </Reference>
     <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
       <Private>True</Private>
@@ -114,26 +111,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.4.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Xceed.Wpf.DataGrid, Version=2.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.4.0\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Xceed.Wpf.Toolkit, Version=2.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.4.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>True</Private>
@@ -147,14 +124,6 @@
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Interface\IFile.cs" />
-    <Compile Include="Interface\IFolderable.cs" />
-    <Compile Include="Interface\IFolderableHost.cs" />
-    <Compile Include="Interface\IIoObject.cs" />
-    <Compile Include="Model\IoObject.cs" />
-    <Compile Include="Model\Model.cs" />
-    <Compile Include="Model\Folder.cs" />
-    <Compile Include="Model\StaticImageUtils.cs" />
     <Compile Include="Native\DwmApiInteropt.cs" />
     <Compile Include="Native\HookEventArgs.cs" />
     <Compile Include="Native\HookType.cs" />
@@ -168,24 +137,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Types\AdjustmentOptions.cs" />
-    <Compile Include="Types\CropOptions.cs" />
-    <Compile Include="Types\Enums\Alignment.cs" />
-    <Compile Include="Types\Enums\ColorType.cs" />
-    <Compile Include="Types\Enums\Format.cs" />
-    <Compile Include="Types\Enums\InterpolationMode.cs" />
-    <Compile Include="Types\Enums\NameType.cs" />
-    <Compile Include="Types\Enums\RawHighlightMode.cs" />
-    <Compile Include="Types\Enums\ResizeMode.cs" />
-    <Compile Include="Types\Enums\Rotation.cs" />
-    <Compile Include="Types\Enums\WatermarkType.cs" />
-    <Compile Include="Types\Enums\WhiteBalanceMode.cs" />
-    <Compile Include="Types\ModelProgressUpdate.cs" />
-    <Compile Include="Types\OptionSet.cs" />
-    <Compile Include="Types\OutputOptions.cs" />
-    <Compile Include="Types\RawOptions.cs" />
-    <Compile Include="Types\ResizeOptions.cs" />
-    <Compile Include="Types\WatermarkOptions.cs" />
     <Compile Include="ViewModel\Converters\BooleanConverter.cs" />
     <Compile Include="ViewModel\Converters\BooleanToEffectConverter.cs" />
     <Compile Include="ViewModel\Converters\BooleanToOpacityConverter.cs" />
@@ -242,7 +193,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\File.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -423,7 +373,12 @@
     </Content>
     <None Include="Resources\image-export.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\BatchImageProcessor.Model\BatchImageProcessor.Model.csproj">
+      <Project>{7165d238-5543-40fb-a74f-f792368be597}</Project>
+      <Name>BatchImageProcessor.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
