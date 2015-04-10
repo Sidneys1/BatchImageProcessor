@@ -8,6 +8,7 @@ using System.Text;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Native;
 using BatchImageProcessor.Types;
+using BatchImageProcessor.Types.Enums;
 using BatchImageProcessor.View;
 using NDesk.Options;
 using Xceed.Wpf.Toolkit;

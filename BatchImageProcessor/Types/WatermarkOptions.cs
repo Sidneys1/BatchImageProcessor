@@ -1,4 +1,5 @@
 using System.Drawing;
+using BatchImageProcessor.Types.Enums;
 
 namespace BatchImageProcessor.Types
 {

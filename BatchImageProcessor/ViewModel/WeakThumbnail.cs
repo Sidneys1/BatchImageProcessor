@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Shell;
 
-namespace BatchImageProcessor.Types
+namespace BatchImageProcessor.ViewModel
 {
 	public class WeakThumbnail
 	{

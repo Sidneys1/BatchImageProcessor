@@ -11,18 +11,18 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
-using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Native;
 using BatchImageProcessor.Types;
+using BatchImageProcessor.Types.Enums;
 using BatchImageProcessor.ViewModel;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using static System.Environment;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
-using static System.Environment;
 
 
 namespace BatchImageProcessor.View

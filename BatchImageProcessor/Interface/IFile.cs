@@ -1,4 +1,5 @@
 ﻿using BatchImageProcessor.Types;
+using BatchImageProcessor.Types.Enums;
 
 namespace BatchImageProcessor.Interface
 {

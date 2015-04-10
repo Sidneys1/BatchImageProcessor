@@ -10,32 +10,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using BatchImageProcessor.Interface;
 using BatchImageProcessor.Types;
+using BatchImageProcessor.Types.Enums;
 
 namespace BatchImageProcessor.Model
 {
-	public struct ModelProgressUpdate
-	{
-		public int Total;
-		public int Done;
-
-		public ModelProgressUpdate(int total, int done)
-		{
-			Total = total;
-			Done = done;
-		}
-
-	}
-
 	public class Model
 	{
 		private int _totalImages;
 		private int _doneImages;
-
-		//public event EventHandler UpdateDone;
+		
 
 		public bool Cancel = false;
 		
-		//private readonly Mutex _namingMutex = new Mutex();
 
 		public bool OutputSet { get; set; } = false;
 

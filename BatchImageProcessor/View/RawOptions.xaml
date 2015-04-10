@@ -8,6 +8,7 @@
         xmlns:types="clr-namespace:BatchImageProcessor.Types"
         xmlns:converters="clr-namespace:BatchImageProcessor.ViewModel.Converters"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:enums="clr-namespace:BatchImageProcessor.Types.Enums"
         mc:Ignorable="d" Loaded="RawOptions_OnLoaded"
         Title="RAW Import Options" Height="600" Width="800" d:DataContext="{d:DesignInstance viewModel:FileWrapper }" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize">
 	<Window.Resources>
@@ -36,7 +37,7 @@
 
 		<StackPanel Grid.Row="1" Grid.RowSpan="3" Grid.Column="1">
 			<TextBlock Text="White Balance Mode" VerticalAlignment="Center" Margin="3" FontWeight="Bold"/>
-			<ComboBox Margin="3" SelectedValue="{Binding RawOptions.WhiteBalance}" ItemsSource="{Binding Source={extensions:Enumeration {x:Type types:WhiteBalanceMode}}}" DisplayMemberPath="Description" SelectedValuePath="Value"/>
+			<ComboBox Margin="3" SelectedValue="{Binding RawOptions.WhiteBalance}" ItemsSource="{Binding Source={extensions:Enumeration {x:Type enums:WhiteBalanceMode}}}" DisplayMemberPath="Description" SelectedValuePath="Value"/>
 			<Grid Visibility="{Binding RawOptions.WhiteBalance, ConverterParameter=AverageArea, Converter={StaticResource EnumVisibilityConverter}}">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto"/>
@@ -90,7 +91,7 @@
 				<xctk:DoubleUpDown Grid.Row="4" Grid.Column="1" Margin="3" Minimum="1" Value="{Binding RawOptions.WhiteBalanceMul3}"/>
 			</Grid>
 			<TextBlock Text="Interpolation Mode" VerticalAlignment="Center" Margin="3" FontWeight="Bold"/>
-			<ComboBox Margin="3" SelectedValue="{Binding RawOptions.InterpolationMode}" ItemsSource="{Binding Source={extensions:Enumeration {x:Type types:InterpolationMode}}}" DisplayMemberPath="Description" SelectedValuePath="Value"/>
+			<ComboBox Margin="3" SelectedValue="{Binding RawOptions.InterpolationMode}" ItemsSource="{Binding Source={extensions:Enumeration {x:Type enums:InterpolationMode}}}" DisplayMemberPath="Description" SelectedValuePath="Value"/>
 			<CheckBox Margin="3" Content="Clean up color Artifacts with a 3x3 Median Filter" IsChecked="{Binding RawOptions.Cleanup}"/>
 			<Grid Visibility="{Binding RawOptions.Cleanup, Converter={StaticResource BooleanToVisibilityConverter}}">
 				<Grid.ColumnDefinitions>

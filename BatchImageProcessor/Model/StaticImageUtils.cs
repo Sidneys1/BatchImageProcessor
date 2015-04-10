@@ -9,8 +9,9 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using BatchImageProcessor.Interface;
 using BatchImageProcessor.Types;
-using InterpolationMode = BatchImageProcessor.Types.InterpolationMode;
-using Rotation = BatchImageProcessor.Types.Rotation;
+using BatchImageProcessor.Types.Enums;
+using InterpolationMode = BatchImageProcessor.Types.Enums.InterpolationMode;
+using Rotation = BatchImageProcessor.Types.Enums.Rotation;
 
 namespace BatchImageProcessor.Model
 {
@@ -107,7 +108,7 @@ namespace BatchImageProcessor.Model
 			{
 				return Image.FromStream(process.StandardOutput.BaseStream, true, true);
 			}
-			catch
+			catch (Exception e)
 			{
 				// ignored
 			}
@@ -481,7 +482,7 @@ namespace BatchImageProcessor.Model
 		public static Image LoadImage(IFile file)
 		{
 			var f = new FileInfo(file.Path);
-			return RawExts.Contains(f.Extension, StringComparer.OrdinalIgnoreCase) ? Image.FromFile(file.Path, true) : GetRawImageData(file, ".\\Exec\\dcraw.exe");
+			return !RawExts.Contains(f.Extension, StringComparer.OrdinalIgnoreCase) ? Image.FromFile(file.Path, true) : GetRawImageData(file, ".\\Exec\\dcraw.exe");
 		}
 
 		#endregion

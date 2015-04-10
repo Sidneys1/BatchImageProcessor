@@ -1,9 +1,9 @@
-﻿namespace BatchImageProcessor.Types
+﻿using BatchImageProcessor.Types.Enums;
+
+namespace BatchImageProcessor.Types
 {
 	public class OptionSet
 	{
-
-
 		#region Enabled
 
 		public bool EnableCrop { get; set; } = false;

@@ -1,3 +1,5 @@
+using BatchImageProcessor.Types.Enums;
+
 namespace BatchImageProcessor.Types
 {
 	public class CropOptions

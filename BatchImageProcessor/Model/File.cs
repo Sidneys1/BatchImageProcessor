@@ -1,5 +1,6 @@
 ﻿using BatchImageProcessor.Interface;
 using BatchImageProcessor.Types;
+using BatchImageProcessor.Types.Enums;
 
 namespace BatchImageProcessor.Model
 {

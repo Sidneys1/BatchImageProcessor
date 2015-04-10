@@ -4,6 +4,7 @@ using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Types;
+using BatchImageProcessor.Types.Enums;
 
 namespace BatchImageProcessor.ViewModel
 {

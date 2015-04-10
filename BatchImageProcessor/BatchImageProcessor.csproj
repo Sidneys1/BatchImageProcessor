@@ -169,23 +169,23 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Types\AdjustmentOptions.cs" />
-    <Compile Include="Types\Alignment.cs" />
-    <Compile Include="Types\ColorType.cs" />
     <Compile Include="Types\CropOptions.cs" />
-    <Compile Include="Types\Format.cs" />
-    <Compile Include="Types\InterpolationMode.cs" />
-    <Compile Include="Types\NameType.cs" />
+    <Compile Include="Types\Enums\Alignment.cs" />
+    <Compile Include="Types\Enums\ColorType.cs" />
+    <Compile Include="Types\Enums\Format.cs" />
+    <Compile Include="Types\Enums\InterpolationMode.cs" />
+    <Compile Include="Types\Enums\NameType.cs" />
+    <Compile Include="Types\Enums\RawHighlightMode.cs" />
+    <Compile Include="Types\Enums\ResizeMode.cs" />
+    <Compile Include="Types\Enums\Rotation.cs" />
+    <Compile Include="Types\Enums\WatermarkType.cs" />
+    <Compile Include="Types\Enums\WhiteBalanceMode.cs" />
+    <Compile Include="Types\ModelProgressUpdate.cs" />
     <Compile Include="Types\OptionSet.cs" />
     <Compile Include="Types\OutputOptions.cs" />
-    <Compile Include="Types\RawHighlightMode.cs" />
     <Compile Include="Types\RawOptions.cs" />
-    <Compile Include="Types\ResizeMode.cs" />
     <Compile Include="Types\ResizeOptions.cs" />
-    <Compile Include="Types\Rotation.cs" />
     <Compile Include="Types\WatermarkOptions.cs" />
-    <Compile Include="Types\WatermarkType.cs" />
-    <Compile Include="Types\WeakThumbnail.cs" />
-    <Compile Include="Types\WhiteBalanceMode.cs" />
     <Compile Include="ViewModel\Converters\BooleanConverter.cs" />
     <Compile Include="ViewModel\Converters\BooleanToEffectConverter.cs" />
     <Compile Include="ViewModel\Converters\BooleanToOpacityConverter.cs" />
@@ -200,6 +200,7 @@
     <Compile Include="ViewModel\FileCollectionView.cs" />
     <Compile Include="ViewModel\TypeConverter.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
+    <Compile Include="ViewModel\WeakThumbnail.cs" />
     <Compile Include="View\AboutBox.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>

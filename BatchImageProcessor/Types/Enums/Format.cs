@@ -1,4 +1,4 @@
-namespace BatchImageProcessor.Types
+namespace BatchImageProcessor.Types.Enums
 {
 	public enum Format
 	{

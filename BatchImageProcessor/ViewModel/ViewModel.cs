@@ -13,9 +13,10 @@ using BatchImageProcessor.Interface;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Properties;
 using BatchImageProcessor.Types;
+using BatchImageProcessor.Types.Enums;
 using BatchImageProcessor.View;
 using RawOptions = BatchImageProcessor.View.RawOptions;
-using ResizeMode = BatchImageProcessor.Types.ResizeMode;
+using ResizeMode = BatchImageProcessor.Types.Enums.ResizeMode;
 
 namespace BatchImageProcessor.ViewModel
 {
