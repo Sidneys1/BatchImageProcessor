@@ -28,9 +28,9 @@ And more!
 
 Now includes a complete CLI interface! Usage:
 
-`BatchImageProcessor.exe [flags] [file0 file1 ... fileX]`
+`bpicli.exe [flags] [file0 file1 ... fileX]`
 
-Including files in the command will process each file listed. For large numbers of files, it may be easier to use a manifest file (see `--man`). Specifying any flags (except `-s` and `-e`), files, or a manifest will disable the GUI.
+Including files in the command will process each file listed. For large numbers of files, it may be easier to use a manifest file (see `--man`).
 
 ### CLI Flags: ###
 Batch Image Processor CLI uses flags to specify options. Short flags, like `-c` and `-w`, can be combined as `-cw`. The last short flag can be `o`, followed by the output path, e.g. `-cwo="C:\Output"` Mode flags, e.g. `--option=(Option1|Option2)` are not case sensitive.
@@ -108,5 +108,6 @@ Batch Image Processor CLI uses flags to specify options. Short flags, like `-c` 
 
 #### GUI Flags ####
 In addition to CLI flags, there are also some GUI flags:
+`BatchImageProcessor.exe [flags]`
 * `-s` or `--noshaders`: Disable the drop shadow and blur shaders used in the GUI
 * `-e` or `--noaero`: Disable the Windows Aero extensions
