@@ -1,5 +1,5 @@
 # Batch Image Processor #
-[![Batch Image Processor](http://imgur.com/7j6L5ok.png)](http://imgur.com/7j6L5ok.png)
+[![Batch Image Processor](http://i.imgur.com/YJApth2.png)](http://i.imgur.com/YJApth2.png)
 ## What does it Do? ##
 
 Import hundreds of photos and perform various manipulations on them!
@@ -28,7 +28,7 @@ And more!
 
 Now includes a complete CLI interface! Usage:
 
-`bpicli.exe [flags] [file0 file1 ... fileX]`
+`bipcli.exe [flags] [file0 file1 ... fileX]`
 
 Including files in the command will process each file listed. For large numbers of files, it may be easier to use a manifest file (see `--man`).
 
