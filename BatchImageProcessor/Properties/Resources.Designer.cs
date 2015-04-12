@@ -656,6 +656,15 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open with paint.net.
+        /// </summary>
+        public static string OpenWithPaintDotNet {
+            get {
+                return ResourceManager.GetString("OpenWithPaintDotNet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Output Folder.
         /// </summary>
         public static string OutputFolder {

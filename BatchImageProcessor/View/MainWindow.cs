@@ -751,5 +751,11 @@ namespace BatchImageProcessor.View
 			var x = new RawOptions(m.DataContext as FileWrapper) {Owner = this};
 			x.ShowDialog();
 		}
-	}
+
+		private void OpenPaintDotNet_Click(object sender, RoutedEventArgs e)
+		{
+			var m = (ContextMenu)Resources["ImageCtxMenu"];
+			VModel.OpenWithPaintDotNet((FileWrapper)m.DataContext);
+		}
+    }
 }

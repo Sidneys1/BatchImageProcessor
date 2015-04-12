@@ -149,6 +149,7 @@
     <Compile Include="ViewModel\FolderWrapper.cs" />
     <Compile Include="ViewModel\FolderCollectionView.cs" />
     <Compile Include="ViewModel\FileCollectionView.cs" />
+    <Compile Include="ViewModel\Services\NavigationService.cs" />
     <Compile Include="ViewModel\TypeConverter.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
     <Compile Include="ViewModel\WeakThumbnail.cs" />

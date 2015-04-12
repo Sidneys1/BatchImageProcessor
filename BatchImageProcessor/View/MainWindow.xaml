@@ -180,6 +180,12 @@
 			<Separator />
 			<MenuItem Header="Edit Raw File Settings" Visibility="{Binding IsRaw, Converter={StaticResource BooleanToVisibilityConverter}}" Click="MenuItem_Click_1"/>
 			<Separator Visibility="{Binding IsRaw, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+			<MenuItem Header="{x:Static properties:Resources.OpenWithPaintDotNet}" Visibility="{Binding PaintDotNetInstalled, Converter={StaticResource BooleanToVisibilityConverter}}" Click="OpenPaintDotNet_Click">
+				<MenuItem.Icon>
+					<Image Source="../Images/image-export.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator Visibility="{Binding PaintDotNetInstalled, Converter={StaticResource BooleanToVisibilityConverter}}" />
 			<MenuItem Header="{x:Static properties:Resources.RemoveImageHeader}" Click="MenuItem_Click">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/cross.png" />

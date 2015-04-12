@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using BatchImageProcessor.ViewModel.Services;
 
 namespace BatchImageProcessor.View
 {
@@ -17,7 +18,8 @@ namespace BatchImageProcessor.View
             VersionTxt.Text = AssemblyVersion;
             CopyrightTxt.Text = AssemblyCopyright;
             CompanyTxt.Text = AssemblyCompany;
-            DescriptionTxt.Text = AssemblyDescription;
+			DescriptionTxt.SetValue(NavigationService.TextProperty, AssemblyDescription);
+            //DescriptionTxt.Text = AssemblyDescription;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

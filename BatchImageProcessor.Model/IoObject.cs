@@ -47,8 +47,8 @@ namespace BatchImageProcessor.Model
             set
             {
                 _path = value;
-                PropChanged(nameof(Name));
-                PropChanged();
+				PropChanged();
+				PropChanged(nameof(Name));
             }
         }
 		

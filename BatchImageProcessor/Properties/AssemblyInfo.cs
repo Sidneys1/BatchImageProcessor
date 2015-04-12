@@ -7,7 +7,11 @@ using System.Windows;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("Batch Image Processor")]
-[assembly: AssemblyDescription("A tool for resizing, rotating, cropping, or watermarking large numbers of photos.")]
+[assembly: AssemblyDescription(
+@"A tool for resizing, rotating, cropping, or watermarking large numbers of photos.
+Some icons by Yusuke Kamiyamane. Licensed under a Creative Commons Attribution 3.0 license.
+http://p.yusukekamiyamane.com/
+http://creativecommons.org/licenses/by/3.0/")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Borne Programming")]
 [assembly: AssemblyProduct("Batch Image Processor")]
