@@ -37,13 +37,26 @@ namespace BatchImageProcessor.View
 		private IntPtr _hwnd;
 		private TaskbarManager _manager;
 
-		public MainWindow(bool noshaders = false, bool noaero = false)
+		public MainWindow(bool noshaders = false, bool noaero = false, string[] files = null, string[] folders = null)
 		{
 			_noShaders = noshaders;
 			_noAero = noaero;
 
 			VModel = new ViewModel.ViewModel(this);
-			VModel.Folders.Add(new FolderWrapper(removable: false) { Name = Properties.Resources.OutputFolder });
+			var folder = new FolderWrapper(removable: false) { Name = Properties.Resources.OutputFolder };
+			VModel.Folders.Add(folder);
+
+			if (files != null)
+				VModel.ImportFiles(this, files, folder);
+
+			if (folders != null)
+			{
+				foreach (var s in folders)
+				{
+					folder.Files.Add(new FolderWrapper(s));
+				}
+			}
+
 
 			InitializeComponent();
 

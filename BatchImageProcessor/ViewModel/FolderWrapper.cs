@@ -32,7 +32,7 @@ namespace BatchImageProcessor.ViewModel
 			get { return _folder.Name; }
 			set
 			{
-				if (_folder.Name.Equals(value, StringComparison.Ordinal)) return;
+				if (_folder.Name?.Equals(value, StringComparison.Ordinal) ?? false) return;
 				
 				_folder.Name = value;
 				PropChanged(nameof(Name));

@@ -89,6 +89,7 @@
 		<!-- Thumbnail Fall-back Image -->
 		<BitmapImage x:Key="LoadingImage" CacheOption="OnLoad" UriSource="../Images/refresh.png" />
 
+		<!-- ReSharper disable once Xaml.RedundantResource -->
 		<ContextMenu x:Key="ImageCtxMenu" d:DataContext="{d:DesignInstance viewmodel:FileWrapper}">
 			
 			<MenuItem Header="{x:Static properties:Resources.OutputOverrideHeader}">

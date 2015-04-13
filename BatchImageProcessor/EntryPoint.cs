@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using BatchImageProcessor.Model.Types;
@@ -17,7 +19,7 @@ namespace BatchImageProcessor
 		{
 			var noShaders = false;
 			var noAero = false;
-
+			List<string> extra=null;
 			if (args != null && args.Length > 0)
 			{
 				var showHelp = false;
@@ -31,7 +33,7 @@ namespace BatchImageProcessor
 				
 				try
 				{
-					p.Parse(args);
+					extra = p.Parse(args);
 				}
 				catch (OptionException e)
 				{
@@ -48,7 +50,7 @@ namespace BatchImageProcessor
 				}
 			}
 			var app = new App();
-			app.Run(new MainWindow(noShaders, noAero));
+			app.Run(new MainWindow(noShaders, noAero, extra?.Where(File.Exists).ToArray(), extra?.Where(Directory.Exists).ToArray()));
 		}
 
 		static void ShowHelp(OptionSet p)
