@@ -6,6 +6,9 @@
         xmlns:properties="clr-namespace:BatchImageProcessor.Properties"
         xmlns:converters="clr-namespace:BatchImageProcessor.ViewModel.Converters"
         xmlns:controls="clr-namespace:BatchImageProcessor.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
         Title="{DynamicResource AppTitle}" Height="720" Width="1280" MinWidth="800" MinHeight="600"
         UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="../Images/ImageRotator.ico"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
@@ -86,27 +89,26 @@
 		<!-- Thumbnail Fall-back Image -->
 		<BitmapImage x:Key="LoadingImage" CacheOption="OnLoad" UriSource="../Images/refresh.png" />
 
-		<!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
-		<!-- ReSharper disable once Xaml.RedundantResource -->
-		<ContextMenu x:Key="ImageCtxMenu">
+		<ContextMenu x:Key="ImageCtxMenu" d:DataContext="{d:DesignInstance viewmodel:FileWrapper}">
+			
 			<MenuItem Header="{x:Static properties:Resources.OutputOverrideHeader}">
-				<MenuItem Header="{x:Static properties:Resources.DefaultOutput}"
-				          IsChecked="{Binding OverrideFormat, ConverterParameter=Default, Converter={StaticResource EnumConv}}" />
+				<MenuItem Header="{x:Static properties:Resources.DefaultOutput}" StaysOpenOnClick="True"
+				          IsChecked="{Binding Options.OutputOptions.OutputFormat, ConverterParameter=Default, Converter={StaticResource EnumConv}}" IsCheckable="True" />
 				<Separator />
 				<MenuItem Header="{x:Static properties:Resources.JpegOutput}" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideFormat, ConverterParameter=Jpg, Converter={StaticResource EnumConv}}"
+				          IsChecked="{Binding Options.OutputOptions.OutputFormat, ConverterParameter=Jpg, Converter={StaticResource EnumConv}}"
 				          IsCheckable="True" />
 				<MenuItem Header="{x:Static properties:Resources.PngOutput}" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideFormat, ConverterParameter=Png, Converter={StaticResource EnumConv}}"
+				          IsChecked="{Binding Options.OutputOptions.OutputFormat, ConverterParameter=Png, Converter={StaticResource EnumConv}}"
 				          IsCheckable="True" />
 				<MenuItem Header="{x:Static properties:Resources.BmpOutput}" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideFormat, ConverterParameter=Bmp, Converter={StaticResource EnumConv}}"
+				          IsChecked="{Binding Options.OutputOptions.OutputFormat, ConverterParameter=Bmp, Converter={StaticResource EnumConv}}"
 				          IsCheckable="True" />
 				<MenuItem Header="{x:Static properties:Resources.GifOutput}" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideFormat, ConverterParameter=Gif, Converter={StaticResource EnumConv}}"
+				          IsChecked="{Binding Options.OutputOptions.OutputFormat, ConverterParameter=Gif, Converter={StaticResource EnumConv}}"
 				          IsCheckable="True" />
 				<MenuItem Header="{x:Static properties:Resources.TifOutput}" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideFormat, ConverterParameter=Tiff, Converter={StaticResource EnumConv}}"
+				          IsChecked="{Binding Options.OutputOptions.OutputFormat, ConverterParameter=Tiff, Converter={StaticResource EnumConv}}"
 				          IsCheckable="True" />
 			</MenuItem>
 			<MenuItem Header="{x:Static properties:Resources.RotationMenu_Header}">
@@ -114,65 +116,66 @@
 					<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/image-rotate.png" />
 				</MenuItem.Icon>
 				<MenuItem Header="{x:Static properties:Resources.RotationMenu_DefaultRotationMenuItem_Header}" IsCheckable="True" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideRotation, ConverterParameter=Default, Converter={StaticResource EnumConv}}">
+				          IsChecked="{Binding Options.Rotation, ConverterParameter=Default, Converter={StaticResource EnumConv}}">
 					<MenuItem.Icon>
 						<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/image-rotate.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 				<Separator />
 				<MenuItem Header="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}" IsCheckable="True" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideRotation, ConverterParameter=CounterClockwise, Converter={StaticResource EnumConv}}">
+				          IsChecked="{Binding Options.Rotation, ConverterParameter=CounterClockwise, Converter={StaticResource EnumConv}}">
 					<MenuItem.Icon>
 						<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/arrow-circle-ccwise.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 				<MenuItem Header="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}" IsCheckable="True" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideRotation, ConverterParameter=None, Converter={StaticResource EnumConv}}">
+				          IsChecked="{Binding Options.Rotation, ConverterParameter=None, Converter={StaticResource EnumConv}}">
 					<MenuItem.Icon>
 						<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/arrow-noturn.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 				<MenuItem Header="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}" IsCheckable="True" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideRotation, ConverterParameter=UpsideDown, Converter={StaticResource EnumConv}}">
+				          IsChecked="{Binding Options.Rotation, ConverterParameter=UpsideDown, Converter={StaticResource EnumConv}}">
 					<MenuItem.Icon>
 						<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/arrow-circle-180.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 				<MenuItem Header="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}" IsCheckable="True" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideRotation, ConverterParameter=Clockwise, Converter={StaticResource EnumConv}}">
+				          IsChecked="{Binding Options.Rotation, ConverterParameter=Clockwise, Converter={StaticResource EnumConv}}">
 					<MenuItem.Icon>
 						<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/arrow-circle-cwise.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 				<MenuItem Header="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}" IsCheckable="True" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideRotation, ConverterParameter=Portrait, Converter={StaticResource EnumConv}}">
+				          IsChecked="{Binding Options.Rotation, ConverterParameter=Portrait, Converter={StaticResource EnumConv}}">
 					<MenuItem.Icon>
 						<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/image-vertical.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 				<MenuItem Header="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}" IsCheckable="True" StaysOpenOnClick="True"
-				          IsChecked="{Binding OverrideRotation, ConverterParameter=Landscape, Converter={StaticResource EnumConv}}">
+				          IsChecked="{Binding Options.Rotation, ConverterParameter=Landscape, Converter={StaticResource EnumConv}}">
 					<MenuItem.Icon>
 						<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/image.png" />
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="{x:Static properties:Resources.OverrideResizeHeader}" IsCheckable="True" IsChecked="{Binding OverrideResize}">
+			
+			<MenuItem Header="{x:Static properties:Resources.OverrideResizeHeader}" IsCheckable="True" IsChecked="{Binding Options.EnableResize}">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/image-resize.png" />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="{x:Static properties:Resources.OverrideCropHeader}" IsCheckable="True" IsChecked="{Binding OverrideCrop}">
+			<MenuItem Header="{x:Static properties:Resources.OverrideCropHeader}" IsCheckable="True" IsChecked="{Binding Options.EnableCrop}">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/image-crop.png" />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="{x:Static properties:Resources.OverrideWatermarkHeader}" IsCheckable="True" IsChecked="{Binding OverrideWatermark}">
+			<MenuItem Header="{x:Static properties:Resources.OverrideWatermarkHeader}" IsCheckable="True" IsChecked="{Binding Options.EnableWatermark}">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/image-saturation.png" />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="{x:Static properties:Resources.OverrideAdjustmentsHeader}" IsCheckable="True" IsChecked="{Binding OverrideColor}">
+			<MenuItem Header="{x:Static properties:Resources.OverrideAdjustmentsHeader}" IsCheckable="True" IsChecked="{Binding Options.EnableAdjustments}">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/color-adjustment.png" />
 				</MenuItem.Icon>
@@ -180,12 +183,18 @@
 			<Separator />
 			<MenuItem Header="Edit Raw File Settings" Visibility="{Binding IsRaw, Converter={StaticResource BooleanToVisibilityConverter}}" Click="MenuItem_Click_1"/>
 			<Separator Visibility="{Binding IsRaw, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-			<MenuItem Header="{x:Static properties:Resources.OpenWithPaintDotNet}" Visibility="{Binding PaintDotNetInstalled, Converter={StaticResource BooleanToVisibilityConverter}}" Click="OpenPaintDotNet_Click">
+			<MenuItem Header="{x:Static properties:Resources.OpenWithPaintDotNet}" Visibility="{Binding Converter={StaticResource BooleanToVisibilityConverter}, Source={x:Static viewmodel:ViewModel.PaintDotNetInstalled}}" Click="OpenPaintDotNet_Click">
 				<MenuItem.Icon>
 					<Image Source="../Images/image-export.png"/>
 				</MenuItem.Icon>
 			</MenuItem>
-			<Separator Visibility="{Binding PaintDotNetInstalled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+			<Separator Visibility="{Binding Converter={StaticResource BooleanToVisibilityConverter}, Source={x:Static viewmodel:ViewModel.PaintDotNetInstalled}}" />
+			<MenuItem Header="Override Settings...">
+				<MenuItem.Icon>
+					<Image Source="../Images/wrench-screwdriver.png" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<Separator/>
 			<MenuItem Header="{x:Static properties:Resources.RemoveImageHeader}" Click="MenuItem_Click">
 				<MenuItem.Icon>
 					<Image Stretch="None" StretchDirection="DownOnly" Source="../Images/cross.png" />
@@ -485,41 +494,41 @@
 						            Effect="{StaticResource DropShadowFx}"
 						            Opacity="{Binding Selected, Converter={StaticResource BoolOpacConv}}">
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideRotation, ConverterParameter=None, Converter={StaticResource EnumVisConv}}"
+							       Visibility="{Binding Options.Rotation, ConverterParameter=None, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/arrow-noturn.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_NoRotationMenuItem_Header}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideRotation, ConverterParameter=Clockwise, Converter={StaticResource EnumVisConv}}"
+							       Visibility="{Binding Options.Rotation, ConverterParameter=Clockwise, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/arrow-circle-cwise.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_CRotationMenuItem_Header}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideRotation, ConverterParameter=UpsideDown, Converter={StaticResource EnumVisConv}}"
+							       Visibility="{Binding Options.Rotation, ConverterParameter=UpsideDown, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/arrow-circle-180.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_180RotationMenuItem_Header}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideRotation, ConverterParameter=CounterClockwise, Converter={StaticResource EnumVisConv}}"
+							       Visibility="{Binding Options.Rotation, ConverterParameter=CounterClockwise, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/arrow-circle-ccwise.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_CCRotationMenuItem_Header}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideRotation, ConverterParameter=Portrait, Converter={StaticResource EnumVisConv}}"
+							       Visibility="{Binding Options.Rotation, ConverterParameter=Portrait, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/image-vertical.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_PortRotationMenuItem_Header}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideRotation, ConverterParameter=Landscape, Converter={StaticResource EnumVisConv}}"
+							       Visibility="{Binding Options.Rotation, ConverterParameter=Landscape, Converter={StaticResource EnumVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/image.png"
 							       ToolTip="{x:Static properties:Resources.RotationMenu_LandRotationMenuItem_Header}" />
 
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideResize, Converter={StaticResource InvBoolVisConv}}"
+							       Visibility="{Binding Options.EnableResize, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/image-resize-actual--cross.png" ToolTip="{x:Static properties:Resources.OverriddenResize}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideCrop, Converter={StaticResource InvBoolVisConv}}"
+							       Visibility="{Binding Options.EnableCrop, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/image-crop--cross.png" ToolTip="{x:Static properties:Resources.OverriddenCrop}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideWatermark, Converter={StaticResource InvBoolVisConv}}"
+							       Visibility="{Binding Options.EnableWatermark, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/image-saturation--cross.png" ToolTip="{x:Static properties:Resources.OverriddenWatermark}" />
 							<Image Width="16" Height="16"
-							       Visibility="{Binding OverrideColor, Converter={StaticResource InvBoolVisConv}}"
+							       Visibility="{Binding Options.EnableAdjustments, Converter={StaticResource InvBoolVisConv}}"
 							       StretchDirection="DownOnly" Source="../Images/color-adjustment--cross.png"
 							       ToolTip="{x:Static properties:Resources.OverriddenAdjustments}" />
 						</StackPanel>

@@ -566,12 +566,12 @@
     <value>..\Resources\image-export.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ImageExts" xml:space="preserve">
-    <value>Image Files|*.jpg;*.jpeg;*.png;</value>
+    <value>Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif</value>
   </data>
   <data name="RawExts" xml:space="preserve">
     <value>Raw Image Files|*.3fr;*.ari;*.arw;*.bay;*.crw;*.cr2;*.cap;*.dcs;*.dcr;*.dng;*.drf;*.eip;*.erf;*.fff;*.iiq;*.k25;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.obm;*.orf;*.pef;*.ptx;*.pxn;*.r3d;*.raf;*.raw;*.rwl;*.rw2;*.rwz;*.sr2;*.srf;*.srw;*.x3f</value>
   </data>
-	<data name="OpenWithPaintDotNet" xml:space="preserve">
+  <data name="OpenWithPaintDotNet" xml:space="preserve">
     <value>Open with paint.net</value>
   </data>
 </root>

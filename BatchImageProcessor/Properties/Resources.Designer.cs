@@ -467,7 +467,7 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png;.
+        ///   Looks up a localized string similar to Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif.
         /// </summary>
         public static string ImageExts {
             get {

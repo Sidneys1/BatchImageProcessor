@@ -8,13 +8,8 @@ namespace BatchImageProcessor.Model
 	{
 		#region Variables
 
+		public OptionSet Options { get; set; } = new OptionSet {Rotation = Rotation.Default};
 		public bool Selected { get; set; } = true;
-		public bool OverrideCrop { get; set; } = false;
-		public bool OverrideColor { get; set; } = false;
-		public bool OverrideResize { get; set; } = false;
-		public bool OverrideWatermark { get; set; } = false;
-		public Format OverrideFormat { get; set; } = Format.Default;
-		public Rotation OverrideRotation { get; set; } = Rotation.Default;
 
 		public RawOptions RawOptions { get; set; } = null;
 		public bool IsRaw { get; set; } = false;
@@ -23,6 +18,7 @@ namespace BatchImageProcessor.Model
 
 		public File(string path) : base(path)
         {
+		Options.OutputOptions.OutputFormat = Format.Default;
         }
 
         #region Properties

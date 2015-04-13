@@ -69,12 +69,12 @@ namespace BatchImageProcessor.ViewModel
 
 		#region Properties
 
-		private bool _paintDotNetSet;
-		private string _paintDotNetInstall;
-		private bool _paintDotNetInstalled;
+		private static bool _paintDotNetSet;
+		private static string _paintDotNetInstall;
+		private static bool _paintDotNetInstalled;
 		public bool Ready => OutputSet && (DoneImages == TotalImages);
 
-		public bool PaintDotNetInstalled
+		public static bool PaintDotNetInstalled
 		{
 			get
 			{
@@ -84,9 +84,7 @@ namespace BatchImageProcessor.ViewModel
 			}
 			private set
 			{
-				if (value == _paintDotNetInstalled) return;
 				_paintDotNetInstalled = value;
-				PropChanged();
 			}
 		}
 
@@ -470,7 +468,7 @@ namespace BatchImageProcessor.ViewModel
 
 		#region Misc Methods
 
-		private bool IsPaintDotNetInstalled()
+		private static bool IsPaintDotNetInstalled()
 		{
 			try
 			{

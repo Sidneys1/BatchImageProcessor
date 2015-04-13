@@ -32,12 +32,18 @@ namespace BatchImageProcessor.ViewModel
 			}
 		}
 
+		public OptionSet Options
+		{
+			get { return _file.Options; }
+			set { /* No setter */ }
+		}
+
 		public Rotation OverrideRotation
 		{
-			get { return _file.OverrideRotation; }
+			get { return _file.Options.Rotation; }
 			set
 			{
-				_file.OverrideRotation = value;
+				_file.Options.Rotation = value;
 				PropChanged();
 			}
 		}
@@ -48,50 +54,50 @@ namespace BatchImageProcessor.ViewModel
 
 		public Format OverrideFormat
 		{
-			get { return _file.OverrideFormat; }
+			get { return _file.Options.OutputOptions.OutputFormat; }
 			set
 			{
-				_file.OverrideFormat = value;
+				_file.Options.OutputOptions.OutputFormat = value;
 				PropChanged();
 			}
 		}
 
 		public bool OverrideResize
 		{
-			get { return _file.OverrideResize; }
+			get { return _file.Options.EnableResize; }
 			set
 			{
-				_file.OverrideResize = value;
+				_file.Options.EnableResize = value;
 				PropChanged();
 			}
 		}
 
 		public bool OverrideCrop
 		{
-			get { return _file.OverrideCrop; }
+			get { return _file.Options.EnableCrop; }
 			set
 			{
-				_file.OverrideCrop = value;
+				_file.Options.EnableCrop = value;
 				PropChanged();
 			}
 		}
 
 		public bool OverrideWatermark
 		{
-			get { return _file.OverrideWatermark; }
+			get { return _file.Options.EnableWatermark; }
 			set
 			{
-				_file.OverrideWatermark = value;
+				_file.Options.EnableWatermark = value;
 				PropChanged();
 			}
 		}
 
 		public bool OverrideColor
 		{
-			get { return _file.OverrideColor; }
+			get { return _file.Options.EnableAdjustments; }
 			set
 			{
-				_file.OverrideColor = value;
+				_file.Options.EnableAdjustments = value;
 				PropChanged();
 			}
 		}

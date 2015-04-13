@@ -1,4 +1,5 @@
-﻿using BatchImageProcessor.Model.Types.Enums;
+﻿using System.Text;
+using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
@@ -6,10 +7,11 @@ namespace BatchImageProcessor.Model.Types
 	{
 		#region Enabled
 
-		public bool EnableCrop { get; set; } = false;
-		public bool EnableWatermark { get; set; } = false;
 		public bool EnableRotation { get; set; } = false;
 		public bool EnableResize { get; set; } = false;
+		public bool EnableCrop { get; set; } = false;
+		public bool EnableWatermark { get; set; } = false;
+		public bool EnableAdjustments { get; set; } = false;
 
 		#endregion
 		

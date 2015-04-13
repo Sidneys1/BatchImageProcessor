@@ -18,10 +18,10 @@ namespace BatchImageProcessor.Model
 	{
 		private int _totalImages;
 		private int _doneImages;
-		
+
 
 		public bool Cancel = false;
-		
+
 
 		public bool OutputSet { get; set; } = false;
 
@@ -84,7 +84,7 @@ namespace BatchImageProcessor.Model
 
 			if (w != null)
 			{
-				var outFmt = w.OverrideFormat == Format.Default ? Options.OutputOptions.OutputFormat : w.OverrideFormat;
+				var outFmt = w.Options.OutputOptions.OutputFormat == Format.Default ? Options.OutputOptions.OutputFormat : w.Options.OutputOptions.OutputFormat;
 
 				// Load Image
 				Image b = null;
@@ -114,20 +114,19 @@ namespace BatchImageProcessor.Model
 				b.Dispose();
 				b = clone;
 
-				if (w.OverrideRotation != Rotation.Default || Options.EnableRotation)
-					b.RotateImage(w.OverrideRotation == Rotation.Default ? Options.Rotation : w.OverrideRotation);
+				if (w.Options.Rotation != Rotation.Default || Options.EnableRotation)
+					b.RotateImage(w.Options.EnableRotation ? w.Options.Rotation : Options.Rotation);
 
-				if (Options.EnableResize && !w.OverrideResize)
-					b = b.ResizeImage(Options.ResizeOptions);
+				if (Options.EnableResize || w.Options.EnableResize)
+					b = b.ResizeImage(w.Options.EnableResize ? w.Options.ResizeOptions : Options.ResizeOptions);
 
-				if (Options.EnableCrop && !w.OverrideCrop)
-					b = b.CropImage(Options.CropOptions);
+				if (Options.EnableCrop || w.Options.EnableCrop)
+					b = b.CropImage(w.Options.EnableCrop ? w.Options.CropOptions : Options.CropOptions);
 
-				if (Options.EnableWatermark && !w.OverrideWatermark)
-					b.WatermarkImage(Options.WatermarkOptions);
+				if (Options.EnableWatermark || w.Options.EnableWatermark)
+					b.WatermarkImage(w.Options.EnableWatermark ? w.Options.WatermarkOptions : Options.WatermarkOptions);
 
-				if (!w.OverrideColor)
-					b = b.AdjustImage(Options.AdjustmentOptions);
+				b = b.AdjustImage(w.Options.EnableAdjustments ? w.Options.AdjustmentOptions : Options.AdjustmentOptions);
 
 				#endregion
 
