@@ -30,10 +30,10 @@
     <InstallUrl>http://sidneys1.github.io/BatchImageProcessor/Download/</InstallUrl>
     <ProductName>Batch Image Processor</ProductName>
     <PublisherName>Borne Programming</PublisherName>
-    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
-    <ApplicationRevision>9</ApplicationRevision>
-    <ApplicationVersion>0.0.0.%2a</ApplicationVersion>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationVersion>0.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -384,6 +384,10 @@
     <None Include="Resources\image-export.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BatchImageProcessor.CLI\BatchImageProcessor.CLI.csproj">
+      <Project>{293511ac-5e5d-4182-833d-7e802796891c}</Project>
+      <Name>BatchImageProcessor.CLI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BatchImageProcessor.Model\BatchImageProcessor.Model.csproj">
       <Project>{7165d238-5543-40fb-a74f-f792368be597}</Project>
       <Name>BatchImageProcessor.Model</Name>

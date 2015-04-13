@@ -1,7 +1,9 @@
-﻿using BatchImageProcessor.Model.Types.Enums;
+﻿using System;
+using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
+	[Serializable]
 	public class RawOptions
 	{
 		#region Color Options
