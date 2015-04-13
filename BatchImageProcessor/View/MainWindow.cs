@@ -43,7 +43,7 @@ namespace BatchImageProcessor.View
 			_noAero = noaero;
 
 			VModel = new ViewModel.ViewModel(this);
-			VModel.Folders.Add(new FolderWrapper(removable: false) {Name = Properties.Resources.OutputFolder});
+			VModel.Folders.Add(new FolderWrapper(removable: false) { Name = Properties.Resources.OutputFolder });
 
 			InitializeComponent();
 
@@ -52,7 +52,7 @@ namespace BatchImageProcessor.View
 			_watermarkFontDlg.Font = VModel.WatermarkFont;
 
 			Handle = new WindowInteropHelper(this).Handle;
-			
+
 #if !DEBUG
 			GcBtn.Visibility = Visibility.Collapsed;
 #endif
@@ -61,7 +61,6 @@ namespace BatchImageProcessor.View
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			_manager = TaskbarManager.Instance;
-
 			if (!_noShaders) return;
 			Resources["DropShadowFx"] = null;
 			Resources["BlurEffect"] = null;
@@ -111,7 +110,7 @@ namespace BatchImageProcessor.View
 		private void AdjustWindowFrame()
 		{
 			if (DwmApiInterop.IsCompositionEnabled())
-				ExtendFrameIntoClientArea(0, 0, (int) (RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
+				ExtendFrameIntoClientArea(0, 0, (int)(RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
 			else
 				FallbackPaint();
 		}
@@ -140,7 +139,7 @@ namespace BatchImageProcessor.View
 
 		private void FallbackPaint()
 		{
-			Background = ContentRectangle.Fill; // Brushes.White;
+			Background = ContentRectangle.Fill;	// Brushes.White;
 		}
 
 		private bool IsOnExtendedFrame(int lParam)
@@ -159,8 +158,8 @@ namespace BatchImageProcessor.View
 				// Ignore clicks if desktop composition isn't enabled
 				case DwmApiInterop.WM_NCHITTEST:
 					if (DwmApiInterop.IsCompositionEnabled()
-					    && DwmApiInterop.IsOnClientArea(hwnd, msg, wParam, lParam)
-					    && IsOnExtendedFrame(lParam.ToInt32()))
+						&& DwmApiInterop.IsOnClientArea(hwnd, msg, wParam, lParam)
+						&& IsOnExtendedFrame(lParam.ToInt32()))
 					{
 						handled = true;
 						return new IntPtr(DwmApiInterop.HTCAPTION);
@@ -429,7 +428,7 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper) VModel.Folders[0];
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
 
 			if (parent != null && parent.ContainsFile(f.Name))
@@ -458,7 +457,7 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper) VModel.Folders[0];
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
 
 			if (parent != null && parent.Removable)
@@ -467,12 +466,13 @@ namespace BatchImageProcessor.View
 
 		private void addFolderBtn_Click(object sender, RoutedEventArgs e)
 		{
-			var fdlg = new RenameFileDialog();
+			var fdlg = new RenameFileDialog(Properties.Resources.NewFolderDialogTitle);
 			var f = new FolderWrapper();
 			fdlg.DataContext = f;
 			fdlg.Owner = this;
-			fdlg.Title = Properties.Resources.NewFolderDialogTitle;
+			f.BeginEdit();
 			if (!fdlg.ShowDialog().GetValueOrDefault(false)) return;
+			f.EndEdit();
 			FolderWrapper parent;
 
 			var item = e.Source as MenuItem;
@@ -483,11 +483,9 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper) VModel.Folders[0];
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
-
-			f.Name = f.Name.Trim();
-
+			
 			var v = parent?.Files.OfType<FolderWrapper>();
 			if (v != null)
 			{
@@ -521,12 +519,12 @@ namespace BatchImageProcessor.View
 			else
 			{
 				var folder = TreeView.SelectedItem as FolderWrapper;
-				parent = folder ?? (FolderWrapper) VModel.Folders[0];
+				parent = folder ?? (FolderWrapper)VModel.Folders[0];
 			}
 
-			
+
 			VModel.ImportFiles(this, _fileBrowser.FileNames, parent);
-			
+
 		}
 
 		private void RenameFolderMenuItem_Click(object sender, RoutedEventArgs e)
@@ -535,6 +533,7 @@ namespace BatchImageProcessor.View
 			var target = menuItem?.DataContext as FolderWrapper;
 
 			if (target == null) return;
+
 			var fdlg = new RenameFileDialog
 			{
 				DataContext = target,
@@ -544,9 +543,9 @@ namespace BatchImageProcessor.View
 
 			target.BeginEdit();
 
-			if (fdlg.ShowDialog().GetValueOrDefault(false))
+			if (fdlg.ShowDialog() ?? false)
 			{
-				var parent = (FolderWrapper) VModel.Folders[0];
+				var parent = (FolderWrapper)VModel.Folders[0];
 
 				var v = parent.Files.OfType<FolderWrapper>();
 				var folderWrappers = v as FolderWrapper[] ?? v.ToArray();
@@ -561,9 +560,7 @@ namespace BatchImageProcessor.View
 
 					target.Name = string.Format(s, i);
 				}
-
-				target.Name = target.Name.Trim();
-
+				
 				target.EndEdit();
 			}
 			else
@@ -582,7 +579,7 @@ namespace BatchImageProcessor.View
 
 		private void aboutBtn_Click(object sender, RoutedEventArgs e)
 		{
-			var b = new AboutBox {Owner = this};
+			var b = new AboutBox { Owner = this };
 			b.ShowDialog();
 		}
 
@@ -726,30 +723,34 @@ namespace BatchImageProcessor.View
 		{
 			// ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
 			if (TreeView.SelectedValue is FileWrapper)
-				VModel.RemoveFile((FileWrapper) TreeView.SelectedValue);
+				VModel.RemoveFile((FileWrapper)TreeView.SelectedValue);
 			else
-				VModel.RemoveFolder((FolderWrapper) TreeView.SelectedValue);
+				VModel.RemoveFolder((FolderWrapper)TreeView.SelectedValue);
 		}
 
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			var m = (ContextMenu) Resources["ImageCtxMenu"];
-			VModel.RemoveFile((FileWrapper) m.DataContext);
+			var m = (ContextMenu)Resources["ImageCtxMenu"];
+			VModel.RemoveFile((FileWrapper)m.DataContext);
 		}
 
 		public void Report(ModelProgressUpdate value)
 		{
 			Dispatcher.Invoke(() =>
 			{
-				TaskbarItemInfo.ProgressValue = (double) value.Done/value.Total;
+				TaskbarItemInfo.ProgressValue = (double)value.Done / value.Total;
 			});
 		}
 
 		private void MenuItem_Click_1(object sender, RoutedEventArgs e)
 		{
 			var m = (ContextMenu)Resources["ImageCtxMenu"];
-			var x = new RawOptions(m.DataContext as FileWrapper) {Owner = this};
-			x.ShowDialog();
+			var rawOptions = new RawOptions
+			{
+				Owner = this,
+				DataContext = m.DataContext
+			};
+			rawOptions.ShowDialog();
 		}
 
 		private void OpenPaintDotNet_Click(object sender, RoutedEventArgs e)
@@ -757,5 +758,41 @@ namespace BatchImageProcessor.View
 			var m = (ContextMenu)Resources["ImageCtxMenu"];
 			VModel.OpenWithPaintDotNet((FileWrapper)m.DataContext);
 		}
-    }
+
+		private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+		{
+			var m = (ContextMenu)Resources["ImageCtxMenu"];
+			var fileOptions = new FileOptions
+			{
+				Owner = this,
+				DataContext = m.DataContext
+			};
+			((FileWrapper)fileOptions.DataContext).BeginEdit();
+            if (fileOptions.ShowDialog() ?? false)
+				((FileWrapper)fileOptions.DataContext).EndEdit();
+			else
+				((FileWrapper)fileOptions.DataContext).CancelEdit();
+		}
+
+		private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+		{
+			var m = (ContextMenu)Resources["ImageCtxMenu"];
+			var target = m.DataContext as FileWrapper;
+
+			if (target == null) return;
+
+			var fdlg = new RenameFileDialog(Properties.Resources.RenameFileDialogTitle)
+			{
+				DataContext = target,
+				Owner = this,
+			};
+
+			target.BeginEdit();
+
+			if (fdlg.ShowDialog() ?? false)
+				target.EndEdit();
+			else
+				target.CancelEdit();
+		}
+	}
 }

@@ -1,7 +1,9 @@
+using System;
 using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
+	[Serializable]
 	public class ResizeOptions
 	{
 		public ResizeMode ResizeMode { get; set; } = ResizeMode.Smaller;

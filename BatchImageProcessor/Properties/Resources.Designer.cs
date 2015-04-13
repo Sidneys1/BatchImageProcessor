@@ -884,6 +884,15 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Override Settings....
+        /// </summary>
+        public static string OverrideSettings {
+            get {
+                return ResourceManager.GetString("OverrideSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Override Watermark.
         /// </summary>
         public static string OverrideWatermarkHeader {
@@ -925,6 +934,15 @@ namespace BatchImageProcessor.Properties {
         public static string RemoveItemBtn_ToolTip {
             get {
                 return ResourceManager.GetString("RemoveItemBtn_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename Output.
+        /// </summary>
+        public static string RenameFileDialogTitle {
+            get {
+                return ResourceManager.GetString("RenameFileDialogTitle", resourceCulture);
             }
         }
         
@@ -1082,7 +1100,7 @@ namespace BatchImageProcessor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rotation Override.
+        ///   Looks up a localized string similar to Override Rotation.
         /// </summary>
         public static string RotationMenu_Header {
             get {

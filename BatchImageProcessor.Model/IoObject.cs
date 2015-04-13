@@ -11,8 +11,9 @@ namespace BatchImageProcessor.Model
 	{
         private readonly FileSystemWatcher _watcher;
         private string _path;
+		private string _name;
 
-        protected IoObject(string path)
+		protected IoObject(string path)
         {
             var file = System.IO.File.Exists(path);
             if (!(file || Directory.Exists(path)))
@@ -39,16 +40,20 @@ namespace BatchImageProcessor.Model
         {
         }
 
-		public string Name { get; set; }
-		
+		public string Name
+		{
+			get { return _name; }
+			set { _name = value; PropChanged(); }
+		}
+
 		public string Path
         {
             get { return _path; }
             set
             {
                 _path = value;
-				PropChanged();
 				PropChanged(nameof(Name));
+				PropChanged();
             }
         }
 		

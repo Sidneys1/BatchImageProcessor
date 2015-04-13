@@ -1,7 +1,9 @@
+using System;
 using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
+	[Serializable]
 	public class AdjustmentOptions
 	{
 		public ColorType ColorType { get; set; } = ColorType.Saturation;

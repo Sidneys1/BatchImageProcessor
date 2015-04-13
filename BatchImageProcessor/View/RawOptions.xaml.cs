@@ -9,39 +9,18 @@ namespace BatchImageProcessor.View
 	/// </summary>
 	public partial class RawOptions
 	{
-		private readonly FileWrapper _dataContext;
+		private FileWrapper _dataContext;
 
 		public string Info { get; private set; }
 
 		public Visibility ApplyToAllVisible { get; set; } = Visibility.Visible;
 		public bool ApplyToAll { get; set; } = false;
 
-		public RawOptions(string str, string info)
-		{
-			Info = info;
-			InitializeComponent();
-
-			_dataContext = new FileWrapper(str) {RawOptions = new Model.Types.RawOptions()};
-		}
-
-		public RawOptions(FileWrapper opts)
+		public RawOptions()
 		{
 			InitializeComponent();
-			_dataContext = opts;
-			_dataContext.BeginEdit();
-			var p = new Process
-			{
-				StartInfo = new ProcessStartInfo(".\\Exec\\dcraw.exe", $"-i -v \"{opts.Path}\"")
-				{
-					RedirectStandardOutput = true,
-					UseShellExecute = false,
-					CreateNoWindow = true
-				}
-			};
-			p.Start();
-			var info = p.StandardOutput.ReadToEnd();
-			Info = info;
 		}
+
 
 		private void RawOptions_OnLoaded(object sender, RoutedEventArgs e)
 		{
@@ -60,6 +39,13 @@ namespace BatchImageProcessor.View
 			DialogResult = false;
 			_dataContext.CancelEdit();
 			Close();
+		}
+
+		private void window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			_dataContext?.EndEdit();
+			_dataContext = (FileWrapper)DataContext;
+			_dataContext?.BeginEdit();
 		}
 	}
 }

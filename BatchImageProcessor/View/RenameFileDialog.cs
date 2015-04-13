@@ -7,9 +7,12 @@ namespace BatchImageProcessor.View
     /// </summary>
     public partial class RenameFileDialog
     {
-        public RenameFileDialog()
+        public RenameFileDialog(string title = null)
         {
             InitializeComponent();
+
+	        if (title != null)
+		        Title = title;
         }
 		
         private void cancelBtn_Click(object sender, RoutedEventArgs e)

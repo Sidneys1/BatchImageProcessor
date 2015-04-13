@@ -156,6 +156,9 @@
     <Compile Include="View\AboutBox.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\FileOptions.xaml.cs">
+      <DependentUpon>FileOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\MainWindow.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -179,6 +182,10 @@
     <Page Include="View\AboutBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\FileOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -372,6 +379,7 @@
     <Content Include="Exec\dcraw.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\arrow-noturn--auto.png" />
     <Resource Include="Images\wrench-screwdriver.png" />
     <None Include="Resources\image-export.ico" />
   </ItemGroup>

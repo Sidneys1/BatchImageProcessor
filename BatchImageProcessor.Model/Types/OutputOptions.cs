@@ -1,7 +1,9 @@
+using System;
 using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
+	[Serializable]
 	public class OutputOptions
 	{
 		public string OutputPath { get; set; } = string.Empty;

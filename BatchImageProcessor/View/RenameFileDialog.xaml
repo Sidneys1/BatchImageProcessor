@@ -19,7 +19,7 @@
 		         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" />
 		<!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
 		<Button x:Name="OkBtn" Grid.Row="1" Grid.Column="1" Content="{x:Static properties:Resources.OkText}" Padding="15,3"
-		        Margin="5,5" IsEnabled="{Binding IsValidName}" Click="okBtn_Click" />
+		        Margin="5,5" Click="okBtn_Click" />
 		<Button x:Name="CancelBtn" Grid.Row="1" Grid.Column="2" Content="{x:Static properties:Resources.CancelText}"
 		        Padding="15,3" Margin="5,5" Click="cancelBtn_Click" />
 	</Grid>

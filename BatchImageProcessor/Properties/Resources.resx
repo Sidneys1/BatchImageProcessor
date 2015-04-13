@@ -163,7 +163,7 @@
     <value>&lt;No Path Set&gt;</value>
   </data>
   <data name="RotationMenu_Header" xml:space="preserve">
-    <value>Rotation Override</value>
+    <value>Override Rotation</value>
   </data>
   <data name="RotationMenu_DefaultRotationMenuItem_Header" xml:space="preserve">
     <value>Use Default Settings</value>
@@ -573,5 +573,11 @@
   </data>
   <data name="OpenWithPaintDotNet" xml:space="preserve">
     <value>Open with paint.net</value>
+  </data>
+	<data name="OverrideSettings" xml:space="preserve">
+    <value>Override Settings...</value>
+  </data>
+	<data name="RenameFileDialogTitle" xml:space="preserve">
+    <value>Rename Output</value>
   </data>
 </root>

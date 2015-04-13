@@ -35,11 +35,13 @@ namespace BatchImageProcessor.Model.Types
 		public bool DisableAutoOrient { get; set; } = false;
 		public bool NoStretch { get; set; } = false;
 
+		public string Info { get; set; }
+
 		#endregion
 
-		public RawOptions Copy()
+		public RawOptions(string info)
 		{
-			return (RawOptions) MemberwiseClone();
+			Info = info;
 		}
 	}
 }

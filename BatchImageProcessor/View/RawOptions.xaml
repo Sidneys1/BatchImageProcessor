@@ -10,7 +10,7 @@
         xmlns:enums="clr-namespace:BatchImageProcessor.Model.Types.Enums;assembly=BatchImageProcessor.Model"
         xmlns:enums1="clr-namespace:BatchImageProcessor.Model.Types.Enums;assembly=BatchImageProcessor.Model"
         mc:Ignorable="d" Loaded="RawOptions_OnLoaded"
-        Title="RAW Import Options" Height="600" Width="800" d:DataContext="{d:DesignInstance viewModel:FileWrapper }" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize">
+        Title="RAW Import Options" Height="600" Width="800" d:DataContext="{d:DesignInstance viewModel:FileWrapper }" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" ResizeMode="NoResize" DataContextChanged="window_DataContextChanged">
 	<Window.Resources>
 		<converters:EnumVisibilityConverter x:Key="EnumVisibilityConverter"/>
 		<converters:BooleanToVisibilityConverter x:Key ="BooleanToVisibilityConverter"/>

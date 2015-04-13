@@ -1,8 +1,9 @@
-﻿using System.Text;
+﻿using System;
 using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
+	[Serializable]
 	public class OptionSet
 	{
 		#region Enabled

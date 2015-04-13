@@ -3,108 +3,105 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Model.Interface;
 using BatchImageProcessor.Properties;
 
 namespace BatchImageProcessor.ViewModel
 {
-    public class FolderWrapper : INotifyPropertyChanged, IFolderable, IFolderableHost, IEditableObject
-    {
-	    private readonly Folder _folder;
+	public class FolderWrapper : INotifyPropertyChanged, IFolderable, IFolderableHost, IEditableObject
+	{
+		private readonly Folder _folder;
 
-	    public FolderWrapper(string fromPath = null, bool recursion = true, bool removable = true)
-        {
-            IsValidName = true;
+		public FolderWrapper(string fromPath = null, bool recursion = true, bool removable = true)
+		{
+			_folder = new Folder();
 
-		    _folder = new Folder();
-			
-            if (fromPath != null)
-                Populate(fromPath, recursion);
-            Removable = removable;
-		    _folder.Name = Resources.New_Folder_Name;
-        }
+			if (fromPath != null)
+				Populate(fromPath, recursion);
+			Removable = removable;
+			_folder.Name = Resources.New_Folder_Name;
+		}
 
-	    public bool Removable { get; private set; }
+		public bool Removable { get; private set; }
 
-        public string Name
-        {
-            get { return _folder.Name; }
-            set
-            {
-                if (_folder.Name.Equals(value, StringComparison.Ordinal)) return;
-
-	            var n = value.Trim();
-				if (n.Any(Folder.InvalidCharacters.Contains) || string.IsNullOrWhiteSpace(n) )
-                {
-                    IsValidName = false;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
-                    throw new Exception("Data Validation Error");
-                }
-
-                _folder.Name = n;
-                IsValidName = true;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsValidName"));
-            }
-        }
+		public string Name
+		{
+			get { return _folder.Name; }
+			set
+			{
+				if (_folder.Name.Equals(value, StringComparison.Ordinal)) return;
+				
+				_folder.Name = value;
+				PropChanged(nameof(Name));
+			}
+		}
 
 		public ObservableCollection<IFolderable> Files => _folder.Files;
+		
+		private void Populate(string path, bool recursive)
+		{
+			var info = new DirectoryInfo(path);
 
-	    public bool IsValidName { get; private set; }
-        public event PropertyChangedEventHandler PropertyChanged;
+			Name = info.Name;
 
-        private void Populate(string path, bool recursive)
-        {
-            var info = new DirectoryInfo(path);
+			if (recursive)
+			{
+				var folders = info.GetDirectories();
 
-            Name = info.Name;
+				foreach (var inf in folders)
+				{
+					_folder.Files.Add(new FolderWrapper(inf.FullName));
+				}
+			}
 
-            if (recursive)
-            {
-                var folders = info.GetDirectories();
+			foreach (var inf in new[] { "*.jpg", "*.jpeg", "*.png" }.Select(str => info.GetFiles(str)).SelectMany(files => files))
+			{
+				_folder.Files.Add(new FileWrapper(inf.FullName));
+			}
+		}
 
-                foreach (var inf in folders)
-                {
-                    _folder.Files.Add(new FolderWrapper(inf.FullName));
-                }
-            }
+		public bool ContainsFile(string p)
+		{
+			return _folder.ContainsFile(p);
+		}
 
-            foreach (var inf in new[] {"*.jpg", "*.jpeg", "*.png"}.Select(str => info.GetFiles(str)).SelectMany(files => files))
-            {
-                _folder.Files.Add(new FileWrapper(inf.FullName));
-            }
-        }
+		#region IEditableObject
 
-	    public bool ContainsFile(string p)
-	    {
-		    return _folder.ContainsFile(p);
-	    }
+		private string _backupName;
 
-	    #region IEditableObject
+		public void BeginEdit()
+		{
+			_backupName = Name;
+		}
 
-	    private string _backupName;
+		public void EndEdit()
+		{
+			_backupName = null;
+			Name = Name.Trim();
+			Name = Folder.InvalidCharacters.ToList().Aggregate(Name, (x, y) => x.Replace(y.ToString(), ""));
+		}
 
-	    public void BeginEdit()
-	    {
-		    _backupName = Name;
-	    }
+		public void CancelEdit()
+		{
+			if (_backupName != null) Name = _backupName;
+		}
 
-	    public void EndEdit()
-	    {
-		    _backupName = null;
-	    }
+		#endregion
 
-	    public void CancelEdit()
-	    {
-		    if (_backupName != null) Name = _backupName;
-	    }
-
-	    #endregion
-
-	    public void AddFile(string str)
+		public void AddFile(string str)
 		{
 			Files.Add(new FileWrapper(str));
 		}
-    }
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[NotifyPropertyChangedInvocator]
+		protected virtual void PropChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
 }

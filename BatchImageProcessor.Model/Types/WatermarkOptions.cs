@@ -1,8 +1,10 @@
+using System;
 using System.Drawing;
 using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
+	[Serializable]
 	public class WatermarkOptions
 	{
 		private Font _watermarkFont;
@@ -23,6 +25,7 @@ namespace BatchImageProcessor.Model.Types
 		public Alignment WatermarkAlignment { get; set; } = Alignment.Bottom_Right;
 		public double WatermarkOpacity { get; set; } = 0.7;
 		public WatermarkType WatermarkType { get; set; } = WatermarkType.Text;
+		public string WatermarkFontString => $"{WatermarkFont.FontFamily.Name}, {WatermarkFont.SizeInPoints}pt";
 
 		public Font WatermarkFont
 		{

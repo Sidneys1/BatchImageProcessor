@@ -72,10 +72,9 @@
     <Compile Include="Types\RawOptions.cs" />
     <Compile Include="Types\ResizeOptions.cs" />
     <Compile Include="Types\WatermarkOptions.cs" />
+    <Compile Include="Utility\ObjectCopier.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,5 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls;
 using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Model.Interface;
@@ -35,7 +38,7 @@ namespace BatchImageProcessor.ViewModel
 		public OptionSet Options
 		{
 			get { return _file.Options; }
-			set { /* No setter */ }
+			set { _file.Options = value; PropChanged(); }
 		}
 
 		public Rotation OverrideRotation
@@ -107,11 +110,14 @@ namespace BatchImageProcessor.ViewModel
 			get { return _file.Name; }
 			set
 			{
+				if (_file.Name.Equals(value, StringComparison.Ordinal)) return;
+				
 				_file.Name = value;
 				PropChanged();
+				
 			}
 		}
-
+		
 		public string Path => _file.Path;
 
 		public bool IsFile => true;
@@ -139,22 +145,30 @@ namespace BatchImageProcessor.ViewModel
 
 		private string _backupName;
 		private RawOptions _rawBackup;
+		private OptionSet _optionsBackup;
 		public void BeginEdit()
 		{
 			_backupName = Name;
-			_rawBackup = _file.RawOptions.Copy();
+			if (_file.RawOptions != null)
+				_rawBackup = Model.Utility.ObjectCopier.Clone(_file.RawOptions);
+			if (_file.Options != null)
+				_optionsBackup = Model.Utility.ObjectCopier.Clone(_file.Options);
 		}
 
 		public void EndEdit()
 		{
 			_backupName = null;
 			_rawBackup = null;
+			_optionsBackup = null;
+			Name = Name.Trim();
+			Name = File.InvalidCharacters.ToList().Aggregate(Name, (x, y) => x.Replace(y.ToString(), ""));
 		}
 
 		public void CancelEdit()
 		{
 			if (_backupName != null) Name = _backupName;
 			if (_rawBackup != null) RawOptions = _rawBackup;
+			if (_optionsBackup != null) Options = _optionsBackup;
 			EndEdit();
 		}
 

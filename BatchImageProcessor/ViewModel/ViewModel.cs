@@ -213,8 +213,8 @@ namespace BatchImageProcessor.ViewModel
 			}
 		}
 
-		public string WatermarkFontString
-			=> $"{WatermarkFont.FontFamily.Name}, {WatermarkFont.SizeInPoints}pt";
+		public string WatermarkFontString => OptionSet.WatermarkOptions.WatermarkFontString;
+
 
 		public double WatermarkOpacity
 		{
@@ -578,7 +578,10 @@ namespace BatchImageProcessor.ViewModel
 						p.StartInfo.Arguments = $"-i -v \"{f.FullName}\"";
 						p.Start();
 						var info = p.StandardOutput.ReadToEnd();
-						var x = new RawOptions(str, info) { Owner = sender };
+
+						
+
+						var x = new RawOptions { Owner = sender, DataContext = new FileWrapper(f.FullName) {RawOptions = new Model.Types.RawOptions(info)} };
 						if (x.ShowDialog() == false) continue; // Cancelled!
 
 						if (x.ApplyToAll)
@@ -589,7 +592,7 @@ namespace BatchImageProcessor.ViewModel
 						x.Close();
 						continue;
 					}
-					folder.Files.Add(new FileWrapper(str) { RawOptions = overrideOptions.Copy(), IsRaw = true });
+					folder.Files.Add(new FileWrapper(str) { RawOptions = BatchImageProcessor.Model.Utility.ObjectCopier.Clone(overrideOptions), IsRaw = true });
 				}
 				else
 					folder.AddFile(str);
