@@ -9,12 +9,7 @@ namespace BatchImageProcessor.ViewModel.Converters
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var parameterString = value.ToString().Replace('_', ' ');
-
-            return parameterString;
-        }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value?.ToString().Replace('_', ' ');
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

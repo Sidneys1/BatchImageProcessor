@@ -33,7 +33,7 @@
 				<DropShadowEffect  Opacity="0.6" BlurRadius="6" ShadowDepth="0" RenderingBias="Quality"/>
 			</Image.Effect>
 		</Image>
-		<TextBox Grid.Row="2" Grid.Column="0" BorderThickness="0" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Text="{Binding Info, ElementName=window, Mode=OneWay}"/>
+		<!--<TextBox Grid.Row="2" Grid.Column="0" BorderThickness="0" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Text="{Binding Info, ElementName=window, Mode=OneWay}"/>-->
 
 		<StackPanel Grid.Row="1" Grid.RowSpan="3" Grid.Column="1">
 			<TextBlock Text="White Balance Mode" VerticalAlignment="Center" Margin="3" FontWeight="Bold"/>

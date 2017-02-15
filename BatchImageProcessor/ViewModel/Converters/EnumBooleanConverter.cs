@@ -9,12 +9,10 @@ namespace BatchImageProcessor.ViewModel.Converters
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             var parameterString = parameter as string;
-            if (parameterString == null)
+            if (parameterString == null || value == null)
                 return DependencyProperty.UnsetValue;
-
             if (Enum.IsDefined(value.GetType(), value) == false)
                 return DependencyProperty.UnsetValue;
 

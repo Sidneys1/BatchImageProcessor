@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows.Controls;
 using BatchImageProcessor.Annotations;
 using BatchImageProcessor.Model;
 using BatchImageProcessor.Model.Interface;

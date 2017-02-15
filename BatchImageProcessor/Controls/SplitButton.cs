@@ -17,10 +17,11 @@ namespace BatchImageProcessor.Controls
             DataContext = this;
         }
 
-        public event Action<Object, EventArgs> Click = delegate { };
+        public event Action<object, EventArgs> Click = delegate { };
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            if (ContextMenu == null) return;
             ContextMenu.IsEnabled = true;
             ContextMenu.PlacementTarget = (sender as Button);
             ContextMenu.Placement = PlacementMode.Bottom;

@@ -69,7 +69,7 @@
     <StartupObject>BatchImageProcessor.EntryPoint</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>B7884CF99F3EBB4809520DFEAED585E96CEDD123</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>5FF27F20160E587AD4BF8F9CD3DA2F4E1483EE95</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>BatchImageProcessor_TemporaryKey.pfx</ManifestKeyFile>
@@ -214,6 +214,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="BatchImageProcessor_1_TemporaryKey.pfx" />
     <None Include="BatchImageProcessor_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

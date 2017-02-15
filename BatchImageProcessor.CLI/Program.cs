@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -166,15 +165,14 @@ namespace BatchImageProcessor.CLI
 			x.WatermarkOptions.WatermarkFont = new Font(fontname, fontsize);
 
 			if ((extra == null || !extra.Any()) && string.IsNullOrEmpty(manifest)) return;
-
-			Debug.Assert(extra != null, "extra != null");
-			var badfiles = extra.Where(o => !File.Exists(o)).ToList();
-			if (badfiles.Count > 0)
+			
+			var badfiles = extra?.Where(o => !File.Exists(o)).ToList();
+			if (badfiles?.Count > 0)
 			{
 				Console.WriteLine("Bad Filename(s):");
 				badfiles.ForEach(o => Console.Write("\t\"{0}\"", o));
 			}
-			if (extra.Any())
+			if (extra != null && extra.Any())
 				files.AddRange(extra);
 			else
 			{

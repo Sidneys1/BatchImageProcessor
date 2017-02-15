@@ -49,10 +49,10 @@ namespace BatchImageProcessor.ViewModel.Services
 				}
 
 				// Create a hyperlink for the match
-				var link = new Hyperlink(new Run(match.Value))
-				{
+				var link = new Hyperlink(new Run(match.Value)) {
 					NavigateUri = new Uri(match.Value)
 				};
+
 				link.Click += OnUrlClick;
 
 				textBlock.Inlines.Add(link);

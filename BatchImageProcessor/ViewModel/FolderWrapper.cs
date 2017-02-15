@@ -19,10 +19,12 @@ namespace BatchImageProcessor.ViewModel
 		{
 			_folder = new Folder();
 
-			if (fromPath != null)
+			if (fromPath != null) {
+				_folder.Name = Path.GetDirectoryName(fromPath);
 				Populate(fromPath, recursion);
+			} else
+				_folder.Name = Resources.New_Folder_Name;
 			Removable = removable;
-			_folder.Name = Resources.New_Folder_Name;
 		}
 
 		public bool Removable { get; private set; }

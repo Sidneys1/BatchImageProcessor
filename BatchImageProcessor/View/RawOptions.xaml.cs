@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using BatchImageProcessor.ViewModel;
 
 namespace BatchImageProcessor.View
@@ -11,7 +10,7 @@ namespace BatchImageProcessor.View
 	{
 		private FileWrapper _dataContext;
 
-		public string Info { get; private set; }
+		//public string Info { get; }
 
 		public Visibility ApplyToAllVisible { get; set; } = Visibility.Visible;
 		public bool ApplyToAll { get; set; } = false;

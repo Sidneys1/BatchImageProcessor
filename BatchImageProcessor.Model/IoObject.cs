@@ -9,36 +9,36 @@ namespace BatchImageProcessor.Model
 {
 	public abstract class IoObject : INotifyPropertyChanged, IDisposable, IIoObject
 	{
-        private readonly FileSystemWatcher _watcher;
-        private string _path;
+		private readonly FileSystemWatcher _watcher;
+		private string _path;
 		private string _name;
 
 		protected IoObject(string path)
-        {
-            var file = System.IO.File.Exists(path);
-            if (!(file || Directory.Exists(path)))
-                throw new FileNotFoundException($@"File/folder at ""{path}"" does not exist.");
+		{
+			var file = System.IO.File.Exists(path);
+			if (!(file || Directory.Exists(path)))
+				throw new FileNotFoundException($@"File/folder at ""{path}"" does not exist.");
 
-            IsFile = file;
-            Path = path;
+			IsFile = file;
+			Path = path;
 
-	        Name = GetName(path);
+			Name = GetName(path);
 
 
-            var directoryInfo = new FileInfo(Path).Directory;
-            if (directoryInfo != null)
-                _watcher = new FileSystemWatcher(IsFile ? directoryInfo.FullName : Path);
-            if (IsFile)
-                _watcher.Filter = System.IO.Path.GetFileName(path);
+			var directoryInfo = new FileInfo(Path).Directory;
+			if (directoryInfo != null)
+				_watcher = new FileSystemWatcher(IsFile ? directoryInfo.FullName : Path);
+			if (IsFile)
+				_watcher.Filter = System.IO.Path.GetFileName(path);
 
-            _watcher.Renamed += watcher_Renamed;
-            _watcher.Deleted += Watcher_Deleted;
-            _watcher.EnableRaisingEvents = true;
-        }
+			_watcher.Renamed += watcher_Renamed;
+			_watcher.Deleted += Watcher_Deleted;
+			_watcher.EnableRaisingEvents = true;
+		}
 
-        protected IoObject()
-        {
-        }
+		protected IoObject()
+		{
+		}
 
 		public string Name
 		{
@@ -47,33 +47,34 @@ namespace BatchImageProcessor.Model
 		}
 
 		public string Path
-        {
-            get { return _path; }
-            set
-            {
-                _path = value;
+		{
+			get { return _path; }
+			set
+			{
+				_path = value;
+				// ReSharper disable once ExplicitCallerInfoArgument
 				PropChanged(nameof(Name));
 				PropChanged();
-            }
-        }
+			}
+		}
 		
-        public bool IsFile { get; set; }
+		public bool IsFile { get; set; }
 
-        public void Dispose()
-        {
-            _watcher.Dispose();
-        }
+		public void Dispose()
+		{
+			_watcher.Dispose();
+		}
 		
-        private static void Watcher_Deleted(object sender, FileSystemEventArgs e)
-        {
-        }
+		private static void Watcher_Deleted(object sender, FileSystemEventArgs e)
+		{
+		}
 
-        private void watcher_Renamed(object sender, RenamedEventArgs e)
-        {
-	        if (!IsFile) return;
-	        Path = e.FullPath;
-	        _watcher.Filter = e.Name;
-        }
+		private void watcher_Renamed(object sender, RenamedEventArgs e)
+		{
+			if (!IsFile) return;
+			Path = e.FullPath;
+			_watcher.Filter = e.Name;
+		}
 		public static string GetName(string path)
 		{
 			if (Directory.Exists(path) &&

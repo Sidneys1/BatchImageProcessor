@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.Collections.Generic;
 using BatchImageProcessor.Model.Interface;
 using BatchImageProcessor.Model.Types;
 using BatchImageProcessor.Model.Types.Enums;
@@ -30,16 +27,16 @@ namespace BatchImageProcessor.Model
 		public bool IsValidName { get; set; }
 
 		public File(string path) : base(path)
-        {
+		{
 			Options.OutputOptions.OutputFormat = Format.Default;
-        }
+		}
 
-        #region Properties
+		#region Properties
 
-	    
-	    public int ImageNumber { get; set; }
-	    public string OutputPath { get; set; }
+		
+		public int ImageNumber { get; set; }
+		public string OutputPath { get; set; }
 
-	    #endregion
+		#endregion
 	}
 }

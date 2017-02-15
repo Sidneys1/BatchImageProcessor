@@ -10,8 +10,9 @@ namespace BatchImageProcessor.ViewModel.Converters
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if (value == null) return null;
+
             var parameterString = parameter as string;
 
             if (parameterString == null)
