@@ -1,3 +1,27 @@
+# Social Office Memin #
+
+Social Office is a set free and open source tools for Social Media, Social Managers, Community Managers, by Javier Cañon (http://www.javiercanon.com) (http://www.javiercañon.com).
+
+Memin (from meme) is a tool for make memes in batch mode.
+
+Memín Pinguín is a Mexican comic book character. He was created in 1943 by comics writer Yolanda Vargas Dulché and author Sixto Valencia in a comic book magazine called "Pepín" and given his own magazine in 1947. Alberto Cabrera took over drawing from 1953 until 1962, followed by Sixto Valencia Burgo.
+
+Based in "Batch Image Processor" (https://github.com/Sidneys1/BatchImageProcessor), thanks to Sidneys1.
+
+## Requeriments? ##
+
+* Windows 7, 8.1, 10.
+* .Net Framework 4.6.2.
+
+## Install and Dependencies ##
+
+* Check the releases link.
+* You can use Nutget for install or from installer/releases:
+  * Extended.Wpf.Toolkit
+  * Microsoft.WindowsAPICodePack-Core
+  * Microsoft.WindowsAPIPack-Shell
+  * NDesk.Options 
+
 # Batch Image Processor #
 [![Batch Image Processor](http://i.imgur.com/YJApth2.png)](http://i.imgur.com/YJApth2.png)
 ## What does it Do? ##
