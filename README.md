@@ -1,10 +1,10 @@
 # Social Office Memin #
 
-Social Office is a set free and open source tools for Social Media, Social Managers, Community Managers, by Javier Cañon (http://www.javiercanon.com) (http://www.javiercañon.com).
+Social Office is a set free and open source tools for Social Media, Social Managers, Community Managers, by Javier CaÃ±on (http://www.javiercanon.com) (http://www.javiercaÃ±on.com).
 
 Memin (from meme) is a tool for make memes in batch mode.
 
-Memín Pinguín is a Mexican comic book character. He was created in 1943 by comics writer Yolanda Vargas Dulché and author Sixto Valencia in a comic book magazine called "Pepín" and given his own magazine in 1947. Alberto Cabrera took over drawing from 1953 until 1962, followed by Sixto Valencia Burgo.
+MemÃ­n PinguÃ­n is a Mexican comic book character. He was created in 1943 by comics writer Yolanda Vargas DulchÃ© and author Sixto Valencia in a comic book magazine called "PepÃ­n" and given his own magazine in 1947. Alberto Cabrera took over drawing from 1953 until 1962, followed by Sixto Valencia Burgo.
 
 Based in "Batch Image Processor" (https://github.com/Sidneys1/BatchImageProcessor), thanks to Sidneys1.
 
@@ -12,6 +12,13 @@ Based in "Batch Image Processor" (https://github.com/Sidneys1/BatchImageProcesso
 
 * Windows 7, 8.1, 10.
 * .Net Framework 4.6.2.
+
+## Community ##
+
+* Website, videos, photos, docs, etc. (https://www.facebook.com/SocialOfficeMemin/)
+* Group (https://www.facebook.com/groups/marketing.digital.social.media/)
+* Wiki (https://github.com/JavierCanon/Social-Office-Memin/wiki)
+* Issue - Bug Traking (https://github.com/JavierCanon/Social-Office-Memin/issues)
 
 ## Install and Dependencies ##
 
