@@ -16,7 +16,7 @@ Based in "Batch Image Processor" (https://github.com/Sidneys1/BatchImageProcesso
 ## Community ##
 
 * Website, videos, photos, docs, etc. (https://www.facebook.com/SocialOfficeMemin/)
-* Group (https://www.facebook.com/groups/marketing.digital.social.media/)
+* Group (https://www.facebook.com/groups/socialoffice/)
 * Wiki (https://github.com/JavierCanon/Social-Office-Memin/wiki)
 * Issue - Bug Traking (https://github.com/JavierCanon/Social-Office-Memin/issues)
 
