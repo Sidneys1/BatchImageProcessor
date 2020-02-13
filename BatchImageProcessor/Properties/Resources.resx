@@ -574,10 +574,13 @@
   <data name="OpenWithPaintDotNet" xml:space="preserve">
     <value>Open with paint.net</value>
   </data>
-	<data name="OverrideSettings" xml:space="preserve">
+  <data name="OverrideSettings" xml:space="preserve">
     <value>Override Settings...</value>
   </data>
-	<data name="RenameFileDialogTitle" xml:space="preserve">
+  <data name="RenameFileDialogTitle" xml:space="preserve">
     <value>Rename Output</value>
+  </data>
+  <data name="WatermarkSettings_Color" xml:space="preserve">
+    <value>Color:</value>
   </data>
 </root>

@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="groupBoxWatermark.Text" xml:space="preserve">
+    <value>Marca de agua</value>
+  </data>
+  <data name="groupBoxFiles.Text" xml:space="preserve">
+    <value>Directorio de imagenes</value>
+  </data>
+  <data name="groupBoxTexts.Text" xml:space="preserve">
+    <value>Fuente del mensaje</value>
+  </data>
+  <data name="groupBoxProcess.Text" xml:space="preserve">
+    <value>Procesar Imagenes</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Memín</value>
+  </data>
+  <data name="buttonOutputDir.Text" xml:space="preserve">
+    <value>Salida</value>
+  </data>
+  <data name="buttonSrcDirectory.Text" xml:space="preserve">
+    <value>Directorio</value>
+  </data>
+  <data name="buttonColorMsg.Text" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="labelTextPosition.Text" xml:space="preserve">
+    <value>Posición del texto:</value>
+  </data>
+  <data name="labelTextFontExample.Text" xml:space="preserve">
+    <value>¡Fuente texto de ejemplo!</value>
+  </data>
+  <data name="buttonTextFont.Text" xml:space="preserve">
+    <value>Fuente del texto</value>
+  </data>
+  <data name="buttonColorWA.Text" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="labelWmOpacity.Text" xml:space="preserve">
+    <value>Opacidad:</value>
+  </data>
+  <data name="labelWmTextExample.Text" xml:space="preserve">
+    <value>¡Fuente texto de ejemplo!</value>
+  </data>
+  <data name="buttonWmText.Text" xml:space="preserve">
+    <value>Fuente del texto</value>
+  </data>
+  <data name="labelTextWatermark.Text" xml:space="preserve">
+    <value>Texto:</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items" xml:space="preserve">
+    <value>arriba a la izquierda</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items1" xml:space="preserve">
+    <value>Centro superior</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items2" xml:space="preserve">
+    <value>arriba a la derecha</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items3" xml:space="preserve">
+    <value>media izquierda</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items4" xml:space="preserve">
+    <value>Centro de medio</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items5" xml:space="preserve">
+    <value>medio derecha</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items6" xml:space="preserve">
+    <value>abajo a la izquierda</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items7" xml:space="preserve">
+    <value>centro inferior</value>
+  </data>
+  <data name="comboBoxWatermarkPos.Items8" xml:space="preserve">
+    <value>abajo a la derecha</value>
+  </data>
+  <data name="labelWatermarkPos.Text" xml:space="preserve">
+    <value>Imagen o posición del texto:</value>
+  </data>
+  <data name="buttonImgWatermark.Text" xml:space="preserve">
+    <value>Imagen</value>
+  </data>
+  <data name="checkBoxUseAspectRatio.Text" xml:space="preserve">
+    <value>Utilizar la relación de aspecto...</value>
+  </data>
+  <data name="labelResizeMode.Text" xml:space="preserve">
+    <value>Cambiar el tamaño de modo:</value>
+  </data>
+  <data name="comboBoxResizeMode.Items" xml:space="preserve">
+    <value>Ninguno</value>
+  </data>
+  <data name="comboBoxResizeMode.Items1" xml:space="preserve">
+    <value>Más pequeño</value>
+  </data>
+  <data name="comboBoxResizeMode.Items2" xml:space="preserve">
+    <value>Más grande</value>
+  </data>
+  <data name="comboBoxResizeMode.Items3" xml:space="preserve">
+    <value>Exacto</value>
+  </data>
+  <data name="checkBoxResizeImg.Text" xml:space="preserve">
+    <value>Cambiar el tamaño de imagen anchura - altura (px):</value>
+  </data>
+  <data name="comboBoxOutputFormat.Items" xml:space="preserve">
+    <value>JPG</value>
+  </data>
+  <data name="comboBoxOutputFormat.Items1" xml:space="preserve">
+    <value>PNG</value>
+  </data>
+  <data name="comboBoxOutputFormat.Items2" xml:space="preserve">
+    <value>GIF</value>
+  </data>
+  <data name="comboBoxOutputFormat.Items3" xml:space="preserve">
+    <value>BMP</value>
+  </data>
+  <data name="labelOutputFormat.Text" xml:space="preserve">
+    <value>Formato de salida:</value>
+  </data>
+  <data name="buttonRun.Text" xml:space="preserve">
+    <value>Procesar Archivos...</value>
+  </data>
+  <data name="toolStripContainer1.Text" xml:space="preserve">
+    <value>toolStripContainer1</value>
+  </data>
+  <data name="toolStripButtonAbout.Text" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="toolStripButtonHelp.Text" xml:space="preserve">
+    <value>Ayuda</value>
+  </data>
+  <data name="checkBoxEnableWatermark.Text" xml:space="preserve">
+    <value>Habilitar la marca de agua...</value>
+  </data>
+  <data name="checkBoxEnableMessages.Text" xml:space="preserve">
+    <value>Activar los mensajes...</value>
+  </data>
+  <data name="labelMsgOpacity.Text" xml:space="preserve">
+    <value>Opacidad:</value>
+  </data>
+  <data name="comboBoxMsgPos.Items" xml:space="preserve">
+    <value>arriba a la izquierda</value>
+  </data>
+  <data name="comboBoxMsgPos.Items1" xml:space="preserve">
+    <value>Centro superior</value>
+  </data>
+  <data name="comboBoxMsgPos.Items2" xml:space="preserve">
+    <value>arriba a la derecha</value>
+  </data>
+  <data name="comboBoxMsgPos.Items3" xml:space="preserve">
+    <value>media izquierda</value>
+  </data>
+  <data name="comboBoxMsgPos.Items4" xml:space="preserve">
+    <value>Centro de medio</value>
+  </data>
+  <data name="comboBoxMsgPos.Items5" xml:space="preserve">
+    <value>medio derecha</value>
+  </data>
+  <data name="comboBoxMsgPos.Items6" xml:space="preserve">
+    <value>abajo a la izquierda</value>
+  </data>
+  <data name="comboBoxMsgPos.Items7" xml:space="preserve">
+    <value>centro inferior</value>
+  </data>
+  <data name="comboBoxMsgPos.Items8" xml:space="preserve">
+    <value>abajo a la derecha</value>
+  </data>
+  <data name="buttonMsgSource.Text" xml:space="preserve">
+    <value>Archivo de texto</value>
+  </data>
+  <data name="toolStripButtonCustomize.Text" xml:space="preserve">
+    <value>¿Necesita personalizar?</value>
+  </data>
+</root>
