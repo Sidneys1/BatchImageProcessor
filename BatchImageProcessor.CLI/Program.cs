@@ -17,6 +17,7 @@ namespace BatchImageProcessor.CLI
 			var showHelp = false;
 			var x = new Model.Types.OptionSet();
 			var manifest = string.Empty;
+			var did_resize = false;
 
 			var fontsize = 12f;
 			var fontname = "Calibri";
@@ -35,14 +36,29 @@ namespace BatchImageProcessor.CLI
 				#region Resize Flags
 
 				{
-					"resize=", "A {resize} transform.\n(None|Smaller|Larger|Exact)", o =>
-					{
+					"resize=", "A {resize} transform.\n(None|Smaller|Larger|Exact)",
+					o => {
 						ResizeMode r;
-						if (Enum.TryParse(o, true, out r)) x.ResizeOptions.ResizeMode = r;
+						if (Enum.TryParse(o, true, out r))
+							x.ResizeOptions.ResizeMode = r;
+
+						x.EnableResize = x.ResizeOptions.ResizeMode != ResizeMode.None;
 					}
 				},
-				{"rwidth=", "Resize {width}, in pixels.", (int o) => x.ResizeOptions.ResizeWidth = o},
-				{"rheight=", "Resize {height}, in pixels.", (int o) => x.ResizeOptions.ResizeHeight = o},
+				{
+					"rwidth=", "Resize {width}, in pixels.", 
+					(int o) => {
+						x.ResizeOptions.ResizeWidth = o;
+						did_resize = true;
+					} 
+				},
+				{
+					"rheight=", "Resize {height}, in pixels.", 
+					(int o) => {
+						x.ResizeOptions.ResizeHeight = o;
+						did_resize = true;
+					}
+				},
 				{
 					"a|noaspect", "Disables automatic aspect\nratio matching when resizing.",
 					o => x.ResizeOptions.UseAspectRatio = o == null
@@ -160,6 +176,14 @@ namespace BatchImageProcessor.CLI
 				return;
 			}
 
+			if (!x.EnableResize && did_resize)
+			{
+				var fg = Console.ForegroundColor;
+				Console.ForegroundColor = ConsoleColor.Yellow;
+				Console.WriteLine("Warning: resize dimension(s) specified, but no --resize mode set.");
+				Console.ForegroundColor = fg;
+            }
+
 			var files = new List<string>();
 
 			x.WatermarkOptions.WatermarkFont = new Font(fontname, fontsize);
@@ -193,17 +217,7 @@ namespace BatchImageProcessor.CLI
 				x.OutputOptions.OutputPath = new DirectoryInfo(".").FullName;
 
 			var mod = new Model.Model(x, files);
-
-			Console.BufferHeight = Console.WindowWidth;
-			Console.BufferWidth = Console.BufferHeight;
-			Console.WriteLine();
-			Console.CursorVisible = false;
-			Console.Clear();
 			mod.Process(new Program()).Wait();
-
-			Console.WriteLine(@"Press ENTER to exit...");
-			Console.ReadLine();
-			Console.CursorVisible = true;
 		}
 
 		private static void ShowHelp(OptionSet p)
@@ -223,14 +237,13 @@ namespace BatchImageProcessor.CLI
 			{
 				var s = $@"Done {value.Done} out of {value.Total}";
 
-				Console.SetCursorPosition((Console.WindowWidth/2) - (s.Length/2), Console.WindowHeight/2);
+				Console.SetCursorPosition(0, Console.CursorTop > 1 ? Console.CursorTop - 2 : 0);
 				Console.WriteLine(s);
 
 				var max = Console.WindowWidth - 2;
 
 				var val = (float) value.Done/value.Total;
 				Console.WriteLine(@" " + new string('|', val > 0 ? (int) (max*val) : 1));
-				Console.Out.Flush();
 			}
 		}
 	}
