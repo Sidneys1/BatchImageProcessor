@@ -21,6 +21,7 @@ namespace BatchImageProcessor.Controls
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            // TODO ContextMenu is no longer supported. Use ContextMenuStrip instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
             if (ContextMenu == null) return;
             ContextMenu.IsEnabled = true;
             ContextMenu.PlacementTarget = (sender as Button);

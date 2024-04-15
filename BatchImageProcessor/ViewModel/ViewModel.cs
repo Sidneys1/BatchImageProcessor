@@ -592,7 +592,7 @@ namespace BatchImageProcessor.ViewModel
 						x.Close();
 						continue;
 					}
-					folder.Files.Add(new FileWrapper(str) { RawOptions = BatchImageProcessor.Model.Utility.ObjectCopier.Clone(overrideOptions), IsRaw = true });
+					folder.Files.Add(new FileWrapper(str) { RawOptions = overrideOptions.Copy(), IsRaw = true });
 				}
 				else
 					folder.AddFile(str);

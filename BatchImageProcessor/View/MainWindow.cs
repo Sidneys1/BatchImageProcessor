@@ -17,10 +17,12 @@ using BatchImageProcessor.Native;
 using BatchImageProcessor.ViewModel;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using static System.Environment;
-using ContextMenu = System.Windows.Controls.ContextMenu;
+using // TODO ContextMenu is no longer supported. Use ContextMenuStrip instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
+ContextMenu = System.Windows.Controls.ContextMenu;
 using Control = System.Windows.Forms.Control;
 using IWin32Window = System.Windows.Forms.IWin32Window;
-using MenuItem = System.Windows.Controls.MenuItem;
+using // TODO MenuItem is no longer supported. Use ToolStripMenuItem instead. For more details see https://docs.microsoft.com/en-us/dotnet/core/compatibility/winforms#removed-controls
+MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 
 
@@ -123,7 +125,7 @@ namespace BatchImageProcessor.View
 		private void AdjustWindowFrame()
 		{
 			if (DwmApiInterop.IsCompositionEnabled())
-				ExtendFrameIntoClientArea(0, 0, (int)(RootGrid.ActualHeight - ContentRectangle.ActualHeight), 0);
+				ExtendFrameIntoClientArea(0, 0, (int)(RootGrid.Height - ContentRectangle.Height), 0);
 			else
 				FallbackPaint();
 		}

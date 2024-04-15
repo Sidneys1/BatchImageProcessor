@@ -3,7 +3,7 @@ using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
-	[Serializable]
+	// [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 	public class OptionSet
 	{
 		#region Enabled

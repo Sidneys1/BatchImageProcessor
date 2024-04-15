@@ -5,6 +5,7 @@ using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model
 {
+	// [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 	public class File : IoObject, IFolderable, IFile
 	{
 		#region Variables

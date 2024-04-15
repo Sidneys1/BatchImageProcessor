@@ -1,86 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7165D238-5543-40FB-A74F-F792368BE597}</ProjectGuid>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BatchImageProcessor.Model</RootNamespace>
-    <AssemblyName>BatchImageProcessor.Model</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <UseWPF>true</UseWPF>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyTitle>BatchImageProcessor.Model</AssemblyTitle>
+    <Product>BatchImageProcessor.Model</Product>
+    <Copyright>Copyright © Sidneys1 2024</Copyright>
+    <Version>2.0.0</Version>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.4" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="File.cs" />
-    <Compile Include="Folder.cs" />
-    <Compile Include="Interface\IFile.cs" />
-    <Compile Include="Interface\IFolderable.cs" />
-    <Compile Include="Interface\IFolderableHost.cs" />
-    <Compile Include="Interface\IIoObject.cs" />
-    <Compile Include="IoObject.cs" />
-    <Compile Include="Model.cs" />
-    <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StaticImageUtils.cs" />
-    <Compile Include="Types\AdjustmentOptions.cs" />
-    <Compile Include="Types\CropOptions.cs" />
-    <Compile Include="Types\Enums\Alignment.cs" />
-    <Compile Include="Types\Enums\ColorType.cs" />
-    <Compile Include="Types\Enums\Format.cs" />
-    <Compile Include="Types\Enums\InterpolationMode.cs" />
-    <Compile Include="Types\Enums\NameType.cs" />
-    <Compile Include="Types\Enums\RawHighlightMode.cs" />
-    <Compile Include="Types\Enums\ResizeMode.cs" />
-    <Compile Include="Types\Enums\Rotation.cs" />
-    <Compile Include="Types\Enums\WatermarkType.cs" />
-    <Compile Include="Types\Enums\WhiteBalanceMode.cs" />
-    <Compile Include="Types\ModelProgressUpdate.cs" />
-    <Compile Include="Types\OptionSet.cs" />
-    <Compile Include="Types\OutputOptions.cs" />
-    <Compile Include="Types\RawOptions.cs" />
-    <Compile Include="Types\ResizeOptions.cs" />
-    <Compile Include="Types\WatermarkOptions.cs" />
-    <Compile Include="Utility\ObjectCopier.cs" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

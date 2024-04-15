@@ -4,9 +4,10 @@ using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model.Types
 {
-	[Serializable]
+	// [Serializable, System.Runtime.Versioning.SupportedOSPlatform("windows")]
 	public class WatermarkOptions
 	{
+		[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 		private Font _watermarkFont;
 
 		public WatermarkOptions()
@@ -27,6 +28,7 @@ namespace BatchImageProcessor.Model.Types
 		public WatermarkType WatermarkType { get; set; } = WatermarkType.Text;
 		public string WatermarkFontString => $"{WatermarkFont.FontFamily.Name}, {WatermarkFont.SizeInPoints}pt";
 
+		[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 		public Font WatermarkFont
 		{
 			get { return _watermarkFont; }

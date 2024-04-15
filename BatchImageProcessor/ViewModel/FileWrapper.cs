@@ -149,9 +149,9 @@ namespace BatchImageProcessor.ViewModel
 		{
 			_backupName = Name;
 			if (_file.RawOptions != null)
-				_rawBackup = Model.Utility.ObjectCopier.Clone(_file.RawOptions);
+				_rawBackup = _file.RawOptions.Copy();
 			if (_file.Options != null)
-				_optionsBackup = Model.Utility.ObjectCopier.Clone(_file.Options);
+				_optionsBackup = _file.Options.Copy();
 		}
 
 		public void EndEdit()

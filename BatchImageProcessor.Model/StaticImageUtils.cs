@@ -15,6 +15,7 @@ using Rotation = BatchImageProcessor.Model.Types.Enums.Rotation;
 
 namespace BatchImageProcessor.Model
 {
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 	public static class StaticImageUtils
 	{
 		public static ImageCodecInfo GetEncoder(ImageFormat format)

@@ -179,3 +179,6 @@ packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.DataGrid.dll
 packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/Xceed.Wpf.Toolkit.dll
 packages/Extended.Wpf.Toolkit.2.2.1/lib/net40/zh-Hans/Xceed.Wpf.AvalonDock.resources.dll
 packages/Extended.Wpf.Toolkit.2.2.1/tools/install.ps1
+
+.vs/
+.tool-versions

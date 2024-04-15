@@ -1,13 +1,13 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22609.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchImageProcessor", "BatchImageProcessor\BatchImageProcessor.csproj", "{A57FEBB7-72BF-4794-AB8F-DB1A71989C0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatchImageProcessor", "BatchImageProcessor\BatchImageProcessor.csproj", "{A57FEBB7-72BF-4794-AB8F-DB1A71989C0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchImageProcessor.Model", "BatchImageProcessor.Model\BatchImageProcessor.Model.csproj", "{7165D238-5543-40FB-A74F-F792368BE597}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatchImageProcessor.Model", "BatchImageProcessor.Model\BatchImageProcessor.Model.csproj", "{7165D238-5543-40FB-A74F-F792368BE597}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchImageProcessor.CLI", "BatchImageProcessor.CLI\BatchImageProcessor.CLI.csproj", "{293511AC-5E5D-4182-833D-7E802796891C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatchImageProcessor.CLI", "BatchImageProcessor.CLI\BatchImageProcessor.CLI.csproj", "{293511AC-5E5D-4182-833D-7E802796891C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

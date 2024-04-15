@@ -14,6 +14,7 @@ using BatchImageProcessor.Model.Types.Enums;
 
 namespace BatchImageProcessor.Model
 {
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 	public class Model
 	{
 		private int _totalImages;
