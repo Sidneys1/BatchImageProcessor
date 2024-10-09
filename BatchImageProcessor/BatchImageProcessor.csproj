@@ -229,7 +229,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="NDesk.Options.Core" Version="1.2.8" />
-    <PackageReference Include="System.Runtime.Caching" Version="8.0.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="8.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ViewModel\EnumStringConverter.cs" />
